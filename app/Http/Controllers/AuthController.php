@@ -16,7 +16,7 @@ class AuthController extends Controller
     }
 
     // Handle login submission
-    public function login(Request $request)
+public function login(Request $request)
 {
     $request->validate([
         'username' => 'required|string',
@@ -34,8 +34,11 @@ class AuthController extends Controller
         return back()->with('error', 'Your account is waiting for admin approval.');
     }
 
-    // Log the user in
+    // ✅ Proper login
     Auth::login($user);
+
+    // ✅ VERY IMPORTANT (prevents session issues)
+    $request->session()->regenerate();
 
     // Redirect by role
     if ($user->role === 'admin') {
@@ -48,10 +51,16 @@ class AuthController extends Controller
 }
 
 
+
     // Logout
-    public function logout()
-    {
-        Auth::logout();
-        return redirect()->route('login');
-    }
+    public function logout(Request $request)
+{
+    Auth::logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('login');
+}
+
 }

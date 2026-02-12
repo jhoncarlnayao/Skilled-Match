@@ -29,10 +29,10 @@ return new class extends Migration
 });
 
  DB::table('users')->insert([
-            'name' => 'Admin User',
+            'name' => 'AdminUser',
             'username' => 'admin',
             'email' => 'admin@example.com',
-            'password' => Hash::make('admin123'), // <-- set your password here
+            'password' => Hash::make('admin'), // <-- set your password here
             'role' => 'admin',
             'status' => 'active',
             'created_at' => now(),

@@ -41,15 +41,15 @@
   <div class="sm:flex sm:items-center sm:justify-between">
     <div>
       <div class="flex items-center gap-x-3">
-        <h2 class="text-lg font-medium text-gray-800">Customers</h2>
-        <span class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full">240 vendors</span>
+        <h2 class="text-lg font-medium text-gray-800">Client's Account List</h2>
+        <span class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full">240 Client's</span>
       </div>
       <p class="mt-1 text-sm text-gray-500">These companies have purchased in the last 12 months.</p>
     </div>
 
   <div class="flex items-center mt-4 gap-x-3">
 
-    <a href="{{ route('admin.pending.accounts', ['status' => 'pending']) }}"
+    {{-- <a href="{{ route('admin.pending.accounts', ['status' => 'pending']) }}"
        class="px-5 py-2 text-sm font-medium rounded-lg transition
        {{ $status === 'pending' 
             ? 'bg-yellow-500 text-white shadow-sm' 
@@ -63,7 +63,7 @@
             ? 'bg-green-600 text-white shadow-sm' 
             : 'bg-white border text-gray-700 hover:bg-gray-100' }}">
         Approved Accounts
-    </a>
+    </a> --}}
 
 </div>
 
@@ -103,9 +103,13 @@
 
               <!-- Status -->
               <td class="px-12 py-4">
-                  <span class="inline-block px-3 py-1 text-sm font-normal text-yellow-700 bg-yellow-100 rounded-full">
-                      {{ ucfirst($user->status) }}
-                  </span>
+                <span class="inline-block px-3 py-1 text-sm font-normal rounded-full
+    {{ $user->status === 'approved' 
+        ? 'text-green-700 bg-green-100' 
+        : 'text-yellow-700 bg-yellow-100' }}">
+    {{ ucfirst($user->status) }}
+</span>
+
               </td>
 
               <!-- About -->
@@ -119,16 +123,14 @@
               <!-- Action -->
             <!-- Action -->
 <td class="px-4 py-4 text-sm">
-
-    @if($status === 'pending')
-    <div class="flex gap-2">
-
-      <!-- Approve -->
-<a href="{{ route('admin.pending.approve', $user->id) }}"
-   class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white 
-          bg-green-600 rounded-lg shadow-sm 
-          hover:bg-green-700 focus:outline-none focus:ring-2 
-          focus:ring-green-500 focus:ring-offset-1 transition">
+  <div class="flex items-center gap-2">
+    <!-- Edit -->
+<button type="button"
+        data-hs-overlay="#edit-user-modal-{{ $user->id }}"
+        class="flex items-center gap-2 px-4 py-2 text-sm font-medium 
+               text-white bg-blue-600 rounded-lg shadow-sm
+               hover:bg-blue-700 focus:outline-none focus:ring-2 
+               focus:ring-blue-500 focus:ring-offset-1 transition">
     <svg xmlns="http://www.w3.org/2000/svg"
          class="w-4 h-4"
          fill="none"
@@ -136,38 +138,38 @@
          stroke="currentColor"
          stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round"
-              d="M5 13l4 4L19 7" />
+              d="M11 5h2M12 7v10m-7 4h14a2 2 0 002-2V7l-6-4H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
     </svg>
-    Approve
-</a>
+    Edit
+</button>
 
-<!-- Reject -->
-<a href="{{ route('admin.pending.reject', $user->id) }}"
-   class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white 
-          bg-red-600 rounded-lg shadow-sm 
-          hover:bg-red-700 focus:outline-none focus:ring-2 
-          focus:ring-red-500 focus:ring-offset-1 transition">
-    <svg xmlns="http://www.w3.org/2000/svg"
-         class="w-4 h-4"
-         fill="none"
-         viewBox="0 0 24 24"
-         stroke="currentColor"
-         stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12" />
-    </svg>
-    Reject
-</a>
-    </div>
-    @endif
 
+    <!-- Deactivate -->
+    <a href="#"
+       class="flex items-center gap-2 px-4 py-2 text-sm font-medium 
+              text-white bg-red-600 rounded-lg shadow-sm
+              hover:bg-red-700 focus:outline-none focus:ring-2 
+              focus:ring-red-500 focus:ring-offset-1 transition">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="w-4 h-4"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor"
+             stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+        Deactivate
+    </a>
+
+  </div>
 </td>
 
           </tr>
           @empty
           <tr>
               <td colspan="4" class="px-4 py-4 text-center text-gray-500">
-                  No pending users found.
+                  No client accounts found.
               </td>
           </tr>
           @endforelse
@@ -179,13 +181,73 @@
 </div>
 
 </section>
+{{-- MODALS --}}
+@foreach($users as $user)
+<div id="edit-user-modal-{{ $user->id }}"
+     class="hs-overlay hidden w-full h-full fixed top-0 start-0 z-[60] overflow-x-hidden overflow-y-auto">
+  <div class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 
+              ease-out transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
 
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm">
+
+      <!-- Header -->
+      <div class="flex justify-between items-center py-3 px-4 border-b">
+        <h3 class="font-bold text-gray-800">
+          Edit Client Account
+        </h3>
+        <button type="button"
+                data-hs-overlay="#edit-user-modal-{{ $user->id }}"
+                class="size-7 flex justify-center items-center rounded-full hover:bg-gray-100">
+          ✕
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-4">
+        <form action="#" method="POST" class="space-y-4">
+          @csrf
+
+          <div>
+            <label class="block text-sm mb-1">Full Name</label>
+            <input type="text"
+                   name="name"
+                   value="{{ $user->name }}"
+                   class="w-full border-gray-200 rounded-lg text-sm">
+          </div>
+
+          <div>
+            <label class="block text-sm mb-1">Email</label>
+            <input type="email"
+                   name="email"
+                   value="{{ $user->email }}"
+                   class="w-full border-gray-200 rounded-lg text-sm">
+          </div>
+
+          <div class="flex justify-end gap-2 pt-4 border-t">
+            <button type="button"
+                    data-hs-overlay="#edit-user-modal-{{ $user->id }}"
+                    class="px-4 py-2 border rounded-lg text-sm">
+              Cancel
+            </button>
+            <button type="submit"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">
+              Save Changes
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+@endforeach
 
   
 
     </main>
   </div>
-
+<script src="https://cdn.jsdelivr.net/npm/preline@latest/dist/preline.js"></script>
   <script src="https://preline.co/assets/vendor/preline/dist/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <script>

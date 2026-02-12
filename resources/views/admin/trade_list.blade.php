@@ -15,7 +15,9 @@
     </head>
     <body class="bg-[#f8fafc]">
 
-    @include('admin.navigation-bar-admin.navbar-admin')
+@include('admin.navigation-bar-admin.navbar-admin')
+
+
 
     <div class="w-full lg:ps-64">
         
@@ -81,29 +83,30 @@
                         Enter the trade name and description below.
                     </p>
 
-                    <form class="mt-4" method="POST" action="{{ route('admin.trades.store') }}">
-                        @csrf
+               <form class="mt-4" method="POST" action="{{ route('admin.trades.store') }}">
+    @csrf
 
-                        <label class="block mt-3 text-sm text-gray-700" for="name">Trade Name</label>
-                        <input type="text" name="name" id="name" placeholder="e.g. Plumbing"
-                                class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40" required>
+    <label class="block mt-3 text-sm text-gray-700" for="name">Trade Name</label>
+    <input type="text" name="name" id="name" placeholder="e.g. Plumbing"
+           class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40" required>
 
-                        <label class="block mt-3 text-sm text-gray-700" for="description">Description</label>
-                        <textarea name="description" id="description" rows="3" placeholder="Description of this trade"
-                                    class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"></textarea>
+    <label class="block mt-3 text-sm text-gray-700" for="description">Description</label>
+    <textarea name="description" id="description" rows="3" placeholder="Description of this trade"
+              class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"></textarea>
 
-                        <div class="mt-4 sm:flex sm:items-center sm:-mx-2">
-                            <button type="button" @click="isOpen = false"
-                                    class="w-full px-4 py-2 text-sm font-medium tracking-wide text-gray-700 transition-colors duration-300 transform border border-gray-200 rounded-md sm:w-1/2 sm:mx-2 hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40">
-                                Cancel
-                            </button>
+    <div class="mt-4 sm:flex sm:items-center sm:-mx-2">
+        <button type="button" @click="isOpen = false"
+                class="w-full px-4 py-2 text-sm font-medium tracking-wide text-gray-700 transition-colors duration-300 transform border border-gray-200 rounded-md sm:w-1/2 sm:mx-2 hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40">
+            Cancel
+        </button>
 
-                            <button type="submit"
-                                    class="w-full px-4 py-2 mt-3 text-sm font-medium tracking-wide text-white transition-colors duration-300 transform bg-blue-600 rounded-md sm:mt-0 sm:w-1/2 sm:mx-2 hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40">
-                                Add Trade
-                            </button>
-                        </div>
-                    </form>
+        <button type="submit"
+                class="w-full px-4 py-2 mt-3 text-sm font-medium tracking-wide text-white transition-colors duration-300 transform bg-blue-600 rounded-md sm:mt-0 sm:w-1/2 sm:mx-2 hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40">
+            Add Trade
+        </button>
+    </div>
+</form>
+
 
                     </div>
                 </div>

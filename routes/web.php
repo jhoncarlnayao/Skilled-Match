@@ -7,13 +7,20 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientJobController;
 use App\Http\Controllers\Admin\DashboardController;
 
+// ======================
 // Landing page
+// ======================
 Route::get('/', function () {
     return view('landing-page');
 });
 
+Route::post('/test-post', function () {
+    return 'POST received!';
+});
+
+
 // ======================
-// AUTH
+// AUTH LOGIN/LOGOUT
 // ======================
 Route::get('/login', [AuthController::class, 'showLoginForm'])
     ->name('login');
@@ -24,72 +31,98 @@ Route::post('/login', [AuthController::class, 'login'])
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
+// // ======================
+// // ADMIN AREA 
+// // ======================
+// Route::middleware(['auth'])->group(function () {
+
+//     Route::get('/admindashboard', [DashboardController::class, 'index'])
+//         ->name('admin.dashboard');
+
+//     Route::get('/admin/pending-accounts', [DashboardController::class, 'pendingAccounts'])
+//         ->name('admin.pending.accounts');
+
+//     Route::get('/admin/pending-accounts/{id}/approve', [DashboardController::class, 'approve'])
+//         ->name('admin.pending.approve');
+
+//     Route::get('/admin/pending-accounts/{id}/reject', [DashboardController::class, 'reject'])
+//         ->name('admin.pending.reject');
+
+//     Route::get('/admin/trades', [DashboardController::class, 'trades'])
+//         ->name('admin.trades');
+
+//     Route::post('/admin/trades/store', [DashboardController::class, 'storeTrade'])
+//         ->name('admin.trades.store');
+
+//     Route::post('/admin/trades/{id}/update', [DashboardController::class, 'updateTrade'])
+//         ->name('admin.trades.update');
+// });
+
 
 // ======================
-// PROTECTED ROUTES (must be logged in)
+// ADMIN AREA (Protected by auth middleware)
 // ======================
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->prefix('admin')->group(function () {
 
-    // ======================
-    // ADMIN AREA
-    // ======================
-    Route::get('/admindashboard', [DashboardController::class, 'index'])
+    Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('admin.dashboard');
 
-    Route::get('/admin/pending-accounts', [DashboardController::class, 'pendingAccounts'])
+    Route::get('/pending-accounts', [DashboardController::class, 'pendingAccounts'])
         ->name('admin.pending.accounts');
 
-    Route::post('/admin/pending-accounts/{id}/approve', [DashboardController::class, 'approve'])
+    Route::get('/pending-accounts/{id}/approve', [DashboardController::class, 'approve'])
         ->name('admin.pending.approve');
 
-    Route::post('/admin/pending-accounts/{id}/reject', [DashboardController::class, 'reject'])
+    Route::get('/pending-accounts/{id}/reject', [DashboardController::class, 'reject'])
         ->name('admin.pending.reject');
 
-    Route::get('/admin/trades', [DashboardController::class, 'trades'])
-        ->name('admin.trades');
+    // Trades
+    Route::get('/trades', [DashboardController::class, 'trades'])
+        ->name('admin.trades'); 
 
-    Route::post('/admin/trades/store', [DashboardController::class, 'storeTrade'])->name('admin.trades.store');
+    Route::post('/trades/store', [DashboardController::class, 'storeTrade'])
+        ->name('admin.trades.store');
 
-    Route::post('/admin/trades/{id}/update', [DashboardController::class, 'updateTrade'])->name('admin.trades.update');
+    Route::post('/trades/{id}/update', [DashboardController::class, 'updateTrade'])
+        ->name('admin.trades.update');
 
-
-    // ======================
-    // WORKER DASHBOARD
-    // ======================
-    Route::get('/worker/dashboard', function () {
-        return view('worker.dashboard'); // Replace with proper worker dashboard view
-    })->name('worker.dashboard');
-
-    // ======================
-    // CLIENT DASHBOARD
-    // ======================
-    Route::get('/client/dashboard', function () {
-        return view('client.client_dashboard'); // Replace with proper client dashboard logic if needed
-    })->name('client.client_dashboard');
-
-    Route::get('/client/post-job', [ClientJobController::class, 'postJob'])
-        ->name('client.client_post_job');
-
-    Route::post('/client/jobs/store', [ClientJobController::class, 'store'])
-        ->name('client.jobs.store');
-
-    Route::get('/client/jobs/create', [ClientJobController::class, 'create'])
-        ->name('client.jobs.create');
+        Route::get('/client-accounts', [DashboardController::class, 'getClientAccounts'])
+    ->name('admin.client.accounts');
 });
 
 
 // ======================
-// REGISTRATION (public)
+// WORKER DASHBOARD
 // ======================
+Route::get('/worker/dashboard', function () {
+    return view('worker.dashboard');
+})->name('worker.dashboard');
 
-// CLIENT REGISTRATION
+// ======================
+// CLIENT DASHBOARD
+// ======================
+Route::get('/client/dashboard', function () {
+    return view('client.client_dashboard');
+})->name('client.client_dashboard');
+
+Route::get('/client/post-job', [ClientJobController::class, 'postJob'])
+    ->name('client.client_post_job');
+
+Route::post('/client/jobs/store', [ClientJobController::class, 'store'])
+    ->name('client.jobs.store');
+
+Route::get('/client/jobs/create', [ClientJobController::class, 'create'])
+    ->name('client.jobs.create');
+
+// ======================
+// REGISTRATION (PUBLIC)
+// ======================
 Route::get('/create-account-user', [ClientRegisterController::class, 'showForm'])
     ->name('client.register.form');
 
 Route::post('/create-account-user', [ClientRegisterController::class, 'register'])
     ->name('client.register.submit');
 
-// WORKER REGISTRATION
 Route::get('/create-account-worker', [WorkerRegisterController::class, 'create'])
     ->name('worker.register.form');
 

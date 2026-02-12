@@ -19,13 +19,19 @@
           </a>
         </li>
         <li><a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-slate-600 hover:bg-gray-50 rounded-lg" href="{{ route('admin.pending.accounts') }}">Worker's Account</a></li>
+        <li><a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-slate-600 hover:bg-gray-50 rounded-lg" href="{{ route('admin.client.accounts') }}">Client's Account</a></li>
         <li><a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-slate-600 hover:bg-gray-50 rounded-lg" href="{{ route('admin.trades') }}">Trade List</a></li>
         <li><a class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-slate-600 hover:bg-gray-50 rounded-lg" href="#">Account</a></li>
         
         <li>
+            {{-- Use the admin guard explicitly --}}
             <form method="POST" action="{{ route('logout') }}">
-    @csrf
-    <button class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-slate-600 hover:bg-gray-50 rounded-lg" type="submit">Log out</button></li>
+                @csrf
+                <button class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-slate-600 hover:bg-gray-50 rounded-lg" type="submit">
+                    Log out ({{ optional(auth()->user())->name ?? 'Admin' }})
+                </button>
+            </form>
+        </li>
       </ul>
     </nav>
-  </aside>
+</aside>
