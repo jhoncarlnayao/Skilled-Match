@@ -33,6 +33,10 @@ public function login(Request $request)
     if ($user->role === 'worker' && $user->status === 'pending') {
         return back()->with('error', 'Your account is waiting for admin approval.');
     }
+    
+    if ($user->status === 'deactivate') {
+    return back()->with('error', 'Your account has been deactivated by admin.');
+}
 
     // ✅ Proper login
     Auth::login($user);

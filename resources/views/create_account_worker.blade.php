@@ -115,7 +115,7 @@
         <div class="text-center mt-8">
             <p class="text-[13px] text-gray-400">
                 Already have a profile? 
-                <a href="login.php" class="text-[#FD5068] font-bold hover:underline ml-1">Log in</a>
+                <a href="{{ route('login') }}" class="text-[#FD5068] font-bold hover:underline ml-1">Log in</a>
             </p>
         </div>
     </div>

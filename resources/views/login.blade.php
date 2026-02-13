@@ -83,7 +83,7 @@
                 </a>
                 <span class="h-4 w-[1px] bg-gray-200"></span>
                 <a href="{{ url('create-account-user') }}" class="group flex flex-col items-center gap-1">
-                    <span class="text-sm font-bold text-gray-700 group-hover:text-[#FF7854] transition-colors">Customer</span>
+                    <span class="text-sm font-bold text-gray-700 group-hover:text-[#FF7854] transition-colors">Client</span>
                     <div class="h-1 w-0 group-hover:w-full bg-[#FF7854] transition-all duration-300 rounded-full"></div>
                 </a>
             </div>

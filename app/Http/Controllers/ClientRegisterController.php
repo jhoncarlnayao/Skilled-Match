@@ -45,7 +45,7 @@ class ClientRegisterController extends Controller
     'phone' => $request->phone,
     'email' => $request->email,
     'address' => $request->address,
-    'role' => 'Client',
+    'role' => 'client',
     'status' => 'Active',
 ]);
 

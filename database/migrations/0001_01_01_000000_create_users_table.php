@@ -22,7 +22,7 @@ return new class extends Migration
     $table->timestamp('email_verified_at')->nullable();
     $table->string('password');
     $table->enum('role', ['admin','client','worker'])->default('client');  // add here
-    $table->enum('status', ['pending','approved','active'])->default('pending');
+    $table->enum('status', ['pending','approved','active','deactivate'])->default('pending');
 
     $table->rememberToken();
     $table->timestamps();

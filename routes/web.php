@@ -83,11 +83,22 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/trades/store', [DashboardController::class, 'storeTrade'])
         ->name('admin.trades.store');
 
+    Route::delete('/trades/{id}/delete', [DashboardController::class, 'deleteTrade'])
+    ->name('admin.trades.delete');
+
     Route::post('/trades/{id}/update', [DashboardController::class, 'updateTrade'])
         ->name('admin.trades.update');
 
         Route::get('/client-accounts', [DashboardController::class, 'getClientAccounts'])
     ->name('admin.client.accounts');
+
+    Route::post('/client-accounts/{id}/update', 
+    [DashboardController::class, 'updateClient'])
+    ->name('admin.client.update');
+
+    Route::get('/admin/client/toggle/{id}', 
+    [DashboardController::class, 'toggleClientStatus']
+)->name('admin.client.toggle');
 });
 
 

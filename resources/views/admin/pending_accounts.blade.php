@@ -41,7 +41,7 @@
   <div class="sm:flex sm:items-center sm:justify-between">
     <div>
       <div class="flex items-center gap-x-3">
-        <h2 class="text-lg font-medium text-gray-800">Customers</h2>
+        <h2 class="text-lg font-medium text-gray-800">Customer's Account List</h2>
         <span class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full">240 vendors</span>
       </div>
       <p class="mt-1 text-sm text-gray-500">These companies have purchased in the last 12 months.</p>

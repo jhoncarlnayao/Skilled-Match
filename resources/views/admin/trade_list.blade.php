@@ -201,6 +201,18 @@
                       </div>
                     </div>
                   </div>
+                  <form method="POST" action="{{ route('admin.trades.delete', $trade->id) }}" 
+      onsubmit="return confirm('Are you sure you want to delete this trade?');"
+      class="inline-block">
+    @csrf
+    @method('DELETE')
+
+    <button type="submit"
+        class="px-3 py-1 text-sm font-medium rounded-lg bg-red-600 text-white shadow-sm hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 focus:ring-opacity-40">
+        Delete
+    </button>
+</form>
+
                 </td>
               </tr>
             @empty

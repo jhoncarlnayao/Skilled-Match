@@ -23,6 +23,12 @@ class DashboardController extends Controller
             'totalWorkers' => User::where('role', 'worker')->count(),
             'pendingWorkers' => User::where('role', 'worker')->where('status', 'pending')->count(),
             'newWorkersThisMonth' => User::where('role', 'worker')
+            
+                ->whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->count(),
+            'totalClients' => User::where('role', 'client')->count(),
+            'newClientsThisMonth' => User::where('role', 'client')
                 ->whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->count(),
@@ -77,6 +83,16 @@ class DashboardController extends Controller
         return redirect()->route('admin.trades')->with('success', 'Trade added successfully!');
     }
 
+    // Delete trade
+    public function deleteTrade($id)
+{
+    $trade = Trade::findOrFail($id);
+    $trade->delete();
+
+    return redirect()->route('admin.trades')
+        ->with('success', 'Trade deleted successfully!');
+}
+
     // Update trade
     public function updateTrade(Request $request, $id)
     {
@@ -94,18 +110,50 @@ class DashboardController extends Controller
     }
 
 
-public function getClientAccounts(Request $request)
+public function getClientAccounts()
 {
-    // Get status from URL (default = pending)
-    $status = $request->get('status', 'active');
-
-    // Get ONLY CLIENT accounts
     $users = User::where('role', 'client')
-                ->where('status', $status)
                 ->orderBy('created_at', 'desc')
                 ->get();
 
-    return view('admin.client_accounts', compact('users', 'status'));
+    return view('admin.client_accounts', compact('users'));
+}
+
+
+public function toggleClientStatus($id)
+{
+    $user = User::where('role', 'client')->findOrFail($id);
+
+    if ($user->status === 'active') {
+        $user->status = 'deactivate';
+    } else {
+        $user->status = 'active';
+    }
+
+    $user->save();
+
+    return back()->with('success', 'Client status updated successfully.');
+}
+
+
+public function updateClient(Request $request, $id)
+{
+    $request->validate([
+        'name'   => 'required|string|max:255',
+        'email'  => 'required|email|max:255|unique:users,email,' . $id,
+        'status' => 'required|in:active,deactivate',
+
+    ]);
+
+    $user = User::where('role', 'client')->findOrFail($id);
+
+    $user->name   = $request->name;
+    $user->email  = $request->email;
+    $user->status = $request->status;
+
+    $user->save();
+
+    return back()->with('success', 'Client updated successfully.');
 }
 
     

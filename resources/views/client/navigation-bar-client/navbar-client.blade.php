@@ -38,28 +38,6 @@ class="hs-overlay hs-overlay-open:translate-x-0 -translate-x-full transition-all
                 </a>
             </li>
 
-            <!-- My Jobs -->
-            <li>
-                <a href="#"
-                   class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm rounded-lg text-slate-600 hover:bg-gray-50">
-                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="4" width="18" height="18" rx="2"/>
-                    </svg>
-                    My Jobs
-                </a>
-            </li>
-
-            <!-- Ongoing Jobs -->
-            <li>
-                <a href="#?status=ongoing"
-                   class="flex items-center gap-x-3.5 py-2 px-2.5 text-sm rounded-lg text-slate-600 hover:bg-gray-50">
-                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                    Ongoing Jobs
-                </a>
-            </li>
 
             <!-- Completed Jobs -->
             <li>

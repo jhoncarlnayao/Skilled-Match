@@ -41,8 +41,35 @@
 
 <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
+  <a href="{{ route('admin.client.accounts') }}">
+<!-- Total Clients -->
+<div class="p-5 bg-[#eff6ff] border border-blue-100 rounded-2xl hover:scale-105 hover:bg-[#eff6ff] transition duration-300">
+  <div class="flex justify-between items-start">
+    <span class="text-sm font-medium text-blue-600">Total Clients</span>
+    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24">
+      <path d="M16 14a4 4 0 10-8 0"/>
+      <circle cx="12" cy="7" r="4"/>
+      <path d="M6 18h12"/>
+    </svg>
+  </div>
+
+  <div class="mt-2 flex items-baseline gap-x-2">
+    <h3 class="text-2xl font-bold text-slate-800">
+        {{ $totalClients }}
+    </h3>
+
+    <span class="text-xs font-semibold bg-white px-2 py-0.5 rounded-md text-green-600">
+        +{{ $newClientsThisMonth }}
+    </span>
+  </div>
+</div>
+</a>
+
+
   <!-- Total Workers -->
-  <div class="p-5 bg-[#f5f3ff] border border-purple-100 rounded-2xl">
+  <a href="{{ route('admin.pending.accounts', ['status' => 'approved']) }}">
+  <div class="p-5 bg-[#f5f3ff] border border-purple-100 rounded-2xl hover:scale-105 hover:bg-[#f5f3ff] transition duration-300">
     <div class="flex justify-between items-start">
       <span class="text-sm font-medium text-purple-600">Total Workers</span>
       <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" stroke-width="2"
@@ -60,9 +87,11 @@
       </span>
     </div>
   </div>
+  </a>
 
   <!-- Pending Approvals -->
-  <div class="p-5 bg-[#fefce8] border border-yellow-100 rounded-2xl">
+  <a href="{{ route('admin.pending.accounts', ['status' => 'pending']) }}">
+  <div class="p-5 bg-[#fefce8] border border-yellow-100 rounded-2xl hover:scale-105 hover:bg-[#fefce8] transition duration-300" >
     <div class="flex justify-between items-start">
       <span class="text-sm font-medium text-yellow-600">Pending Approvals</span>
       <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2"
@@ -78,9 +107,11 @@
       </span>
     </div>
   </div>
+</a>
+  
 
   <!-- Active Jobs -->
-  <div class="p-5 bg-[#ecfeff] border border-cyan-100 rounded-2xl">
+  <div class="p-5 bg-[#ecfeff] border border-cyan-100 rounded-2xl hover:scale-105 hover:bg-[#ecfeff] transition duration-300">
     <div class="flex justify-between items-start">
       <span class="text-sm font-medium text-cyan-600">Active Jobs</span>
       <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2"
@@ -97,22 +128,6 @@
     </div>
   </div>
 
-  <!-- Completed Jobs -->
-  <div class="p-5 bg-[#f1f5f9] border border-slate-200 rounded-2xl">
-    <div class="flex justify-between items-start">
-      <span class="text-sm font-medium text-slate-600">Completed Jobs</span>
-      <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2"
-           viewBox="0 0 24 24">
-        <path d="M5 13l4 4L19 7"/>
-      </svg>
-    </div>
-    <div class="mt-2 flex items-baseline gap-x-2">
-      {{-- <h3 class="text-2xl font-bold text-slate-800">{{ $completedJobs }}</h3> --}}
-      <span class="text-xs font-semibold bg-white px-2 py-0.5 rounded-md text-green-600">
-        {{-- {{ $completionRate }}% --}}
-      </span>
-    </div>
-  </div>
 
 </div>
 

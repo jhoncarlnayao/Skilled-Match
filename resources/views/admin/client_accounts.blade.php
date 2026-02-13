@@ -144,23 +144,33 @@
 </button>
 
 
-    <!-- Deactivate -->
-    <a href="#"
-       class="flex items-center gap-2 px-4 py-2 text-sm font-medium 
-              text-white bg-red-600 rounded-lg shadow-sm
-              hover:bg-red-700 focus:outline-none focus:ring-2 
-              focus:ring-red-500 focus:ring-offset-1 transition">
-        <svg xmlns="http://www.w3.org/2000/svg"
-             class="w-4 h-4"
-             fill="none"
-             viewBox="0 0 24 24"
-             stroke="currentColor"
-             stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-        Deactivate
-    </a>
+  <div class="flex gap-2">
+
+        @if($user->status === 'active')
+
+            <!-- Deactivate Button -->
+            <a href="{{ route('admin.client.toggle', $user->id) }}"
+               class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white 
+                      bg-red-600 rounded-lg shadow-sm 
+                      hover:bg-red-700 focus:outline-none focus:ring-2 
+                      focus:ring-red-500 focus:ring-offset-1 transition">
+                Deactivate
+            </a>
+
+        @else
+
+            <!-- Activate Button -->
+            <a href="{{ route('admin.client.toggle', $user->id) }}"
+               class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white 
+                      bg-green-600 rounded-lg shadow-sm 
+                      hover:bg-green-700 focus:outline-none focus:ring-2 
+                      focus:ring-green-500 focus:ring-offset-1 transition">
+                Activate
+            </a>
+
+        @endif
+
+    </div>
 
   </div>
 </td>
@@ -181,56 +191,100 @@
 </div>
 
 </section>
-{{-- MODALS --}}
+
 @foreach($users as $user)
 <div id="edit-user-modal-{{ $user->id }}"
-     class="hs-overlay hidden w-full h-full fixed top-0 start-0 z-[60] overflow-x-hidden overflow-y-auto">
-  <div class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 
-              ease-out transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto">
+     class="hs-overlay hidden fixed inset-0 z-[80] overflow-y-auto">
+     
+  <div class="flex items-center justify-center min-h-screen px-4">
+    
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl border border-gray-200">
 
-    <div class="bg-white border border-gray-200 rounded-xl shadow-sm">
-
-      <!-- Header -->
-      <div class="flex justify-between items-center py-3 px-4 border-b">
-        <h3 class="font-bold text-gray-800">
+      {{-- Header --}}
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800">
           Edit Client Account
         </h3>
         <button type="button"
                 data-hs-overlay="#edit-user-modal-{{ $user->id }}"
-                class="size-7 flex justify-center items-center rounded-full hover:bg-gray-100">
+                class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
           ✕
         </button>
       </div>
 
-      <!-- Body -->
-      <div class="p-4">
-        <form action="#" method="POST" class="space-y-4">
+      {{-- Body --}}
+      <div class="p-6">
+        <form action="{{ route('admin.client.update', $user->id) }}"
+              method="POST"
+              class="space-y-5">
           @csrf
+     
 
+          {{-- Full Name --}}
           <div>
-            <label class="block text-sm mb-1">Full Name</label>
+            <label class="block text-sm font-medium text-gray-600 mb-2">
+              Full Name
+            </label>
             <input type="text"
                    name="name"
                    value="{{ $user->name }}"
-                   class="w-full border-gray-200 rounded-lg text-sm">
+                   class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
+                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                          outline-none transition"
+                   required>
           </div>
 
+          {{-- Email --}}
           <div>
-            <label class="block text-sm mb-1">Email</label>
+            <label class="block text-sm font-medium text-gray-600 mb-2">
+              Email Address
+            </label>
             <input type="email"
                    name="email"
                    value="{{ $user->email }}"
-                   class="w-full border-gray-200 rounded-lg text-sm">
+                   class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
+                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                          outline-none transition"
+                   required>
           </div>
 
-          <div class="flex justify-end gap-2 pt-4 border-t">
+          {{-- Status --}}
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-2">
+              Account Status
+            </label>
+        <select name="status"
+        class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl
+               focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+               outline-none transition">
+
+  <option value="active"
+          {{ $user->status == 'active' ? 'selected' : '' }}>
+      Active
+  </option>
+
+  <option value="deactivate"
+          {{ $user->status == 'deactivate' ? 'selected' : '' }}>
+      Deactivated
+  </option>
+
+</select>
+
+          </div>
+
+          {{-- Footer --}}
+          <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
             <button type="button"
                     data-hs-overlay="#edit-user-modal-{{ $user->id }}"
-                    class="px-4 py-2 border rounded-lg text-sm">
+                    class="px-5 py-2.5 text-sm font-medium border border-gray-300 
+                           rounded-xl hover:bg-gray-100 transition">
               Cancel
             </button>
+
             <button type="submit"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">
+                    class="px-5 py-2.5 text-sm font-medium text-white 
+                           bg-blue-600 rounded-xl 
+                           hover:bg-blue-700 transition shadow-sm">
               Save Changes
             </button>
           </div>

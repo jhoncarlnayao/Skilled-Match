@@ -22,7 +22,7 @@
         <div class="text-center mb-8">
             <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="hidden md:block w-16 h-16 mx-auto mb-4">
             <h1 class="text-2xl font-extrabold tracking-tight text-gray-900 uppercase">
-                Customer Registration
+                Client Registration
             </h1>
             <p class="text-gray-400 text-[14px] mt-2 leading-relaxed">
                 Create an account to find and hire skilled professionals.
@@ -120,7 +120,7 @@
         <div class="text-center mt-8">
             <p class="text-[13px] text-gray-400">
                 Already have an account? 
-                <a href="#" class="text-[#FD5068] font-bold hover:underline ml-1">Log in</a>
+                <a href="{{ route ('login') }}" class="text-[#FD5068] font-bold hover:underline ml-1">Log in</a>
             </p>
         </div>
     </div>
