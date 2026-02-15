@@ -56,10 +56,25 @@
 
             <!-- Add Trade Button inline -->
             <div x-data="{ isOpen: false }" class="mt-4 sm:mt-0">
-        <button @click="isOpen = true"
-                class="px-5 py-2 text-sm font-medium rounded-lg bg-green-600 text-white shadow-sm transition hover:bg-green-500 focus:outline-none focus:ring focus:ring-green-300 focus:ring-opacity-40">
+         <button @click="isOpen = true"
+        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
+               text-blue-700 bg-blue-50 border border-blue-200 rounded-lg
+               hover:bg-blue-100
+               focus:outline-none focus:ring-2 focus:ring-blue-200 transition">
+
+        <!-- Plus Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="w-4 h-4"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor"
+             stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 4v16m8-8H4"/>
+        </svg>
+
         Add Trade
-        </button>
+    </button>
 
                 <!-- Modal -->
                 <div x-show="isOpen"
@@ -136,10 +151,25 @@
                 <td class="px-4 py-4 text-sm text-gray-700">{{ $trade->description }}</td>
                 <td class="px-4 py-4 text-sm text-gray-500">{{ $trade->created_at->format('M d, Y') }}</td>
                 <td class="px-4 py-4 text-center text-sm">
-                  <button @click="isEditOpen = true"
-                          class="px-3 py-1 text-sm font-medium rounded-lg bg-yellow-500 text-white shadow-sm hover:bg-yellow-400 focus:outline-none focus:ring focus:ring-yellow-300 focus:ring-opacity-40">
-                    Edit
-                  </button>
+              <button @click="isEditOpen = true"
+        class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
+               text-gray-700 bg-white border border-gray-300 rounded-lg
+               hover:bg-gray-50 hover:border-gray-400
+               focus:outline-none focus:ring-2 focus:ring-gray-200 transition">
+
+        <!-- Pencil Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="w-4 h-4 text-gray-500"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor"
+             stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M15.232 5.232l3.536 3.536M9 11l6-6m-6 6v4h4"/>
+        </svg>
+
+        Edit
+    </button>
 
                   <!-- Edit Modal -->
                   <div x-show="isEditOpen" class="fixed inset-0 z-20 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -201,17 +231,34 @@
                       </div>
                     </div>
                   </div>
-                  <form method="POST" action="{{ route('admin.trades.delete', $trade->id) }}" 
-      onsubmit="return confirm('Are you sure you want to delete this trade?');"
-      class="inline-block">
-    @csrf
-    @method('DELETE')
+                    <!-- Delete -->
+    <form method="POST"
+          action="{{ route('admin.trades.delete', $trade->id) }}"
+          onsubmit="return confirm('Are you sure you want to delete this trade?');"
+          class="inline-block">
+        @csrf
+        @method('DELETE')
 
-    <button type="submit"
-        class="px-3 py-1 text-sm font-medium rounded-lg bg-red-600 text-white shadow-sm hover:bg-red-500 focus:outline-none focus:ring focus:ring-red-300 focus:ring-opacity-40">
-        Delete
-    </button>
-</form>
+        <button type="submit"
+            class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
+                   text-red-700 bg-red-50 border border-red-200 rounded-lg
+                   hover:bg-red-100
+                   focus:outline-none focus:ring-2 focus:ring-red-200 transition">
+
+            <!-- Trash Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="w-4 h-4"
+                 fill="none"
+                 viewBox="0 0 24 24"
+                 stroke="currentColor"
+                 stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M6 7h12M9 7v12m6-12v12M10 7l1-2h2l1 2"/>
+            </svg>
+
+            Delete
+        </button>
+    </form>
 
                 </td>
               </tr>

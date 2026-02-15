@@ -120,6 +120,8 @@ public function getClientAccounts()
 }
 
 
+
+
 public function toggleClientStatus($id)
 {
     $user = User::where('role', 'client')->findOrFail($id);

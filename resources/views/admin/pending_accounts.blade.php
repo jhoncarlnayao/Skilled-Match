@@ -41,31 +41,32 @@
   <div class="sm:flex sm:items-center sm:justify-between">
     <div>
       <div class="flex items-center gap-x-3">
-        <h2 class="text-lg font-medium text-gray-800">Customer's Account List</h2>
+        <h2 class="text-lg font-medium text-gray-800">Workers Account List</h2>
         <span class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full">240 vendors</span>
       </div>
       <p class="mt-1 text-sm text-gray-500">These companies have purchased in the last 12 months.</p>
     </div>
 
-  <div class="flex items-center mt-4 gap-x-3">
-
+<div class="flex items-center mt-4 gap-x-3">
     <a href="{{ route('admin.pending.accounts', ['status' => 'pending']) }}"
-       class="px-5 py-2 text-sm font-medium rounded-lg transition
+       class="px-5 py-2 text-sm font-medium rounded-md transition
        {{ $status === 'pending' 
-            ? 'bg-yellow-500 text-white shadow-sm' 
-            : 'bg-white border text-gray-700 hover:bg-gray-100' }}">
+            ? 'bg-yellow-500 text-white shadow-sm hover:bg-yellow-600' 
+            : 'bg-white border text-gray-700 hover:bg-gray-100' }} 
+       focus:outline-none focus:ring-2 focus:ring-yellow-300 active:scale-95">
         Pending Accounts
     </a>
 
     <a href="{{ route('admin.pending.accounts', ['status' => 'approved']) }}"
-       class="px-5 py-2 text-sm font-medium rounded-lg transition
+       class="px-5 py-2 text-sm font-medium rounded-md transition
        {{ $status === 'approved' 
-            ? 'bg-green-600 text-white shadow-sm' 
-            : 'bg-white border text-gray-700 hover:bg-gray-100' }}">
+            ? 'bg-green-600 text-white shadow-sm hover:bg-green-700' 
+            : 'bg-white border text-gray-700 hover:bg-gray-100' }} 
+       focus:outline-none focus:ring-2 focus:ring-green-300 active:scale-95">
         Approved Accounts
     </a>
-
 </div>
+
 
 
   </div>
@@ -101,12 +102,49 @@
                   </div>
               </td>
 
-              <!-- Status -->
-              <td class="px-12 py-4">
-                  <span class="inline-block px-3 py-1 text-sm font-normal text-yellow-700 bg-yellow-100 rounded-full">
-                      {{ ucfirst($user->status) }}
-                  </span>
-              </td>
+       <!-- Status -->
+<td class="px-12 py-4">
+    @if(strtolower($user->status) === 'approved')
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium
+                     text-green-700 bg-green-50 border border-green-200 rounded-full">
+            
+            <!-- Check Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="w-3.5 h-3.5"
+                 fill="none"
+                 viewBox="0 0 24 24"
+                 stroke="currentColor"
+                 stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M5 13l4 4L19 7"/>
+            </svg>
+
+            {{ ucfirst($user->status) }}
+        </span>
+    @elseif(strtolower($user->status) === 'pending')
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium
+                     text-yellow-700 bg-yellow-100 rounded-full">
+            
+            <!-- Clock Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="w-3.5 h-3.5"
+                 fill="none"
+                 viewBox="0 0 24 24"
+                 stroke="currentColor"
+                 stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M12 6v6l4 2M12 3a9 9 0 110 18 9 9 0 010-18z"/>
+            </svg>
+
+            {{ ucfirst($user->status) }}
+        </span>
+    @else
+        <!-- Default fallback -->
+        <span class="inline-block px-3 py-1 text-sm font-normal text-gray-700 bg-gray-100 rounded-full">
+            {{ ucfirst($user->status) }}
+        </span>
+    @endif
+</td>
 
               <!-- About -->
               <td class="px-4 py-4 text-sm">
@@ -120,46 +158,50 @@
             <!-- Action -->
 <td class="px-4 py-4 text-sm">
 
-    @if($status === 'pending')
-    <div class="flex gap-2">
+   @if($status === 'pending')
+<div class="flex gap-2">
 
-      <!-- Approve -->
-<a href="{{ route('admin.pending.approve', $user->id) }}"
-   class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white 
-          bg-green-600 rounded-lg shadow-sm 
-          hover:bg-green-700 focus:outline-none focus:ring-2 
-          focus:ring-green-500 focus:ring-offset-1 transition">
-    <svg xmlns="http://www.w3.org/2000/svg"
-         class="w-4 h-4"
-         fill="none"
-         viewBox="0 0 24 24"
-         stroke="currentColor"
-         stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M5 13l4 4L19 7" />
-    </svg>
-    Approve
-</a>
+  
 
-<!-- Reject -->
-<a href="{{ route('admin.pending.reject', $user->id) }}"
-   class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white 
-          bg-red-600 rounded-lg shadow-sm 
-          hover:bg-red-700 focus:outline-none focus:ring-2 
-          focus:ring-red-500 focus:ring-offset-1 transition">
-    <svg xmlns="http://www.w3.org/2000/svg"
-         class="w-4 h-4"
-         fill="none"
-         viewBox="0 0 24 24"
-         stroke="currentColor"
-         stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12" />
-    </svg>
-    Reject
-</a>
-    </div>
-    @endif
+    <!-- Approve (soft green) -->
+    <a href="{{ route('admin.pending.approve', $user->id) }}"
+       class="flex items-center gap-2 px-4 py-2 text-sm font-medium 
+              text-green-800 bg-green-100 rounded-md shadow-sm
+              hover:bg-green-200 focus:outline-none focus:ring-2 
+              focus:ring-green-300 focus:ring-offset-1 transition duration-150 ease-in-out
+              active:scale-95">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="w-4 h-4 text-green-800"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor"
+             stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        Approve
+    </a>
+
+    <!-- Reject (soft red) -->
+    <a href="{{ route('admin.pending.reject', $user->id) }}"
+       class="flex items-center gap-2 px-4 py-2 text-sm font-medium 
+              text-red-800 bg-red-100 rounded-md shadow-sm
+              hover:bg-red-200 focus:outline-none focus:ring-2 
+              focus:ring-red-300 focus:ring-offset-1 transition duration-150 ease-in-out
+              active:scale-95">
+        <svg xmlns="http://www.w3.org/2000/svg"
+             class="w-4 h-4 text-red-800"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor"
+             stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        Reject
+    </a>
+
+</div>
+@endif
+
 
 </td>
 
