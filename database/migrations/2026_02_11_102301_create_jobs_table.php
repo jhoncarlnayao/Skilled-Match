@@ -16,7 +16,9 @@ return new class extends Migration
         $table->foreignId('client_id')->constrained('users')->onDelete('cascade');
         $table->string('title');
         $table->text('description');
-        $table->string('trade'); // plumber, electrician, etc.
+         $table->foreignId('trade_id')
+              ->constrained('trades')
+              ->onDelete('cascade');
         $table->decimal('budget', 10, 2)->nullable();
         $table->string('location');
         $table->enum('status', ['open', 'assigned', 'completed'])->default('open');

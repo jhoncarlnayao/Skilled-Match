@@ -51,14 +51,26 @@
     </div>
 
     <!-- Post Job Button -->
-    <button @click="openModal = true"
-            class="flex items-center gap-1 px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-      <!-- Plus Icon -->
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-      </svg>
-      Post Job
-    </button>
+   <button @click="openModal = true"
+    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
+           text-blue-700 bg-blue-50 border border-blue-200 rounded-lg
+           hover:bg-blue-100
+           focus:outline-none focus:ring-2 focus:ring-blue-200 transition">
+
+    <!-- Plus Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="w-4 h-4"
+         fill="none"
+         viewBox="0 0 24 24"
+         stroke="currentColor"
+         stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 4v16m8-8H4" />
+    </svg>
+
+    Post Job
+</button>
+
   </div>
 
   <!-- Mini Description below -->
@@ -70,32 +82,83 @@
 
 <!-- Jobs Grid -->
 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-    @forelse($jobs as $job)
-        <div class="w-full bg-white rounded-md p-5 border border-gray-200">
-            <!-- Date and Status -->
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-xs text-gray-500">{{ $job->created_at->format('M d, Y') }}</span>
-                <span class="px-2 py-1 text-xs rounded-full
-                    {{ $job->status == 'open' ? 'bg-green-100 text-green-700' : '' }}
-                    {{ $job->status == 'assigned' ? 'bg-yellow-100 text-yellow-700' : '' }}
-                    {{ $job->status == 'completed' ? 'bg-blue-100 text-blue-700' : '' }}">
-                    {{ ucfirst($job->status) }}
-                </span>
+@forelse($jobs as $job)
+<div class="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition duration-300 cursor-pointer flex flex-col gap-5">
+
+    <!-- Top: Title + Status -->
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+        <div>
+            <h2 class="text-xl font-semibold text-gray-800 hover:text-blue-600 transition">
+                {{ $job->title }}
+            </h2>
+            <p class="text-sm text-gray-400 mt-1">
+                Posted on {{ $job->created_at->format('M d, Y') }}
+            </p>
+        </div>
+        <span class="px-4 py-1.5 text-sm font-medium rounded-full
+            {{ $job->status === 'open' ? 'bg-green-100 text-green-700' : '' }}
+            {{ $job->status === 'assigned' ? 'bg-yellow-100 text-yellow-700' : '' }}
+            {{ $job->status === 'completed' ? 'bg-blue-100 text-blue-700' : '' }}">
+            {{ ucfirst($job->status) }}
+        </span>
+    </div>
+
+    <!-- Description -->
+    <p class="text-gray-600 text-sm sm:text-base line-clamp-4">
+        {{ $job->description }}
+    </p>
+
+    <!-- Claimed Worker (UI Only) -->
+    <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+            <div class="relative">
+                <img src="https://i.pravatar.cc/100" class="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-sm">
+                <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></span>
             </div>
-
-            <!-- Job Title -->
-            <h2 class="mt-1 text-lg font-semibold text-gray-800">{{ $job->title }}</h2>
-
-            <!-- Job Description -->
-            <p class="mt-1 text-sm text-gray-600 line-clamp-3">{{ $job->description }}</p>
-
-            <!-- Trade and Budget -->
-            <div class="mt-3 flex justify-between text-sm text-gray-500">
-                <span>{{ $job->trade }}</span>
-                <span>₱{{ number_format($job->budget, 2) }}</span>
+            <div>
+                <p class="text-sm font-semibold text-gray-800">John Doe</p>
+                <p class="text-xs text-gray-500">Assigned Worker</p>
             </div>
         </div>
-    @empty
+        <span class="px-3 py-1 text-xs font-medium bg-yellow-100 text-yellow-700 rounded-full">In Progress</span>
+    </div>
+
+    <!-- Bottom: Trade, Budget + Buttons -->
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+
+        <!-- Left: Trade + Budget -->
+        <div class="flex flex-col gap-1">
+            <div class="flex items-center gap-2 text-sm text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="w-5 h-5 text-gray-400"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke="currentColor"
+                     stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M9 12h6m-6 4h6M7 8h10" />
+                </svg>
+                <span>{{ $job->trade->name }}</span>
+            </div>
+            <div class="text-sm text-gray-500">
+                Budget: <span class="font-semibold text-gray-800">₱{{ number_format($job->budget, 2) }}</span>
+            </div>
+        </div>
+
+        <!-- Right: Edit/Remove Buttons -->
+        <div class="flex gap-2">
+            <button class="px-4 py-2 text-sm font-medium bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition">
+                Edit
+            </button>
+            <button class="px-4 py-2 text-sm font-medium bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">
+                Remove
+            </button>
+        </div>
+    </div>
+
+</div>
+@empty
+
         <div class="col-span-full text-center text-gray-500 py-10">
             No jobs posted yet.
         </div>
@@ -111,10 +174,11 @@
       <form action="{{ route('client.jobs.store') }}" method="POST" class="space-y-4">
         @csrf
         <input type="text" name="title" placeholder="Job Title" required class="w-full px-4 py-3 text-sm border rounded-lg focus:ring focus:ring-blue-200">
-      <select name="trade" required class="w-full px-4 py-3 text-sm border rounded-lg focus:ring focus:ring-blue-200">
+      <select name="trade_id" required class="w-full px-4 py-3 text-sm border rounded-lg focus:ring focus:ring-blue-200">
     <option value="">Select Trade</option>
     @foreach($trades as $trade)
-        <option value="{{ $trade->name }}">{{ $trade->name }}</option>
+        <option value="{{ $trade->id }}">
+{{ $trade->name }}</option>
     @endforeach
 </select>
         <input type="number" name="budget" placeholder="Budget" class="w-full px-4 py-3 text-sm border rounded-lg focus:ring focus:ring-blue-200">
@@ -137,39 +201,5 @@
   <script src="//unpkg.com/alpinejs" defer></script>
   <script src="https://preline.co/assets/vendor/preline/dist/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-  <script>
-    window.addEventListener('load', () => {
-      const options = {
-        chart: {
-          height: 350,
-          type: 'line',
-          toolbar: { show: false },
-          zoom: { enabled: false }
-        },
-        series: [
-          { name: 'Reach', data: [25, 35, 20, 45, 38, 55, 48, 62, 58, 70, 65, 80] },
-          { name: 'Engagement', data: [15, 25, 40, 30, 45, 35, 50, 45, 60, 55, 75, 70] },
-          { name: 'Impression', data: [10, 20, 15, 25, 20, 30, 25, 35, 30, 45, 40, 50] }
-        ],
-        stroke: { curve: 'smooth', width: 3 },
-        colors: ['#facc15', '#22d3ee', '#a855f7'],
-        grid: {
-          borderColor: '#f1f5f9',
-          strokeDashArray: 4,
-          xaxis: { lines: { show: true } }
-        },
-        xaxis: {
-          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-          axisBorder: { show: false },
-          axisTicks: { show: false }
-        },
-        yaxis: { labels: { style: { colors: '#94a3b8' } } },
-        legend: { show: false }
-      };
-
-      const chart = new ApexCharts(document.querySelector("#sociotix-main-chart"), options);
-      chart.render();
-    });
-  </script>
 </body>
 </html>

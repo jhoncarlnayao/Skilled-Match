@@ -36,16 +36,16 @@ public function store(Request $request)
     $request->validate([
         'title' => 'required|string|max:255',
         'description' => 'required',
-        'trade' => 'required',
+        'trade_id' => 'required|exists:trades,id',
         'budget' => 'nullable|numeric',
-        'location' => 'required'
+        'location' => 'required|string'
     ]);
 
     Job::create([
         'client_id' => Auth::id(),
         'title' => $request->title,
         'description' => $request->description,
-        'trade' => $request->trade,
+        'trade_id' => $request->trade_id, // ✅ correct column
         'budget' => $request->budget,
         'location' => $request->location,
         'status' => 'open'
@@ -53,5 +53,6 @@ public function store(Request $request)
 
     return redirect()->back()->with('success', 'Job posted successfully.');
 }
+
 
 }
