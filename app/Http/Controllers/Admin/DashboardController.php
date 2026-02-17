@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Trade;
 use Illuminate\Http\Request;
+use App\Models\Job;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -18,22 +19,35 @@ class DashboardController extends Controller
 
     // Admin dashboard
     public function index()
-    {
-        return view('admin.dashboard', [
-            'totalWorkers' => User::where('role', 'worker')->count(),
-            'pendingWorkers' => User::where('role', 'worker')->where('status', 'pending')->count(),
-            'newWorkersThisMonth' => User::where('role', 'worker')
-            
-                ->whereMonth('created_at', now()->month)
-                ->whereYear('created_at', now()->year)
-                ->count(),
-            'totalClients' => User::where('role', 'client')->count(),
-            'newClientsThisMonth' => User::where('role', 'client')
-                ->whereMonth('created_at', now()->month)
-                ->whereYear('created_at', now()->year)
-                ->count(),
-        ]);
-    }
+{
+    $today = now()->toDateString();
+
+    return view('admin.dashboard', [
+        'totalWorkers' => User::where('role', 'worker')->count(),
+        'pendingWorkers' => User::where('role', 'worker')->where('status', 'pending')->count(),
+        'newWorkersThisMonth' => User::where('role', 'worker')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count(),
+        'totalClients' => User::where('role', 'client')->count(),
+        'newClientsThisMonth' => User::where('role', 'client')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count(),
+
+        // ✅ NEW ACCOUNTS TODAY
+        'newAccountsToday' => User::whereDate('created_at', $today)
+            ->orderBy('created_at', 'desc')
+            ->get(),
+
+        // ✅ NEW JOBS TODAY
+        'newJobsToday' => Job::with(['client', 'trade'])
+            ->whereDate('created_at', $today)
+            ->latest()
+            ->get(),
+    ]);
+}
+
 
     // Pending accounts
     public function pendingAccounts(Request $request)
@@ -157,6 +171,30 @@ public function updateClient(Request $request, $id)
 
     return back()->with('success', 'Client updated successfully.');
 }
+
+
+public function ShowJobs()
+{
+    return view('admin.jobs_list', [
+        'totalWorkers' => User::where('role', 'worker')->count(),
+        'pendingWorkers' => User::where('role', 'worker')->where('status', 'pending')->count(),
+        'newWorkersThisMonth' => User::where('role', 'worker')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count(),
+        'totalClients' => User::where('role', 'client')->count(),
+        'newClientsThisMonth' => User::where('role', 'client')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count(),
+
+        // ✅ ADD THIS
+        'jobs' => Job::with(['client', 'trade'])
+                    ->latest()
+                    ->get(),
+    ]);
+}
+
 
     
 }

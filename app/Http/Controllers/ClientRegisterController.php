@@ -36,7 +36,7 @@ class ClientRegisterController extends Controller
 
         // Create the client
         User::create([
-    'name' => $request->first_name . ' ' . $request->last_name, // required for default Laravel user table
+    // 'name' => $request->first_name . ' ' . $request->last_name, // required for default Laravel user table
     'first_name' => $request->first_name,
     'middle_name' => $request->middle_name,
     'last_name' => $request->last_name,

@@ -127,12 +127,11 @@
       </span>
     </div>
   </div>
-
-
 </div>
 
 
-      <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+
+ <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
         <div class="flex flex-wrap justify-between items-center gap-2 mb-8">
           <h4 class="text-lg font-bold text-slate-800">Profile Overview</h4>
           <div class="flex items-center gap-x-4 text-xs font-medium text-gray-500">
@@ -141,8 +140,139 @@
             <div class="flex items-center gap-x-1"><span class="w-3 h-3 rounded-full bg-purple-400"></span> Impression</div>
           </div>
         </div>
-        <div id="sociotix-main-chart" class="min-h-[350px]"></div>
+        <div id="sociotix-main-chart" class="min-h-[200px]"></div>
+  </div>
+
+<!-- New Accounts & New Jobs (Side by Side) -->
+<div class="grid lg:grid-cols-2 gap-6 mt-6">
+
+  <!-- New Accounts Today -->
+  <section class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="flex items-center gap-x-3">
+          <h2 class="text-lg font-medium text-gray-800">New Accounts Today</h2>
+          <span class="px-3 py-1 text-xs text-green-600 bg-green-100 rounded-full">
+           {{ $newAccountsToday->count() }} Accounts
+
+          </span>
+        </div>
+        <p class="mt-1 text-sm text-gray-500">
+          List of all clients and workers who registered today.
+        </p>
       </div>
+    </div>
+
+    <div class="mt-6 overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50 sticky top-0">
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Registered</th>
+          </tr>
+        </thead>
+     <tbody class="divide-y divide-gray-200">
+    @forelse($newAccountsToday as $user)
+        <tr class="hover:bg-gray-50 transition">
+            <td class="px-4 py-4 font-medium text-gray-800">
+                {{ $user->name }}
+            </td>
+            <td class="px-4 py-4 text-gray-700 capitalize">
+                {{ $user->role }}
+            </td>
+            <td class="px-4 py-4 text-gray-700">
+                {{ $user->email }}
+            </td>
+            <td class="px-4 py-4 text-gray-500">
+                {{ $user->created_at->format('M d, Y H:i') }}
+            </td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="4" class="px-4 py-6 text-center text-gray-400">
+                No new accounts today.
+            </td>
+        </tr>
+    @endforelse
+</tbody>
+
+      </table>
+    </div>
+  </section>
+
+
+  <!-- New Jobs Today -->
+  <section class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="flex items-center gap-x-3">
+          <h2 class="text-lg font-medium text-gray-800">New Jobs Today</h2>
+          <span class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full">
+           {{ $newJobsToday->count() }} Jobs
+
+          </span>
+        </div>
+        <p class="mt-1 text-sm text-gray-500">
+          List of all jobs posted today by clients.
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-6 overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50 sticky top-0">
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Trade</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Budget</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+          </tr>
+        </thead>
+      <tbody class="divide-y divide-gray-200">
+    @forelse($newJobsToday as $job)
+        <tr class="hover:bg-gray-50 transition">
+            <td class="px-4 py-4 font-medium text-blue-800">
+                {{ $job->title }}
+            </td>
+            <td class="px-4 py-4 text-gray-700">
+                {{ $job->client->name ?? 'N/A' }}
+            </td>
+            <td class="px-4 py-4 text-gray-700">
+                {{ $job->trade->name ?? 'N/A' }}
+            </td>
+            <td class="px-4 py-4 font-semibold text-yellow-800">
+                ₱{{ number_format($job->budget, 2) }}
+            </td>
+            <td class="px-4 py-4">
+                <span class="px-3 py-1 text-xs font-medium rounded-full
+                    @if($job->status == 'open') bg-green-100 text-green-700
+                    @elseif($job->status == 'assigned') bg-yellow-100 text-yellow-700
+                    @elseif($job->status == 'completed') bg-blue-100 text-blue-700
+                    @else bg-gray-100 text-gray-700
+                    @endif">
+                    {{ ucfirst($job->status) }}
+                </span>
+            </td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="5" class="px-4 py-6 text-center text-gray-400">
+                No new jobs today.
+            </td>
+        </tr>
+    @endforelse
+</tbody>
+
+      </table>
+    </div>
+  </section>
+
+</div>
+
+     
 
     </main>
   </div>

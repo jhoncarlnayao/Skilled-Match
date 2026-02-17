@@ -99,6 +99,11 @@
         Route::get('/admin/client/toggle/{id}', 
         [DashboardController::class, 'toggleClientStatus']
     )->name('admin.client.toggle');
+
+
+    // Jobs
+    Route::get('/jobs', [DashboardController::class, 'ShowJobs'])
+    ->name('admin.jobs_list');
     });
 
 

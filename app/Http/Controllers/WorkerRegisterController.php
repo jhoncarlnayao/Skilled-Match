@@ -32,14 +32,17 @@ class WorkerRegisterController extends Controller
         ]);
 
         DB::transaction(function() use ($request){
-            $user = User::create([
-                'name' => $request->first_name . ' ' . $request->last_name,
-                'username' => $request->username,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'role' => 'worker',
-                'status' => 'pending',
-            ]);
+           $user = User::create([
+    'first_name' => $request->first_name,
+    'middle_name' => null,
+    'last_name' => $request->last_name,
+    'username' => $request->username,
+    'email' => $request->email,
+    'password' => Hash::make($request->password),
+    'role' => 'worker',
+    'status' => 'pending',
+]);
+
 
           Worker::create([
     'user_id' => $user->id,

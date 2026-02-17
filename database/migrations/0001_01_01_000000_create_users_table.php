@@ -14,30 +14,40 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('users', function (Blueprint $table) {
-    $table->id();
-    $table->string('name');
-    $table->string('username')->unique();           // add here
-    $table->string('email')->unique();
-    $table->timestamp('email_verified_at')->nullable();
-    $table->string('password');
-    $table->enum('role', ['admin','client','worker'])->default('client');  // add here
-    $table->enum('status', ['pending','approved','active','deactivate'])->default('pending');
+    Schema::create('users', function (Blueprint $table) {
+            $table->id();
 
-    $table->rememberToken();
-    $table->timestamps();
-});
+            // Names
+            $table->string('first_name');
+            $table->string('middle_name')->nullable();
+            $table->string('last_name');
+            $table->string('username')->unique();
+            $table->string('email')->unique();
+            $table->string('phone')->nullable();
+            $table->string('address', 500)->nullable(); // <-- added address
 
- DB::table('users')->insert([
-            'name' => 'AdminUser',
-            'username' => 'admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('admin'), // <-- set your password here
-            'role' => 'admin',
-            'status' => 'active',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->enum('role', ['admin','client','worker'])->default('client');  
+            $table->enum('status', ['pending','approved','active','deactivate'])->default('pending');
+
+            $table->rememberToken();
+            $table->timestamps();
+        });
+        
+DB::table('users')->insert([
+    'first_name' => 'Admin',
+    'middle_name' => null,
+    'last_name' => 'User',
+    'username' => 'admin',
+    'email' => 'admin@example.com',
+    'password' => Hash::make('admin'),
+    'role' => 'admin',
+    'status' => 'active',
+    'created_at' => now(),
+    'updated_at' => now(),
+]);
+
 
 
 

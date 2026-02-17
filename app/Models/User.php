@@ -18,14 +18,20 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-   protected $fillable = [
-    'name',
-    'username',
-    'email',
-    'password',
-    'role',
-    'status',
-];
+  // Allow mass assignment for these fields
+    protected $fillable = [
+        // 'name',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'username',
+        'password',
+        'phone',       // <-- add phone
+        'email',
+        'address',
+        'role',
+        'status',
+    ];
 
 
     /**

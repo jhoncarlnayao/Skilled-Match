@@ -21,6 +21,9 @@ public function trade()
 {
     return $this->belongsTo(Trade::class);
 }
-
+public function client()
+{
+    return $this->belongsTo(User::class, 'client_id');
+}
 
 }
