@@ -15,13 +15,6 @@ class ClientJobController extends Controller
 }
 
 
-// ClientJobController.php
-// public function dashboard()
-// {
-//     $jobs = Job::where('client_id', Auth::id())->latest()->get();
-//     return view('client.client_post_job', compact('jobs'));
-// }
-
 public function postJob()
 {
     // Fetch only jobs of this client
@@ -30,6 +23,15 @@ public function postJob()
 return view('client.client_post_job', compact('jobs', 'trades'));
 
 }
+
+public function dashboard()
+{
+    $trades = Trade::all();
+    $jobs = Job::where('client_id', Auth::id())->latest()->get();
+
+    return view('client.client_dashboard', compact('trades', 'jobs'));
+}
+
 
 public function store(Request $request)
 {

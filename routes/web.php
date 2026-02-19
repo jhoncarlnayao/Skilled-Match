@@ -117,15 +117,16 @@
     // ======================
     // CLIENT DASHBOARD
     // ======================
-    Route::get('/client/dashboard', function () {
-        return view('client.client_dashboard');
-    })->name('client.client_dashboard');
+Route::get('/client/dashboard', [ClientJobController::class, 'dashboard'])
+    ->name('client.client_dashboard');
+
 
     Route::get('/client/post-job', [ClientJobController::class, 'postJob'])
         ->name('client.client_post_job');
 
     Route::post('/client/jobs/store', [ClientJobController::class, 'store'])
         ->name('client.jobs.store');
+
 
     Route::get('/client/jobs/create', [ClientJobController::class, 'create'])
         ->name('client.jobs.create');

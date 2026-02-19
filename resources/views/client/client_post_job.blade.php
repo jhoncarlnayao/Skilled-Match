@@ -5,10 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sociotix Light Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
   <link rel="stylesheet" href="https://preline.co/assets/css/main.min.css">
+  
   <style>
     /* Custom font to match the clean UI look */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
     body { font-family: 'Inter', sans-serif; }
   </style>
 </head>
@@ -36,164 +39,195 @@
       </div>
     </header>
 
-   <main class="p-6" x-data="{ openModal: false }">
+    
+  @if(session('success'))
+    <div 
+        x-data="{ show: true }" 
+        x-init="setTimeout(() => show = false, 4000)" 
+        x-show="show"
+        x-transition
+        class="fixed top-5 right-5 z-50"
+    >
+        <div class="flex items-start gap-3 bg-white border border-emerald-200 shadow-lg rounded-xl p-4 min-w-[280px]">
+            
+            <div class="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+                <iconify-icon icon="solar:check-circle-linear" width="20"></iconify-icon>
+            </div>
 
-<!-- Header -->
-<div class="flex flex-col mb-6">
+            <div class="flex-1">
+                <p class="text-sm font-semibold text-slate-900">
+                    Success
+                </p>
+                <p class="text-xs text-slate-500 mt-1">
+                    {{ session('success') }}
+                </p>
+            </div>
 
-  <!-- Top row: Title + Job tag on left, Button on right -->
-  <div class="flex items-center justify-between mb-2">
-    <div class="flex items-center gap-2">
-      <h1 class="text-2xl font-semibold text-gray-800">My Jobs</h1>
-      <span class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full">
-        {{ $jobs->count() }} jobs
-      </span>
+            <button @click="show = false" class="text-slate-400 hover:text-slate-600">
+                <iconify-icon icon="solar:close-circle-linear" width="18"></iconify-icon>
+            </button>
+        </div>
+    </div>
+@endif
+<main class="flex-1 p-6 lg:p-8 bg-slate-50" 
+      x-data="{
+        openModal: false,
+        search: '',
+      }">
+
+  <!-- Page Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-xl font-semibold text-slate-900 tracking-tight">
+        My Jobs
+      </h1>
+      <p class="text-sm text-slate-500 mt-1">
+        Manage {{ $jobs->count() }} posted jobs.
+      </p>
     </div>
 
-    <!-- Post Job Button -->
-   <button @click="openModal = true"
-    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
-           text-blue-700 bg-blue-50 border border-blue-200 rounded-lg
-           hover:bg-blue-100
-           focus:outline-none focus:ring-2 focus:ring-blue-200 transition">
+    <button @click="openModal = true"
+      class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition shadow-sm">
+      <iconify-icon icon="solar:add-circle-linear" width="18"></iconify-icon>
+      Post New Job
+    </button>
+  </div>
 
-    <!-- Plus Icon -->
-    <svg xmlns="http://www.w3.org/2000/svg"
-         class="w-4 h-4"
-         fill="none"
-         viewBox="0 0 24 24"
-         stroke="currentColor"
-         stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M12 4v16m8-8H4" />
-    </svg>
+  <!-- Jobs List -->
+  <div class="space-y-4">
 
-    Post Job
-</button>
+    @forelse($jobs as $job)
+
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:shadow-md transition-all group">
+
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+
+        <!-- Left Side -->
+        <div class="flex items-start gap-4 flex-1">
+
+          <!-- Icon -->
+          <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100 shrink-0">
+            <iconify-icon icon="solar:case-round-linear" width="24"></iconify-icon>
+          </div>
+
+          <!-- Title + Meta -->
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <h3 class="text-base font-semibold text-slate-900 group-hover:text-blue-600 transition">
+                {{ $job->title }}
+              </h3>
+
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium
+                {{ $job->status === 'open' ? 'bg-blue-50 text-blue-600 border border-blue-100' : '' }}
+                {{ $job->status === 'assigned' ? 'bg-yellow-50 text-yellow-600 border border-yellow-100' : '' }}
+                {{ $job->status === 'completed' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : '' }}">
+                {{ ucfirst($job->status) }}
+              </span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-500">
+              <span class="flex items-center gap-1">
+                <iconify-icon icon="solar:calendar-linear" width="14"></iconify-icon>
+                {{ $job->created_at->format('M d, Y') }}
+              </span>
+
+              <span class="flex items-center gap-1">
+                <iconify-icon icon="solar:tag-linear" width="14"></iconify-icon>
+                {{ $job->trade->name }}
+              </span>
+
+              <span class="flex items-center gap-1">
+                <iconify-icon icon="solar:map-point-linear" width="14"></iconify-icon>
+                {{ $job->location }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side -->
+        <div class="flex items-center justify-between md:justify-end gap-6 md:w-auto w-full border-t md:border-t-0 border-slate-100 pt-3 md:pt-0 md:pl-6">
+
+          <!-- Budget -->
+          <div class="text-left md:text-right">
+            <p class="text-xs text-slate-500 font-medium">Budget</p>
+            <p class="text-base font-semibold text-slate-900">
+              ₱{{ number_format($job->budget, 2) }}
+            </p>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-2">
+            <button class="text-slate-400 hover:text-slate-600 p-2 hover:bg-slate-50 rounded-lg transition">
+              <iconify-icon icon="solar:pen-linear" width="18"></iconify-icon>
+            </button>
+
+            <button class="text-red-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-lg transition">
+              <iconify-icon icon="solar:trash-bin-trash-linear" width="18"></iconify-icon>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    @empty
+      <div class="text-center text-slate-500 py-12">
+        No jobs posted yet.
+      </div>
+    @endforelse
 
   </div>
 
-  <!-- Mini Description below -->
-  <p class="text-sm text-gray-500">
-    Overview of your posted jobs and their status.
-  </p>
-
-</div>
-
-<!-- Jobs Grid -->
-<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-@forelse($jobs as $job)
-<div class="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition duration-300 cursor-pointer flex flex-col gap-5">
-
-    <!-- Top: Title + Status -->
-    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-        <div>
-            <h2 class="text-xl font-semibold text-gray-800 hover:text-blue-600 transition">
-                {{ $job->title }}
-            </h2>
-            <p class="text-sm text-gray-400 mt-1">
-                Posted on {{ $job->created_at->format('M d, Y') }}
-            </p>
-        </div>
-        <span class="px-4 py-1.5 text-sm font-medium rounded-full
-            {{ $job->status === 'open' ? 'bg-green-100 text-green-700' : '' }}
-            {{ $job->status === 'assigned' ? 'bg-yellow-100 text-yellow-700' : '' }}
-            {{ $job->status === 'completed' ? 'bg-blue-100 text-blue-700' : '' }}">
-            {{ ucfirst($job->status) }}
-        </span>
-    </div>
-
-    <!-- Description -->
-    <p class="text-gray-600 text-sm sm:text-base line-clamp-4">
-        {{ $job->description }}
-    </p>
-
-    <!-- Claimed Worker (UI Only) -->
-    <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 flex items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-            <div class="relative">
-                <img src="https://i.pravatar.cc/100" class="w-12 h-12 rounded-full object-cover ring-2 ring-white shadow-sm">
-                <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></span>
-            </div>
-            <div>
-                <p class="text-sm font-semibold text-gray-800">John Doe</p>
-                <p class="text-xs text-gray-500">Assigned Worker</p>
-            </div>
-        </div>
-        <span class="px-3 py-1 text-xs font-medium bg-yellow-100 text-yellow-700 rounded-full">In Progress</span>
-    </div>
-
-    <!-- Bottom: Trade, Budget + Buttons -->
-    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-
-        <!-- Left: Trade + Budget -->
-        <div class="flex flex-col gap-1">
-            <div class="flex items-center gap-2 text-sm text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="w-5 h-5 text-gray-400"
-                     fill="none"
-                     viewBox="0 0 24 24"
-                     stroke="currentColor"
-                     stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M9 12h6m-6 4h6M7 8h10" />
-                </svg>
-                <span>{{ $job->trade->name }}</span>
-            </div>
-            <div class="text-sm text-gray-500">
-                Budget: <span class="font-semibold text-gray-800">₱{{ number_format($job->budget, 2) }}</span>
-            </div>
-        </div>
-
-        <!-- Right: Edit/Remove Buttons -->
-        <div class="flex gap-2">
-            <button class="px-4 py-2 text-sm font-medium bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition">
-                Edit
-            </button>
-            <button class="px-4 py-2 text-sm font-medium bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition">
-                Remove
-            </button>
-        </div>
-    </div>
-
-</div>
-@empty
-
-        <div class="col-span-full text-center text-gray-500 py-10">
-            No jobs posted yet.
-        </div>
-    @endforelse
-</div>
-
+  <!-- Pagination -->
+  {{-- <div class="mt-8 border-t border-slate-200 pt-6">
+    {{ $jobs->links() }}
+  </div> --}}
 
   <!-- Modal -->
-  <div x-show="openModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40" x-transition>
+  <div x-show="openModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" x-transition>
     <div @click.away="openModal = false" class="bg-white w-full max-w-lg rounded-xl shadow-lg p-6">
-      <h2 class="text-lg font-semibold mb-4">Post a New Job</h2>
+      <h2 class="text-lg font-semibold mb-4 text-slate-900">Post a New Job</h2>
 
       <form action="{{ route('client.jobs.store') }}" method="POST" class="space-y-4">
         @csrf
-        <input type="text" name="title" placeholder="Job Title" required class="w-full px-4 py-3 text-sm border rounded-lg focus:ring focus:ring-blue-200">
-      <select name="trade_id" required class="w-full px-4 py-3 text-sm border rounded-lg focus:ring focus:ring-blue-200">
-    <option value="">Select Trade</option>
-    @foreach($trades as $trade)
-        <option value="{{ $trade->id }}">
-{{ $trade->name }}</option>
-    @endforeach
-</select>
-        <input type="number" name="budget" placeholder="Budget" class="w-full px-4 py-3 text-sm border rounded-lg focus:ring focus:ring-blue-200">
-        <input type="text" name="location" placeholder="Location" required class="w-full px-4 py-3 text-sm border rounded-lg focus:ring focus:ring-blue-200">
-        <textarea name="description" placeholder="Describe the job..." rows="3" required class="w-full px-4 py-3 text-sm border rounded-lg focus:ring focus:ring-blue-200"></textarea>
+
+        <input type="text" name="title" placeholder="Job Title"
+          class="w-full px-4 py-3 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900">
+
+        <select name="trade_id"
+          class="w-full px-4 py-3 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900">
+          <option value="">Select Trade</option>
+          @foreach($trades as $trade)
+            <option value="{{ $trade->id }}">{{ $trade->name }}</option>
+          @endforeach
+        </select>
+
+        <input type="number" name="budget" placeholder="Budget"
+          class="w-full px-4 py-3 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900">
+
+        <input type="text" name="location" placeholder="Location"
+          class="w-full px-4 py-3 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900">
+
+        <textarea name="description" rows="3" placeholder="Describe the job..."
+          class="w-full px-4 py-3 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-900"></textarea>
 
         <div class="flex justify-end gap-3 pt-4">
-          <button type="button" @click="openModal = false" class="px-4 py-2 text-sm border rounded-lg hover:bg-gray-100">Cancel</button>
-          <button type="submit" class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700">Post Job</button>
+          <button type="button" @click="openModal = false"
+            class="px-4 py-2 text-sm border border-slate-200 rounded-lg hover:bg-slate-50">
+            Cancel
+          </button>
+
+          <button type="submit"
+            class="px-4 py-2 text-sm bg-slate-900 text-white rounded-lg hover:bg-slate-800">
+            Post Job
+          </button>
         </div>
       </form>
     </div>
   </div>
 
 </main>
+
 
 
 

@@ -113,91 +113,113 @@
                                     <!-- Table Body -->
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         @forelse($jobs as $job)
-                                                                            <tr class="hover:bg-gray-50 transition">
+                                            <tr class="hover:bg-gray-50 transition">
 
-                                                                                <!-- Title -->
-                                                                                <td class="px-4 py-4 text-sm font-medium text-blue-800 bg-blue-50">
-                                                                                    {{ $job->title }}
-                                                                                    <p class="text-xs text-blue-600 line-clamp-1">
-                                                                                        {{ $job->description }}
-                                                                                    </p>
-                                                                                </td>
-
-
-                                                                                <!-- Client -->
-                                                                                <td class="px-4 py-4 text-sm text-gray-700">
-                                                                                    {{ $job->client->name ?? 'Unknown' }}
-                                                                                </td>
-
-                                                                                <!-- Trade -->
-                                                                                <td class="px-4 py-4 text-sm text-gray-700">
-                                                                                    {{ $job->trade->name ?? 'N/A' }}
-                                                                                </td>
-
-                                                                                <!-- Budget -->
-                                                                                <td class="px-4 py-4 text-sm font-semibold text-yellow-800 bg-yellow-50">
-                                                                                    ₱{{ number_format($job->budget, 2) }}
-                                                                                </td>
+                                                <!-- Title -->
+                                                <td class="px-4 py-4 text-sm font-medium text-blue-800 bg-blue-50">
+                                                    {{ $job->title }}
+                                                    <p class="text-xs text-blue-600 line-clamp-1">
+                                                        {{ $job->description }}
+                                                    </p>
+                                                </td>
 
 
-                                                                                <!-- Status -->
-                                                                                <td class="px-4 py-4 text-sm">
-                                                                                    <span class="px-3 py-1 text-xs font-medium rounded-full
-                                                                                    {{ $job->status === 'open' ? 'bg-green-100 text-green-700' : '' }}
-                                                                                    {{ $job->status === 'assigned' ? 'bg-yellow-100 text-yellow-700' : '' }}
-                                                                                    {{ $job->status === 'completed' ? 'bg-blue-100 text-blue-700' : '' }}">
-                                                                                        {{ ucfirst($job->status) }}
-                                                                                    </span>
-                                                                                </td>
+                                                <!-- Client -->
+                                                <td class="px-4 py-4 text-sm text-gray-700">
+                                                    {{ optional($job->client)->first_name }}
+                                                    {{ optional($job->client)->last_name }}
 
-                                                                                <!-- Created -->
-                                                                                <td class="px-4 py-4 text-sm text-gray-500">
-                                                                                    {{ $job->created_at->format('M d, Y') }}
-                                                                                </td>
-                                                                                <td class="px-4 py-4 text-sm">
-                                                                                    <div class="flex items-center gap-x-2">
+                                                </td>
 
-                                                                                        <!-- Edit Button -->
-                                                                                        <button class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
-                                               text-gray-700 bg-white border border-gray-300 rounded-lg
-                                               hover:bg-gray-50 hover:border-gray-400
-                                               focus:outline-none focus:ring-2 focus:ring-gray-200 transition">
+                                                <!-- Trade -->
+                                                <td class="px-4 py-4 text-sm text-gray-700">
+                                                    {{ $job->trade->name ?? 'N/A' }}
+                                                </td>
 
-                                                                                            <!-- Pencil Icon -->
-                                                                                            <svg xmlns="http://www.w3.org/2000/svg"
-                                                                                                class="w-4 h-4 text-gray-500" fill="none"
-                                                                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                                                    d="M15.232 5.232l3.536 3.536M9 11l6-6m-6 6v4h4" />
-                                                                                            </svg>
-
-                                                                                            Edit
-                                                                                        </button>
+                                                <!-- Budget -->
+                                                <td class="px-4 py-4 text-sm font-semibold text-yellow-800 bg-yellow-50">
+                                                    ₱{{ number_format($job->budget, 2) }}
+                                                </td>
 
 
-                                                                                        <!-- Delete Button -->
-                                                                                        <button class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
-                                               text-red-700 bg-red-50 border border-red-200 rounded-lg
-                                               hover:bg-red-100
-                                               focus:outline-none focus:ring-2 focus:ring-red-200 transition">
+                                                <!-- Status -->
+                                                <td class="px-4 py-4 text-sm">
+                                                    <span
+                                                        class="px-3 py-1 text-xs font-medium rounded-full
+                                                                                                                                {{ $job->status === 'open' ? 'bg-green-100 text-green-700' : '' }}
+                                                                                                                                {{ $job->status === 'assigned' ? 'bg-yellow-100 text-yellow-700' : '' }}
+                                                                                                                                {{ $job->status === 'completed' ? 'bg-blue-100 text-blue-700' : '' }}">
+                                                        {{ ucfirst($job->status) }}
+                                                    </span>
+                                                </td>
 
-                                                                                            <!-- Trash Icon -->
-                                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
-                                                                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                                                                                stroke-width="2">
-                                                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                                                    d="M6 7h12M9 7v12m6-12v12M10 7l1-2h2l1 2" />
-                                                                                            </svg>
+                                                <!-- Created -->
+                                                <td class="px-4 py-4 text-sm text-gray-500">
+                                                    {{ $job->created_at->format('M d, Y') }}
+                                                </td>
+                                                <td class="px-4 py-4 text-sm">
+                                                    <div class="flex items-center gap-x-2">
 
-                                                                                            Delete
-                                                                                        </button>
+                                                        <button type="button" class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
+                                                text-gray-700 bg-white border border-gray-300 rounded-lg
+                                                hover:bg-gray-50 hover:border-gray-400
+                                                focus:outline-none focus:ring-2 focus:ring-gray-200 transition"
+                                                            aria-haspopup="dialog" aria-expanded="false"
+                                                            aria-controls="job-modal-{{ $job->id }}"
+                                                            data-hs-overlay="#job-modal-{{ $job->id }}">
+
+                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                class="w-4 h-4 text-gray-500" fill="none"
+                                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M15 12H9m12 0A9 9 0 1112 3a9 9 0 019 9z" />
+                                                            </svg>
+
+                                                            View Details
+                                                        </button>
 
 
-                                                                                    </div>
-                                                                                </td>
+                                                        <!-- Edit Button -->
+                                                        <button
+                                                            class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
+                                                                                           text-gray-700 bg-white border border-gray-300 rounded-lg
+                                                                                           hover:bg-gray-50 hover:border-gray-400
+                                                                                           focus:outline-none focus:ring-2 focus:ring-gray-200 transition">
+
+                                                            <!-- Pencil Icon -->
+                                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                                class="w-4 h-4 text-gray-500" fill="none"
+                                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M15.232 5.232l3.536 3.536M9 11l6-6m-6 6v4h4" />
+                                                            </svg>
+
+                                                            Edit
+                                                        </button>
 
 
-                                                                            </tr>
+                                                        <!-- Delete Button -->
+                                                        <button
+                                                            class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
+                                                                                           text-red-700 bg-red-50 border border-red-200 rounded-lg
+                                                                                           hover:bg-red-100
+                                                                                           focus:outline-none focus:ring-2 focus:ring-red-200 transition">
+
+                                                            <!-- Trash Icon -->
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
+                                                                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                                                stroke-width="2">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    d="M6 7h12M9 7v12m6-12v12M10 7l1-2h2l1 2" />
+                                                            </svg>
+
+                                                            Delete
+                                                        </button>
+
+
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         @empty
                                             <tr>
                                                 <td colspan="6" class="px-4 py-6 text-center text-gray-500">
@@ -206,15 +228,13 @@
                                             </tr>
                                         @endforelse
                                     </tbody>
-
                                 </table>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
-
-
         </main>
     </div>
 

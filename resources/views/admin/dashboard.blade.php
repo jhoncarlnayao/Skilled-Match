@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sociotix Light Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
   <link rel="stylesheet" href="https://preline.co/assets/css/main.min.css">
   <style>
     /* Custom font to match the clean UI look */
@@ -38,241 +39,298 @@
 
     <main class="p-4 sm:p-6 space-y-6">
       
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-xl font-semibold text-slate-900 tracking-tight">Overview</h1>
+          <p class="text-sm text-slate-500 mt-1">Manage your client's posted jobs and track worker progress.</p>
+        </div>
+        {{-- <button class="inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors shadow-sm ring-1 ring-slate-900 ring-offset-1">
+          <iconify-icon icon="solar:add-circle-linear" width="18" height="18"></iconify-icon>
+          Post New Job
+        </button> --}}
+      </div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-<div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
+  <!-- Total Clients -->
   <a href="{{ route('admin.client.accounts') }}">
-<!-- Total Clients -->
-<div class="p-5 bg-[#eff6ff] border border-blue-100 rounded-2xl hover:scale-105 hover:bg-[#eff6ff] transition duration-300">
-  <div class="flex justify-between items-start">
-    <span class="text-sm font-medium text-blue-600">Total Clients</span>
-    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" stroke-width="2"
-         viewBox="0 0 24 24">
-      <path d="M16 14a4 4 0 10-8 0"/>
-      <circle cx="12" cy="7" r="4"/>
-      <path d="M6 18h12"/>
-    </svg>
-  </div>
-
-  <div class="mt-2 flex items-baseline gap-x-2">
-    <h3 class="text-2xl font-bold text-slate-800">
-        {{ $totalClients }}
-    </h3>
-
-    <span class="text-xs font-semibold bg-white px-2 py-0.5 rounded-md text-green-600">
-        +{{ $newClientsThisMonth }}
-    </span>
-  </div>
-</div>
-</a>
-
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-32 hover:scale-105 transition duration-300">
+      <div class="flex items-start justify-between">
+        <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+          <iconify-icon icon="solar:case-round-linear" width="20" height="20"></iconify-icon>
+        </div>
+        <span class="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+          +{{ $newClientsThisMonth }}%
+        </span>
+      </div>
+      <div>
+        <p class="text-2xl font-semibold text-slate-900">{{ $totalClients }}</p>
+        <p class="text-xs text-slate-500 font-medium">Total Clients</p>
+      </div>
+    </div>
+  </a>
 
   <!-- Total Workers -->
   <a href="{{ route('admin.pending.accounts', ['status' => 'approved']) }}">
-  <div class="p-5 bg-[#f5f3ff] border border-purple-100 rounded-2xl hover:scale-105 hover:bg-[#f5f3ff] transition duration-300">
-    <div class="flex justify-between items-start">
-      <span class="text-sm font-medium text-purple-600">Total Workers</span>
-      <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" stroke-width="2"
-           viewBox="0 0 24 24">
-        <path d="M17 20v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-        <circle cx="9" cy="7" r="4"/>
-        <path d="M23 20v-2a4 4 0 00-3-3.87"/>
-        <path d="M16 3.13a4 4 0 010 7.75"/>
-      </svg>
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-32 hover:scale-105 transition duration-300">
+      <div class="flex items-start justify-between">
+        <div class="p-2 bg-purple-50 text-purple-600 rounded-lg">
+          <iconify-icon icon="solar:users-group-rounded-linear" width="20" height="20"></iconify-icon>
+        </div>
+      </div>
+      <div>
+        <p class="text-2xl font-semibold text-slate-900">{{ $totalWorkers }}</p>
+        <p class="text-xs text-slate-500 font-medium">Total Workers</p>
+      </div>
     </div>
-    <div class="mt-2 flex items-baseline gap-x-2">
-      <h3 class="text-2xl font-bold text-slate-800">{{ $totalWorkers }}</h3>
-      <span class="text-xs font-semibold bg-white px-2 py-0.5 rounded-md text-green-600">
-        +{{ $newWorkersThisMonth }}
-      </span>
-    </div>
-  </div>
   </a>
 
   <!-- Pending Approvals -->
   <a href="{{ route('admin.pending.accounts', ['status' => 'pending']) }}">
-  <div class="p-5 bg-[#fefce8] border border-yellow-100 rounded-2xl hover:scale-105 hover:bg-[#fefce8] transition duration-300" >
-    <div class="flex justify-between items-start">
-      <span class="text-sm font-medium text-yellow-600">Pending Approvals</span>
-      <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2"
-           viewBox="0 0 24 24">
-        <path d="M12 8v4l3 3"/>
-        <circle cx="12" cy="12" r="10"/>
-      </svg>
+    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-32 hover:scale-105 transition duration-300">
+      <div class="flex items-start justify-between">
+        <div class="p-2 bg-amber-50 text-amber-600 rounded-lg">
+          <iconify-icon icon="solar:hourglass-line-linear" width="20" height="20"></iconify-icon>
+        </div>
+      </div>
+      <div>
+        <p class="text-2xl font-semibold text-slate-900">{{ $pendingWorkers }}</p>
+        <p class="text-xs text-slate-500 font-medium">Pending Review</p>
+      </div>
     </div>
-    <div class="mt-2 flex items-baseline gap-x-2">
-      <h3 class="text-2xl font-bold text-slate-800">{{ $pendingWorkers }}</h3>
-      <span class="text-xs font-semibold bg-white px-2 py-0.5 rounded-md text-red-600">
-        Needs review
-      </span>
-    </div>
-  </div>
-</a>
-  
+  </a>
 
   <!-- Active Jobs -->
-  <div class="p-5 bg-[#ecfeff] border border-cyan-100 rounded-2xl hover:scale-105 hover:bg-[#ecfeff] transition duration-300">
-    <div class="flex justify-between items-start">
-      <span class="text-sm font-medium text-cyan-600">Active Jobs</span>
-      <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2"
-           viewBox="0 0 24 24">
-        <rect x="3" y="4" width="18" height="14" rx="2"/>
-        <path d="M8 2v4M16 2v4"/>
-      </svg>
+  <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-32 hover:scale-105 transition duration-300">
+    <div class="flex items-start justify-between">
+      <div class="p-2 bg-cyan-50 text-cyan-600 rounded-lg">
+        <iconify-icon icon="solar:wallet-money-linear" width="20" height="20"></iconify-icon>
+      </div>
     </div>
-    <div class="mt-2 flex items-baseline gap-x-2">
-      {{-- <h3 class="text-2xl font-bold text-slate-800">{{ $activeJobs }}</h3> --}}
-      <span class="text-xs font-semibold bg-white px-2 py-0.5 rounded-md text-blue-600">
-        In progress
-      </span>
+    <div>
+      <p class="text-2xl font-semibold text-slate-900">{{ $activeJobs ?? '—' }}</p>
+      <p class="text-xs text-slate-500 font-medium">Active Jobs</p>
     </div>
+  </div>
+
+</div>
+<!-- ================= MAIN GRID LAYOUT ================= -->
+<div class="grid lg:grid-cols-3 gap-6 mt-6">
+
+  <!-- LEFT COLUMN (New Accounts + New Jobs) -->
+  <div class="lg:col-span-2 space-y-6">
+
+    <!-- NEW ACCOUNTS TODAY -->
+    <section class="space-y-4">
+
+      <!-- Header -->
+     <div class="flex flex-col sm:flex-row sm:justify-between px-6 py-5 border-b border-slate-100">
+  <div>
+    <h2 class="text-base font-semibold text-slate-900">New Accounts Today</h2>
+    <p class="text-xs text-slate-500 mt-1">
+      See the latest accounts registered on the platform
+    </p>
+  </div>
+  <a href="#" class="text-xs font-medium text-blue-600 hover:text-blue-700 mt-2 sm:mt-0">
+    View All
+  </a>
+</div>
+
+
+      <!-- Table -->
+      <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider">
+                <th class="px-6 py-3 font-medium">Name</th>
+                <th class="px-6 py-3 font-medium">Role</th>
+                <th class="px-6 py-3 font-medium">Email</th>
+                <th class="px-6 py-3 font-medium">Registered</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              @forelse($newAccountsToday as $user)
+                <tr class="group hover:bg-slate-50/50 transition-colors">
+                  <!-- Name + mini description -->
+                  <td class="px-6 py-4">
+                    <p class="text-sm font-medium text-slate-900">{{ $user->name }}</p>
+                    <p class="text-xs text-slate-500 mt-0.5">
+                      Joined as {{ ucfirst($user->role) }} | {{ $user->created_at->diffForHumans() }}
+                    </p>
+                  </td>
+                  <!-- Role -->
+                  <td class="px-6 py-4">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium
+                      {{ $user->role == 'client'
+                          ? 'bg-blue-50 text-blue-600 border border-blue-100'
+                          : 'bg-purple-50 text-purple-600 border border-purple-100' }}">
+                      {{ ucfirst($user->role) }}
+                    </span>
+                  </td>
+                  <!-- Email -->
+                  <td class="px-6 py-4 text-sm text-slate-700">{{ $user->email }}</td>
+                  <!-- Registered -->
+                  <td class="px-6 py-4 text-sm text-slate-500">{{ $user->created_at->format('M d, Y H:i') }}</td>
+                </tr>
+              @empty
+                <tr>
+                  <td colspan="4" class="px-6 py-8 text-center text-slate-400 text-sm">
+                    No new accounts today.
+                  </td>
+                </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Footer -->
+        <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-center">
+          <a href="#" class="text-xs font-medium text-slate-500 hover:text-slate-900 flex items-center gap-1 transition-colors">
+            View All Accounts <iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW JOBS TODAY -->
+    <section class="space-y-4">
+
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row sm:justify-between px-6 py-5 border-b border-slate-100">
+  <div>
+    <h2 class="text-base font-semibold text-slate-900">New Jobs Today</h2>
+    <p class="text-xs text-slate-500 mt-1">
+      Monitor recently posted jobs and their current status
+    </p>
+  </div>
+  <a href="#" class="text-xs font-medium text-blue-600 hover:text-blue-700 mt-2 sm:mt-0">
+    View All
+  </a>
+</div>
+
+
+      <!-- Table Card -->
+      <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider">
+                <th class="px-6 py-3 font-medium">Job Details</th>
+                <th class="px-6 py-3 font-medium">Budget</th>
+                <th class="px-6 py-3 font-medium">Client</th>
+                <th class="px-6 py-3 font-medium">Trade</th>
+                <th class="px-6 py-3 font-medium text-right">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              @forelse($newJobsToday as $job)
+                <tr class="group hover:bg-slate-50/50 transition-colors">
+                  <!-- Job Details -->
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                        <iconify-icon icon="solar:pen-new-square-linear" width="20"></iconify-icon>
+                      </div>
+                      <div>
+                        <p class="text-sm font-medium text-slate-900">{{ $job->title }}</p>
+                        <p class="text-xs text-slate-500 mt-0.5">
+                          Posted {{ $job->created_at->diffForHumans() }} | ₱{{ number_format($job->budget, 2) }}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+                  <!-- Budget -->
+                  <td class="px-6 py-4 text-sm font-medium text-slate-700">₱{{ number_format($job->budget, 2) }}</td>
+                  <!-- Client -->
+                  <td class="px-6 py-4 text-sm text-slate-700">{{ $job->client->name ?? 'N/A' }}</td>
+                  <!-- Trade -->
+                  <td class="px-6 py-4 text-sm text-slate-700">{{ $job->trade->name ?? 'N/A' }}</td>
+                  <!-- Status -->
+                  <td class="px-6 py-4 text-right">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium
+                      @if($job->status == 'open') bg-emerald-50 text-emerald-600 border border-emerald-100
+                      @elseif($job->status == 'assigned') bg-amber-50 text-amber-600 border border-amber-100
+                      @elseif($job->status == 'completed') bg-blue-50 text-blue-600 border border-blue-100
+                      @else bg-slate-100 text-slate-600 border border-slate-200
+                      @endif">
+                      {{ ucfirst($job->status) }}
+                    </span>
+                  </td>
+                </tr>
+              @empty
+                <tr>
+                  <td colspan="5" class="px-6 py-8 text-center text-slate-400 text-sm">
+                    No new jobs today.
+                  </td>
+                </tr>
+              @endforelse
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Footer -->
+        <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-center">
+          <a href="#" class="text-xs font-medium text-slate-500 hover:text-slate-900 flex items-center gap-1 transition-colors">
+            View All Jobs <iconify-icon icon="solar:alt-arrow-down-linear"></iconify-icon>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- RIGHT COLUMN (Quick Post Widget) -->
+  <div class="space-y-6">
+
+ <div class="flex flex-col sm:flex-row sm:justify-between px-6 py-4 ">
+  <div>
+    <h2 class="text-base font-semibold text-slate-900">Quick Add Trade</h2>
+    <p class="text-xs text-slate-500 mt-1">
+      Add a new trade quickly for your clients and workers
+    </p>
   </div>
 </div>
 
 
+    <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6">
+      <form action="{{ route('admin.trades.store') }}" method="POST" class="space-y-4">
+        @csrf
 
- <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <div class="flex flex-wrap justify-between items-center gap-2 mb-8">
-          <h4 class="text-lg font-bold text-slate-800">Profile Overview</h4>
-          <div class="flex items-center gap-x-4 text-xs font-medium text-gray-500">
-            <div class="flex items-center gap-x-1"><span class="w-3 h-3 rounded-full bg-yellow-400"></span> Reach</div>
-            <div class="flex items-center gap-x-1"><span class="w-3 h-3 rounded-full bg-cyan-400"></span> Engagement</div>
-            <div class="flex items-center gap-x-1"><span class="w-3 h-3 rounded-full bg-purple-400"></span> Impression</div>
-          </div>
+        <!-- Trade Name -->
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1.5">Trade Name</label>
+          <input type="text" name="name" required
+            value="{{ old('name') }}"
+            class="w-full rounded-lg border border-slate-200 bg-slate-50 text-sm
+                   focus:border-slate-900 focus:ring-slate-900
+                   py-2.5 px-3 shadow-sm transition-all"
+            placeholder="e.g. Graphic Design">
         </div>
-        <div id="sociotix-main-chart" class="min-h-[200px]"></div>
+
+        <!-- Trade Description -->
+        <div>
+          <label class="block text-xs font-medium text-slate-700 mb-1.5">Description (Optional)</label>
+          <textarea name="description" rows="3"
+            class="w-full rounded-lg border border-slate-200 bg-slate-50 text-sm
+                   focus:border-slate-900 focus:ring-slate-900
+                   py-2.5 px-3 shadow-sm transition-all resize-none"
+            placeholder="Brief description of this trade">{{ old('description') }}</textarea>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit"
+          class="w-full bg-slate-900 hover:bg-slate-800 text-white
+                 text-sm font-medium py-2.5 px-4 rounded-lg
+                 transition-colors shadow-sm">
+          Add Trade
+        </button>
+      </form>
+    </div>
+
   </div>
-
-<!-- New Accounts & New Jobs (Side by Side) -->
-<div class="grid lg:grid-cols-2 gap-6 mt-6">
-
-  <!-- New Accounts Today -->
-  <section class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-    <div class="flex items-center justify-between">
-      <div>
-        <div class="flex items-center gap-x-3">
-          <h2 class="text-lg font-medium text-gray-800">New Accounts Today</h2>
-          <span class="px-3 py-1 text-xs text-green-600 bg-green-100 rounded-full">
-           {{ $newAccountsToday->count() }} Accounts
-
-          </span>
-        </div>
-        <p class="mt-1 text-sm text-gray-500">
-          List of all clients and workers who registered today.
-        </p>
-      </div>
-    </div>
-
-    <div class="mt-6 overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200 text-sm">
-        <thead class="bg-gray-50 sticky top-0">
-          <tr>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Registered</th>
-          </tr>
-        </thead>
-     <tbody class="divide-y divide-gray-200">
-    @forelse($newAccountsToday as $user)
-        <tr class="hover:bg-gray-50 transition">
-            <td class="px-4 py-4 font-medium text-gray-800">
-                {{ $user->name }}
-            </td>
-            <td class="px-4 py-4 text-gray-700 capitalize">
-                {{ $user->role }}
-            </td>
-            <td class="px-4 py-4 text-gray-700">
-                {{ $user->email }}
-            </td>
-            <td class="px-4 py-4 text-gray-500">
-                {{ $user->created_at->format('M d, Y H:i') }}
-            </td>
-        </tr>
-    @empty
-        <tr>
-            <td colspan="4" class="px-4 py-6 text-center text-gray-400">
-                No new accounts today.
-            </td>
-        </tr>
-    @endforelse
-</tbody>
-
-      </table>
-    </div>
-  </section>
-
-
-  <!-- New Jobs Today -->
-  <section class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-    <div class="flex items-center justify-between">
-      <div>
-        <div class="flex items-center gap-x-3">
-          <h2 class="text-lg font-medium text-gray-800">New Jobs Today</h2>
-          <span class="px-3 py-1 text-xs text-blue-600 bg-blue-100 rounded-full">
-           {{ $newJobsToday->count() }} Jobs
-
-          </span>
-        </div>
-        <p class="mt-1 text-sm text-gray-500">
-          List of all jobs posted today by clients.
-        </p>
-      </div>
-    </div>
-
-    <div class="mt-6 overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200 text-sm">
-        <thead class="bg-gray-50 sticky top-0">
-          <tr>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Trade</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Budget</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-          </tr>
-        </thead>
-      <tbody class="divide-y divide-gray-200">
-    @forelse($newJobsToday as $job)
-        <tr class="hover:bg-gray-50 transition">
-            <td class="px-4 py-4 font-medium text-blue-800">
-                {{ $job->title }}
-            </td>
-            <td class="px-4 py-4 text-gray-700">
-                {{ $job->client->name ?? 'N/A' }}
-            </td>
-            <td class="px-4 py-4 text-gray-700">
-                {{ $job->trade->name ?? 'N/A' }}
-            </td>
-            <td class="px-4 py-4 font-semibold text-yellow-800">
-                ₱{{ number_format($job->budget, 2) }}
-            </td>
-            <td class="px-4 py-4">
-                <span class="px-3 py-1 text-xs font-medium rounded-full
-                    @if($job->status == 'open') bg-green-100 text-green-700
-                    @elseif($job->status == 'assigned') bg-yellow-100 text-yellow-700
-                    @elseif($job->status == 'completed') bg-blue-100 text-blue-700
-                    @else bg-gray-100 text-gray-700
-                    @endif">
-                    {{ ucfirst($job->status) }}
-                </span>
-            </td>
-        </tr>
-    @empty
-        <tr>
-            <td colspan="5" class="px-4 py-6 text-center text-gray-400">
-                No new jobs today.
-            </td>
-        </tr>
-    @endforelse
-</tbody>
-
-      </table>
-    </div>
-  </section>
 
 </div>
 
-     
 
     </main>
   </div>
@@ -280,38 +338,7 @@
   <script src="https://preline.co/assets/vendor/preline/dist/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <script>
-    window.addEventListener('load', () => {
-      const options = {
-        chart: {
-          height: 350,
-          type: 'line',
-          toolbar: { show: false },
-          zoom: { enabled: false }
-        },
-        series: [
-          { name: 'Reach', data: [25, 35, 20, 45, 38, 55, 48, 62, 58, 70, 65, 80] },
-          { name: 'Engagement', data: [15, 25, 40, 30, 45, 35, 50, 45, 60, 55, 75, 70] },
-          { name: 'Impression', data: [10, 20, 15, 25, 20, 30, 25, 35, 30, 45, 40, 50] }
-        ],
-        stroke: { curve: 'smooth', width: 3 },
-        colors: ['#facc15', '#22d3ee', '#a855f7'],
-        grid: {
-          borderColor: '#f1f5f9',
-          strokeDashArray: 4,
-          xaxis: { lines: { show: true } }
-        },
-        xaxis: {
-          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-          axisBorder: { show: false },
-          axisTicks: { show: false }
-        },
-        yaxis: { labels: { style: { colors: '#94a3b8' } } },
-        legend: { show: false }
-      };
-
-      const chart = new ApexCharts(document.querySelector("#sociotix-main-chart"), options);
-      chart.render();
-    });
+  
   </script>
 </body>
 </html>
