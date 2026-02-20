@@ -172,9 +172,9 @@
         Edit
     </button>
 
-                  <!-- Edit Modal -->
+        
                   <div x-show="isEditOpen" class="fixed inset-0 z-20 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                    <!-- Overlay -->
+             
                     <div x-show="isEditOpen" 
                          x-transition:enter="transition ease-out duration-300"
                          x-transition:enter-start="opacity-0"
@@ -206,7 +206,7 @@
 
                         <form class="mt-4" method="POST" action="{{ route('admin.trades.update', $trade->id) }}">
                           @csrf
-                          {{-- @method('PUT') --}}
+                      
 
                           <label class="block mt-3 text-sm text-gray-700" for="edit-name-{{ $trade->id }}">Trade Name</label>
                           <input type="text" name="name" id="edit-name-{{ $trade->id }}" x-model="name"
@@ -232,7 +232,7 @@
                       </div>
                     </div>
                   </div>
-                    <!-- Delete -->
+                  
     <form method="POST"
           action="{{ route('admin.trades.delete', $trade->id) }}"
           onsubmit="return confirm('Are you sure you want to delete this trade?');"
@@ -246,7 +246,7 @@
                    hover:bg-red-100
                    focus:outline-none focus:ring-2 focus:ring-red-200 transition">
 
-            <!-- Trash Icon -->
+          
             <svg xmlns="http://www.w3.org/2000/svg"
                  class="w-4 h-4"
                  fill="none"
@@ -282,25 +282,6 @@
 
     <script src="https://preline.co/assets/vendor/preline/dist/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script>
-        window.addEventListener('load', () => {
-        const options = {
-            chart: { height: 350, type: 'line', toolbar: { show: false }, zoom: { enabled: false } },
-            series: [
-            { name: 'Reach', data: [25, 35, 20, 45, 38, 55, 48, 62, 58, 70, 65, 80] },
-            { name: 'Engagement', data: [15, 25, 40, 30, 45, 35, 50, 45, 60, 55, 75, 70] },
-            { name: 'Impression', data: [10, 20, 15, 25, 20, 30, 25, 35, 30, 45, 40, 50] }
-            ],
-            stroke: { curve: 'smooth', width: 3 },
-            colors: ['#facc15', '#22d3ee', '#a855f7'],
-            grid: { borderColor: '#f1f5f9', strokeDashArray: 4, xaxis: { lines: { show: true } } },
-            xaxis: { categories: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], axisBorder: { show: false }, axisTicks: { show: false } },
-            yaxis: { labels: { style: { colors: '#94a3b8' } } },
-            legend: { show: false }
-        };
-        const chart = new ApexCharts(document.querySelector("#sociotix-main-chart"), options);
-        chart.render();
-        });
-    </script>
+
     </body>
     </html>

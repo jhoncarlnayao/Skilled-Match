@@ -101,6 +101,11 @@
         [DashboardController::class, 'toggleClientStatus']
     )->name('admin.client.toggle');
 
+    // Announcements
+Route::post('/announcements/store',
+    [DashboardController::class, 'storeAnnouncement']
+)->name('admin.announcement.store');
+
 
     // Jobs
     Route::get('/jobs', [DashboardController::class, 'ShowJobs'])

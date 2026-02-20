@@ -247,6 +247,7 @@
         </div>
         </div>
 
+        {{-- EDIT PROFILE MODAL --}}
 <div id="edit-profile-modal" class="fixed inset-0 bg-black/30 hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.02),0px_1px_0px_rgba(0,0,0,0.06)] w-full max-w-3xl overflow-hidden">
         

@@ -44,10 +44,47 @@
           <h1 class="text-xl font-semibold text-slate-900 tracking-tight">Overview</h1>
           <p class="text-sm text-slate-500 mt-1">Manage your client's posted jobs and track worker progress.</p>
         </div>
-        {{-- <button class="inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors shadow-sm ring-1 ring-slate-900 ring-offset-1">
-          <iconify-icon icon="solar:add-circle-linear" width="18" height="18"></iconify-icon>
-          Post New Job
-        </button> --}}
+        <button type="button"
+    onclick="openAnnouncementModal()"
+    class="inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors shadow-sm ring-1 ring-slate-900 ring-offset-1">
+    <iconify-icon icon="solar:add-circle-linear" width="18" height="18"></iconify-icon>
+    Post New Announcement
+</button>
+
+<!-- Announcement Modal -->
+<div id="announcementModal"
+     class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50">
+
+    <div class="bg-white w-full max-w-lg rounded-xl shadow-lg p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">New Announcement</h3>
+            <button type="button"
+                    onclick="closeAnnouncementModal()"
+                    class="text-gray-500 hover:text-gray-700">✕</button>
+        </div>
+
+        <form action="{{ route('admin.announcement.store') }}" method="POST" class="space-y-4">
+            @csrf
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Title</label>
+                <input type="text" name="title" required
+                       class="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring focus:ring-slate-300">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">Content</label>
+                <textarea name="content" rows="4" required
+                          class="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring focus:ring-slate-300"></textarea>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-slate-900 text-white py-2 rounded-lg hover:bg-slate-800">
+                Post Announcement
+            </button>
+        </form>
+    </div>
+</div>
       </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
@@ -338,7 +375,17 @@
   <script src="https://preline.co/assets/vendor/preline/dist/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <script>
-  
+  function openAnnouncementModal() {
+    const modal = document.getElementById('announcementModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeAnnouncementModal() {
+    const modal = document.getElementById('announcementModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
   </script>
 </body>
 </html>

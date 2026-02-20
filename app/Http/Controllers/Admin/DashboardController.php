@@ -8,6 +8,7 @@ use App\Models\Trade;
 use Illuminate\Http\Request;
 use App\Models\Job;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Announcement;
 
 class DashboardController extends Controller
 {
@@ -172,7 +173,6 @@ public function updateClient(Request $request, $id)
     return back()->with('success', 'Client updated successfully.');
 }
 
-
 public function ShowJobs()
 {
     return view('admin.jobs_list', [
@@ -188,13 +188,32 @@ public function ShowJobs()
             ->whereYear('created_at', now()->year)
             ->count(),
 
-        // ✅ ADD THIS
-        'jobs' => Job::with(['client', 'trade'])
-                    ->latest()
-                    ->get(),
+        'jobs' => Job::with(['client', 'trade'])->latest()->get(),
+
+        // ✅ Pass all trades for the edit modal dropdown
+        'trades' => Trade::orderBy('name')->get(),
     ]);
 }
 
+public function storeAnnouncement(Request $request)
+{
+    // Only allow admins
+    if (Auth::user()->role !== 'admin') {
+        abort(403, 'Unauthorized action.');
+    }
 
+    $request->validate([
+        'title'   => 'required|string|max:255',
+        'content' => 'required|string',
+    ]);
+
+    Announcement::create([
+        'title'   => $request->title,
+        'content' => $request->content,
+        'user_id' => Auth::id(), // uses your users table correctly
+    ]);
+
+    return back()->with('success', 'Announcement posted successfully.');
+}
     
 }
