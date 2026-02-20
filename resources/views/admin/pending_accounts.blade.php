@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sociotix Light Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+      <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
   <link rel="stylesheet" href="https://preline.co/assets/css/main.min.css">
   <style>
-    /* Custom font to match the clean UI look */
+    
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     body { font-family: 'Inter', sans-serif; }
   </style>
@@ -48,21 +49,23 @@
     </div>
 
 <div class="flex items-center mt-4 gap-x-3">
+     
     <a href="{{ route('admin.pending.accounts', ['status' => 'pending']) }}"
-       class="px-5 py-2 text-sm font-medium rounded-md transition
-       {{ $status === 'pending' 
-            ? 'bg-yellow-500 text-white shadow-sm hover:bg-yellow-600' 
-            : 'bg-white border text-gray-700 hover:bg-gray-100' }} 
-       focus:outline-none focus:ring-2 focus:ring-yellow-300 active:scale-95">
+       class="inline-flex items-center justify-center px-4 py-2 border border-gray-200 rounded-lg shadow-sm 
+              text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:text-gray-900
+              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-300 transition-all
+              {{ $status === 'pending' ? 'bg-yellow-500 text-white hover:bg-yellow-600' : '' }}">
+        <iconify-icon icon="solar:clock-linear" stroke-width="1.5" class="mr-2 text-lg"></iconify-icon>
         Pending Accounts
     </a>
 
+
     <a href="{{ route('admin.pending.accounts', ['status' => 'approved']) }}"
-       class="px-5 py-2 text-sm font-medium rounded-md transition
-       {{ $status === 'approved' 
-            ? 'bg-green-600 text-white shadow-sm hover:bg-green-700' 
-            : 'bg-white border text-gray-700 hover:bg-gray-100' }} 
-       focus:outline-none focus:ring-2 focus:ring-green-300 active:scale-95">
+       class="inline-flex items-center justify-center px-4 py-2 border border-gray-200 rounded-lg shadow-sm 
+              text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:text-gray-900
+              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-300 transition-all
+              {{ $status === 'approved' ? 'bg-green-600 text-white hover:bg-green-700' : '' }}">
+        <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="mr-2 text-lg"></iconify-icon>
         Approved Accounts
     </a>
 </div>
@@ -71,7 +74,7 @@
 
   </div>
 
-  <!-- Table -->
+
 <div class="flex flex-col mt-6">
   <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
     <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
@@ -90,7 +93,7 @@
   @forelse($users as $user)
 
           <tr>
-              <!-- Full Name + Email -->
+          
               <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
                   <div>
                       <h2 class="font-semibold text-gray-800">
@@ -102,13 +105,12 @@
                   </div>
               </td>
 
-       <!-- Status -->
 <td class="px-12 py-4">
     @if(strtolower($user->status) === 'approved')
         <span class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium
                      text-green-700 bg-green-50 border border-green-200 rounded-full">
             
-            <!-- Check Icon -->
+         
             <svg xmlns="http://www.w3.org/2000/svg"
                  class="w-3.5 h-3.5"
                  fill="none"
@@ -125,7 +127,7 @@
         <span class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium
                      text-yellow-700 bg-yellow-100 rounded-full">
             
-            <!-- Clock Icon -->
+          
             <svg xmlns="http://www.w3.org/2000/svg"
                  class="w-3.5 h-3.5"
                  fill="none"
@@ -139,14 +141,14 @@
             {{ ucfirst($user->status) }}
         </span>
     @else
-        <!-- Default fallback -->
+      
         <span class="inline-block px-3 py-1 text-sm font-normal text-gray-700 bg-gray-100 rounded-full">
             {{ ucfirst($user->status) }}
         </span>
     @endif
 </td>
 
-              <!-- About -->
+             
               <td class="px-4 py-4 text-sm">
                   <p class="text-gray-700">{{ $user->role }}</p>
                   <p class="text-gray-500 text-sm">
@@ -154,57 +156,48 @@
                   </p>
               </td>
 
-              <!-- Action -->
-            <!-- Action -->
+              
 <td class="px-4 py-4 text-sm">
 
    @if($status === 'pending')
 <div class="flex gap-2">
+<a href="{{ route('admin.pending.approve', $user->id) }}"
+   class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
+          text-gray-700 bg-white border border-gray-300 rounded-lg
+          hover:bg-gray-50 hover:border-gray-400
+          focus:outline-none focus:ring-2 focus:ring-gray-200 transition">
 
-  
 
-    <!-- Approve (soft green) -->
-    <a href="{{ route('admin.pending.approve', $user->id) }}"
-       class="flex items-center gap-2 px-4 py-2 text-sm font-medium 
-              text-green-800 bg-green-100 rounded-md shadow-sm
-              hover:bg-green-200 focus:outline-none focus:ring-2 
-              focus:ring-green-300 focus:ring-offset-1 transition duration-150 ease-in-out
-              active:scale-95">
-        <svg xmlns="http://www.w3.org/2000/svg"
-             class="w-4 h-4 text-green-800"
-             fill="none"
-             viewBox="0 0 24 24"
-             stroke="currentColor"
-             stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
-        Approve
-    </a>
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="w-4 h-4 text-gray-500"
+         fill="none"
+         viewBox="0 0 24 24"
+         stroke="currentColor"
+         stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+    Approve
+</a>
+<a href="{{ route('admin.pending.reject', $user->id) }}"
+   class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
+          text-red-700 bg-red-50 border border-red-200 rounded-lg
+          hover:bg-red-100
+          focus:outline-none focus:ring-2 focus:ring-red-200 transition">
 
-    <!-- Reject (soft red) -->
-    <a href="{{ route('admin.pending.reject', $user->id) }}"
-       class="flex items-center gap-2 px-4 py-2 text-sm font-medium 
-              text-red-800 bg-red-100 rounded-md shadow-sm
-              hover:bg-red-200 focus:outline-none focus:ring-2 
-              focus:ring-red-300 focus:ring-offset-1 transition duration-150 ease-in-out
-              active:scale-95">
-        <svg xmlns="http://www.w3.org/2000/svg"
-             class="w-4 h-4 text-red-800"
-             fill="none"
-             viewBox="0 0 24 24"
-             stroke="currentColor"
-             stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-        Reject
-    </a>
 
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="w-4 h-4 text-red-700"
+         fill="none"
+         viewBox="0 0 24 24"
+         stroke="currentColor"
+         stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+    </svg>
+    Reject
+</a>
 </div>
 @endif
-
-
 </td>
-
           </tr>
           @empty
           <tr>
@@ -219,50 +212,11 @@
     </div>
   </div>
 </div>
-
 </section>
-
-
-  
-
     </main>
   </div>
 
   <script src="https://preline.co/assets/vendor/preline/dist/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-  <script>
-    window.addEventListener('load', () => {
-      const options = {
-        chart: {
-          height: 350,
-          type: 'line',
-          toolbar: { show: false },
-          zoom: { enabled: false }
-        },
-        series: [
-          { name: 'Reach', data: [25, 35, 20, 45, 38, 55, 48, 62, 58, 70, 65, 80] },
-          { name: 'Engagement', data: [15, 25, 40, 30, 45, 35, 50, 45, 60, 55, 75, 70] },
-          { name: 'Impression', data: [10, 20, 15, 25, 20, 30, 25, 35, 30, 45, 40, 50] }
-        ],
-        stroke: { curve: 'smooth', width: 3 },
-        colors: ['#facc15', '#22d3ee', '#a855f7'],
-        grid: {
-          borderColor: '#f1f5f9',
-          strokeDashArray: 4,
-          xaxis: { lines: { show: true } }
-        },
-        xaxis: {
-          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-          axisBorder: { show: false },
-          axisTicks: { show: false }
-        },
-        yaxis: { labels: { style: { colors: '#94a3b8' } } },
-        legend: { show: false }
-      };
-
-      const chart = new ApexCharts(document.querySelector("#sociotix-main-chart"), options);
-      chart.render();
-    });
-  </script>
 </body>
 </html>

@@ -25,7 +25,6 @@
         $jobs = Job::where('client_id', Auth::id())->latest()->get();
         $trades = Trade::all();
     return view('client.client_post_job', compact('jobs', 'trades'));
-
     }
 
 public function dashboard()
