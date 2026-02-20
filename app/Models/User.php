@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
+
+  use Notifiable;
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable,HasApiTokens;
     
@@ -19,19 +21,23 @@ class User extends Authenticatable
      * @var list<string>
      */
   // Allow mass assignment for these fields
-    protected $fillable = [
-        // 'name',
-        'first_name',
-        'middle_name',
-        'last_name',
-        'username',
-        'password',
-        'phone',       // <-- add phone
-        'email',
-        'address',
-        'role',
-        'status',
-    ];
+   protected $fillable = [
+    'first_name',
+    'middle_name',
+    'last_name',
+    'username',
+    'email',
+    'phone',
+    'address',
+    'city',
+    'postal_code',
+    'birthdate',
+    'profile_picture',
+    'password',
+    'role',
+    'status',
+];
+
 
 
     /**

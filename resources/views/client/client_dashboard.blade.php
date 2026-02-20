@@ -159,7 +159,7 @@
         <!-- Left Column: Active Jobs List (Span 2) -->
         <div class="lg:col-span-2 space-y-4">
           <div class="flex items-center justify-between">
-            <h2 class="text-base font-semibold text-slate-900">Recent Postings</h2>
+            <h2 class="text-base font-semibold text-slate-900">Recent Jobs</h2>
             <a href="#" class="text-xs font-medium text-blue-600 hover:text-blue-700">View All</a>
           </div>
 
@@ -174,105 +174,60 @@
                     <th class="px-6 py-4 font-medium text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
-                  
-                  <!-- Job Item 1: In Progress -->
-                  <tr class="group hover:bg-slate-50/50 transition-colors">
-                    <td class="px-6 py-4">
-                      <div class="flex items-center gap-3">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-                          <iconify-icon icon="solar:pen-new-square-linear" width="20"></iconify-icon>
-                        </div>
-                        <div>
-                          <p class="text-sm font-medium text-slate-900">Blog Post Writing</p>
-                          <p class="text-xs text-slate-500">Posted 2 days ago</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="px-6 py-4">
-                      <span class="text-sm font-medium text-slate-700">$150.00</span>
-                    </td>
-                    <td class="px-6 py-4">
-                      <div class="flex items-center gap-2">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&amp;fit=crop&amp;w=64&amp;h=64" alt="Worker" class="w-6 h-6 rounded-full ring-2 ring-white">
-                        <span class="text-xs font-medium text-slate-700">Sarah J.</span>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-600 border border-blue-100">
-                          In Progress
-                        </span>
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 text-right">
-                      <button class="text-slate-400 hover:text-slate-600">
-                        <iconify-icon icon="solar:menu-dots-bold" width="20"></iconify-icon>
-                      </button>
-                    </td>
-                  </tr>
-
-                  <!-- Job Item 2: Open / No Worker -->
-                  <tr class="group hover:bg-slate-50/50 transition-colors">
-                    <td class="px-6 py-4">
-                      <div class="flex items-center gap-3">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600">
-                          <iconify-icon icon="solar:code-circle-linear" width="20"></iconify-icon>
-                        </div>
-                        <div>
-                          <p class="text-sm font-medium text-slate-900">React Landing Page</p>
-                          <p class="text-xs text-slate-500">Posted 5 hours ago</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="px-6 py-4">
-                      <span class="text-sm font-medium text-slate-700">$850.00</span>
-                    </td>
-                    <td class="px-6 py-4">
-                      <div class="flex items-center gap-2">
-                        <div class="w-6 h-6 rounded-full border border-dashed border-slate-300 flex items-center justify-center text-slate-400">
-                          <iconify-icon icon="solar:user-linear" width="12"></iconify-icon>
-                        </div>
-                        <span class="text-xs font-medium text-slate-400 italic">Unassigned</span>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
-                          Open
-                        </span>
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 text-right">
-                      <button class="text-slate-400 hover:text-slate-600">
-                        <iconify-icon icon="solar:menu-dots-bold" width="20"></iconify-icon>
-                      </button>
-                    </td>
-                  </tr>
-
-                  <!-- Job Item 3: Completed / Review Needed -->
-                  <tr class="group hover:bg-slate-50/50 transition-colors">
-                    <td class="px-6 py-4">
-                      <div class="flex items-center gap-3">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
-                          <iconify-icon icon="solar:figma-file-linear" width="20"></iconify-icon>
-                        </div>
-                        <div>
-                          <p class="text-sm font-medium text-slate-900">UI Kit Redesign</p>
-                          <p class="text-xs text-slate-500">Posted 1 week ago</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="px-6 py-4">
-                      <span class="text-sm font-medium text-slate-700">$400.00</span>
-                    </td>
-                    <td class="px-6 py-4">
-                      <div class="flex items-center gap-2">
-                         <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&amp;fit=crop&amp;w=64&amp;h=64" alt="Worker" class="w-6 h-6 rounded-full ring-2 ring-white">
-                        <span class="text-xs font-medium text-slate-700">Mike R.</span>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-600 border border-emerald-100">
-                          Completed
-                        </span>
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 text-right">
-                       <button class="text-xs font-medium text-slate-900 underline decoration-slate-300 hover:decoration-slate-900 underline-offset-2 transition-all">Review</button>
-                    </td>
-                  </tr>
-
-                </tbody>
+             <tbody class="divide-y divide-slate-100">
+@forelse($jobs as $job)
+<tr class="group hover:bg-slate-50/50 transition-colors">
+    <td class="px-6 py-4">
+        <div class="flex items-center gap-3">
+            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                <iconify-icon icon="solar:pen-new-square-linear" width="20"></iconify-icon>
+            </div>
+            <div>
+                <p class="text-sm font-medium text-slate-900">{{ $job->title }}</p>
+                <p class="text-xs text-slate-500">Posted {{ $job->created_at->diffForHumans() }}</p>
+            </div>
+        </div>
+    </td>
+    <td class="px-6 py-4">
+        <span class="text-sm font-medium text-slate-700">
+            {{ $job->budget ? '$'.$job->budget : 'N/A' }}
+        </span>
+    </td>
+    <td class="px-6 py-4">
+        @if($job->worker) 
+            <div class="flex items-center gap-2">
+                <img src="{{ $job->worker->avatar ?? 'https://via.placeholder.com/24' }}" alt="Worker" class="w-6 h-6 rounded-full ring-2 ring-white">
+                <span class="text-xs font-medium text-slate-700">{{ $job->worker->name }}</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-600 border border-blue-100">
+                    In Progress
+                </span>
+            </div>
+        @else
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-full border border-dashed border-slate-300 flex items-center justify-center text-slate-400">
+                    <iconify-icon icon="solar:user-linear" width="12"></iconify-icon>
+                </div>
+                <span class="text-xs font-medium text-slate-400 italic">Unassigned</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                    Open
+                </span>
+            </div>
+        @endif
+    </td>
+    <td class="px-6 py-4 text-right">
+        <button class="text-slate-400 hover:text-slate-600">
+            <iconify-icon icon="solar:menu-dots-bold" width="20"></iconify-icon>
+        </button>
+    </td>
+</tr>
+@empty
+<tr>
+    <td colspan="4" class="text-center text-slate-500 py-4">
+        No jobs posted today.
+    </td>
+</tr>
+@endforelse
+</tbody>
               </table>
             </div>
             <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-center">

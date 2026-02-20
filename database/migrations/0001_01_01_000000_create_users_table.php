@@ -15,25 +15,38 @@ return new class extends Migration
     public function up(): void
     {
     Schema::create('users', function (Blueprint $table) {
-            $table->id();
+    $table->id();
 
-            // Names
-            $table->string('first_name');
-            $table->string('middle_name')->nullable();
-            $table->string('last_name');
-            $table->string('username')->unique();
-            $table->string('email')->unique();
-            $table->string('phone')->nullable();
-            $table->string('address', 500)->nullable(); // <-- added address
+    // Names
+    $table->string('first_name');
+    $table->string('middle_name')->nullable();
+    $table->string('last_name');
 
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->enum('role', ['admin','client','worker'])->default('client');  
-            $table->enum('status', ['pending','approved','active','deactivate'])->default('pending');
+    // Account Info
+    $table->string('username')->unique();
+    $table->string('email')->unique();
+    $table->string('phone')->nullable();
 
-            $table->rememberToken();
-            $table->timestamps();
-        });
+    // Address Info
+    $table->string('address', 500)->nullable();
+    $table->string('city')->nullable();
+    $table->string('postal_code')->nullable();
+
+    // Personal Info
+    $table->date('birthdate')->nullable();
+
+    // Profile Image
+    $table->string('profile_picture')->nullable();
+
+    $table->timestamp('email_verified_at')->nullable();
+    $table->string('password');
+
+    $table->enum('role', ['admin','client','worker'])->default('client');  
+    $table->enum('status', ['pending','approved','active','deactivate'])->default('pending');
+
+    $table->rememberToken();
+    $table->timestamps();
+});
         
 DB::table('users')->insert([
     'first_name' => 'Admin',
@@ -41,6 +54,12 @@ DB::table('users')->insert([
     'last_name' => 'User',
     'username' => 'admin',
     'email' => 'admin@example.com',
+    'phone' => null,
+    'address' => null,
+    'city' => null,
+    'postal_code' => null,
+    'birthdate' => null,
+    'profile_picture' => null,
     'password' => Hash::make('admin'),
     'role' => 'admin',
     'status' => 'active',

@@ -37,7 +37,7 @@
       </div>
     </header>
 
-    <main class="p-4 sm:p-6 space-y-6">
+    <main class="p-4 sm:p-6 space-y-6 ">
       
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -203,7 +203,7 @@
       Monitor recently posted jobs and their current status
     </p>
   </div>
-  <a href="#" class="text-xs font-medium text-blue-600 hover:text-blue-700 mt-2 sm:mt-0">
+  <a href="{{ route('admin.jobs_list') }}" class="text-xs font-medium text-blue-600 hover:text-blue-700 mt-2 sm:mt-0">
     View All
   </a>
 </div>

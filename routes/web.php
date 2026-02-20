@@ -6,6 +6,7 @@
     use App\Http\Controllers\AuthController;
     use App\Http\Controllers\ClientJobController;
     use App\Http\Controllers\Admin\DashboardController;
+    use Illuminate\Support\Facades\Auth;
 
     // ======================
     // Landing page
@@ -114,6 +115,7 @@
         return view('worker.dashboard');
     })->name('worker.dashboard');
 
+
     // ======================
     // CLIENT DASHBOARD
     // ======================
@@ -130,6 +132,14 @@ Route::get('/client/dashboard', [ClientJobController::class, 'dashboard'])
 
     Route::get('/client/jobs/create', [ClientJobController::class, 'create'])
         ->name('client.jobs.create');
+
+Route::put('/client/profile/{id}', [ClientJobController::class, 'update'])->name('client.profile.update');
+ 
+Route::middleware(['auth'])->get('/clientprofile',
+    [ClientJobController::class, 'profile']
+)->name('client.client_profile');
+
+
 
     // ======================
     // REGISTRATION (PUBLIC)

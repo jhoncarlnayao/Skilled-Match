@@ -55,7 +55,7 @@ pt-6 pb-6 overflow-y-auto lg:block lg:translate-x-0">
         <div class="border-t border-slate-100 my-4"></div>
 
         <!-- Profile -->
-        <a href="#"
+        <a href="{{ route('client.client_profile') }}"
            class="flex items-center p-2 rounded-lg transition-colors
            text-slate-500 hover:bg-slate-50 hover:text-slate-900">
           
