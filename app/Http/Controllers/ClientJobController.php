@@ -8,7 +8,7 @@
     use App\Models\Trade;
     use App\Models\User;
     use Carbon\Carbon;
-
+    use App\Models\Announcement;
 
 
     class ClientJobController extends Controller
@@ -21,7 +21,6 @@
 
     public function postJob()
     {
-        // Fetch only jobs of this client
         $jobs = Job::where('client_id', Auth::id())->latest()->get();
         $trades = Trade::all();
     return view('client.client_post_job', compact('jobs', 'trades'));
@@ -31,16 +30,40 @@ public function dashboard()
 {
     $trades = Trade::all();
 
-    // Get today’s date
     $today = Carbon::today();
 
-    // Fetch only jobs created today by this client
     $jobs = Job::where('client_id', Auth::id())
                 ->whereDate('created_at', $today)
                 ->latest()
                 ->get();
 
-    return view('client.client_dashboard', compact('trades', 'jobs'));
+    $announcements = Announcement::latest()
+                        ->with('admin')
+                        ->get();
+
+    // Get logged-in client
+    $user = Auth::user();
+
+    return view('client.client_dashboard', compact(
+        'trades',
+        'jobs',
+        'announcements',
+        'user'
+    ));
+}
+
+ public function profile()
+{
+    $user = Auth::user();
+
+    $announcements = Announcement::latest()
+                        ->with('admin')
+                        ->get();
+
+    return view('client.client_profile', compact(
+        'user',
+        'announcements'
+    ));
 }
 
     public function store(Request $request)
@@ -66,17 +89,13 @@ public function dashboard()
         return redirect()->back()->with('success', 'Job posted successfully.');
     }
 
-    public function profile()
-    {
-        $user = Auth::user();
-        return view('client.client_profile', compact('user'));
-    }
+
 
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
-        // Validate inputs including optional password
+        
         $request->validate([
             'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
@@ -86,7 +105,7 @@ public function dashboard()
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:100',
-            'password' => 'nullable|string|min:8|confirmed', // ensures password_confirmation matches
+            'password' => 'nullable|string|min:8|confirmed', 
         ]);
 
         $user->first_name = $request->first_name;
@@ -98,7 +117,7 @@ public function dashboard()
         $user->address = $request->address;
         $user->city = $request->city;
 
-        // Update password only if filled
+        
         if ($request->filled('password')) {
             $user->password = bcrypt($request->password);
         }
@@ -107,6 +126,9 @@ public function dashboard()
 
         return redirect()->back()->with('success', 'Profile updated successfully!');
     }
+
+
+    
 
 
     }

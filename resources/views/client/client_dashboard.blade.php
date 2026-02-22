@@ -37,18 +37,94 @@
 
           <!-- Right Actions -->
           <div class="flex items-center gap-4">
-            <button class="relative p-2 text-slate-400 hover:text-slate-600 transition-colors">
-              <iconify-icon icon="solar:bell-linear" width="20" height="20"></iconify-icon>
-              <span class="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
-            </button>
+            <div x-data="{ open: false }" class="relative">
+
+    <!-- Bell Button -->
+    <button 
+        @click="open = !open"
+        class="relative p-2 text-slate-400 hover:text-slate-600 transition-colors"
+    >
+        <iconify-icon icon="solar:bell-linear" width="20" height="20"></iconify-icon>
+
+        @if($announcements->count())
+            <span class="absolute top-1.5 right-1.5 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+        @endif
+    </button>
+
+    <!-- Dropdown Panel -->
+    <div 
+        x-show="open"
+        @click.outside="open = false"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        class="absolute right-0 mt-3 w-96 bg-white border border-slate-200 rounded-xl shadow-xl z-50"
+        style="display: none;"
+    >
+
+        <!-- Header -->
+        <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-slate-900">
+                Admin Announcements
+            </h3>
+            <span class="text-xs text-slate-400">
+                {{ $announcements->count() }}
+            </span>
+        </div>
+
+        <!-- Announcement List -->
+        <div class="max-h-80 overflow-y-auto divide-y divide-slate-100">
+
+            @forelse($announcements as $announcement)
+                <div class="p-4 hover:bg-slate-50 transition">
+                    <div class="flex items-start gap-3">
+                        
+                        <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                            <iconify-icon icon="solar:notification-unread-linear" width="16"></iconify-icon>
+                        </div>
+
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-slate-900">
+                                {{ $announcement->title }}
+                            </p>
+
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                                {{ $announcement->content }}
+                            </p>
+
+                            <p class="text-[10px] text-slate-400 mt-2">
+                                {{ $announcement->created_at->diffForHumans() }}
+                                @if($announcement->admin)
+                                    • by {{ $announcement->admin->name }}
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="p-6 text-center text-xs text-slate-500">
+                    No announcements available.
+                </div>
+            @endforelse
+
+        </div>
+
+    </div>
+</div>
             <div class="h-8 w-[1px] bg-slate-200 mx-1"></div>
             <div class="flex items-center gap-3">
               <div class="text-right hidden sm:block">
-                <p class="text-sm font-medium text-slate-900">Acme Inc.</p>
+                <p class="text-sm font-medium text-slate-900">{{ $user->first_name }} {{ $user->last_name }}</p>
                 <p class="text-xs text-slate-500">Client Account</p>
               </div>
-              <img class="h-9 w-9 rounded-full ring-2 ring-white object-cover shadow-sm" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&amp;auto=format&amp;fit=facearea&amp;facepad=2&amp;w=256&amp;h=256&amp;q=80" alt="Avatar">
-            </div>
+              <a href="{{ route('client.client_profile') }}">
+                <img src="{{ $user->profile_picture ? asset('storage/'.$user->profile_picture) : asset('images/default-profile.png') }}" alt="Profile" class="w-8 h-8 rounded-full">
+            
+              </a>
+              </div>
           </div>
         </div>
       </div>
