@@ -41,7 +41,7 @@ public function dashboard()
                         ->with('admin')
                         ->get();
 
-    // Get logged-in client
+
     $user = Auth::user();
 
     return view('client.client_dashboard', compact(

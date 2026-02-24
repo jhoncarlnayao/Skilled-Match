@@ -94,7 +94,7 @@
               <td class="px-4 py-4 text-sm font-medium whitespace-nowrap">
                   <div>
                       <h2 class="font-semibold text-gray-800">
-                          {{ $user->name }}
+                          {{ $user->first_name }} {{ $user->middle_name }} {{ $user->last_name }}
                       </h2>
                       <p class="text-gray-500 text-sm">
                           {{ $user->email }}
@@ -157,10 +157,19 @@
                   </p>
               </td>
 
-              <!-- Action -->
+
             <!-- Action -->
 <td class="px-4 py-4 text-sm">
   <div class="flex items-center gap-2">
+ <button type="button"
+        data-hs-overlay="#view-user-modal-{{ $user->id }}"
+        class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
+               text-gray-700 bg-white border border-gray-300 rounded-lg
+               hover:bg-gray-50 hover:border-gray-400
+               focus:outline-none focus:ring-2 focus:ring-gray-200 transition">
+    View Details
+</button>
+
     <!-- Edit -->
 <button type="button"
         data-hs-overlay="#edit-user-modal-{{ $user->id }}"
@@ -290,11 +299,37 @@
           {{-- Full Name --}}
           <div>
             <label class="block text-sm font-medium text-gray-600 mb-2">
-              Full Name
+              First Name
             </label>
             <input type="text"
                    name="name"
-                   value="{{ $user->name }}"
+                       value="{{ $user->first_name }}"
+                   class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
+                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                          outline-none transition"
+                   required>
+          </div>
+
+             <div>
+            <label class="block text-sm font-medium text-gray-600 mb-2">
+              Middle Name
+            </label>
+            <input type="text"
+                   name="middle_name"
+                       value="{{ $user->middle_name }}"
+                   class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
+                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                          outline-none transition"
+                   required>
+          </div>
+
+             <div>
+            <label class="block text-sm font-medium text-gray-600 mb-2">
+              Last Name
+            </label>
+            <input type="text"
+                   name="last_name"
+                       value="{{ $user->last_name }}"
                    class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
                           outline-none transition"
@@ -324,21 +359,16 @@
         class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl
                focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
                outline-none transition">
-
   <option value="active"
           {{ $user->status == 'active' ? 'selected' : '' }}>
       Active
   </option>
-
   <option value="deactivate"
           {{ $user->status == 'deactivate' ? 'selected' : '' }}>
       Deactivated
   </option>
-
 </select>
-
           </div>
-
           {{-- Footer --}}
           <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
             <button type="button"
@@ -355,55 +385,145 @@
               Save Changes
             </button>
           </div>
-
         </form>
       </div>
-
     </div>
   </div>
 </div>
 @endforeach
 
-  
+@foreach($users as $user)
+<div id="view-user-modal-{{ $user->id }}"
+     class="hs-overlay hidden fixed inset-0 z-[80] overflow-y-auto">
 
+  <div class="flex items-center justify-center min-h-screen px-4">
+    
+    <div class="relative w-full max-w-lg bg-white rounded-lg shadow-xl sm:p-6 p-5">
+
+      <!-- Close Button -->
+      <div class="absolute top-4 right-4">
+        <button type="button"
+                data-hs-overlay="#view-user-modal-{{ $user->id }}"
+                class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+          ✕
+        </button>
+      </div>
+
+      <!-- Header -->
+      <div class="flex flex-col items-center gap-3">
+        
+        <!-- Profile Picture -->
+        <img
+          src="{{ $user->profile_picture 
+                  ? asset('storage/' . $user->profile_picture) 
+                  : 'https://ui-avatars.com/api/?name=' . urlencode($user->first_name . ' ' . $user->last_name) }}"
+          class="w-24 h-24 rounded-full ring-2 ring-gray-200 object-cover"
+          alt="Profile Picture">
+
+        <h3 class="text-lg font-medium text-gray-800">
+          Client Details
+        </h3>
+
+        <p class="text-sm text-gray-500 text-center">
+          Review the information of this user.
+        </p>
+      </div>
+
+      <!-- Form Body -->
+      <form class="mt-4 space-y-3">
+
+        <!-- Full Name -->
+        <div>
+          <label class="block text-sm text-gray-700">Full Name</label>
+          <input type="text"
+                 value="{{ $user->first_name }} {{ $user->middle_name }} {{ $user->last_name }}"
+                 readonly
+                 class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="block text-sm text-gray-700">Email</label>
+          <input type="email"
+                 value="{{ $user->email }}"
+                 readonly
+                 class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
+        </div>
+
+        <!-- Status -->
+        <div>
+          <label class="block text-sm text-gray-700">Status</label>
+          <input type="text"
+                 value="{{ ucfirst($user->status) }}"
+                 readonly
+                 class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
+        </div>
+
+        <!-- Address -->
+        <div>
+          <label class="block text-sm text-gray-700">Address</label>
+          <input type="text"
+                 value="{{ $user->address }}"
+                 readonly
+                 class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
+        </div>
+
+        <!-- City -->
+        <div>
+          <label class="block text-sm text-gray-700">City</label>
+          <input type="text"
+                 value="{{ $user->city }}"
+                 readonly
+                 class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
+        </div>
+
+        <!-- Postal Code -->
+        <div>
+          <label class="block text-sm text-gray-700">Postal Code</label>
+          <input type="text"
+                 value="{{ $user->postal_code }}"
+                 readonly
+                 class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
+        </div>
+
+        <!-- Role -->
+        <div>
+          <label class="block text-sm text-gray-700">Role</label>
+          <input type="text"
+                 value="{{ ucfirst($user->role) }}"
+                 readonly
+                 class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
+        </div>
+
+        <!-- Joined Date -->
+        <div>
+          <label class="block text-sm text-gray-700">Joined Date</label>
+          <input type="text"
+                 value="{{ $user->created_at->format('M d, Y') }}"
+                 readonly
+                 class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-4 flex justify-end">
+          <button type="button"
+                  data-hs-overlay="#view-user-modal-{{ $user->id }}"
+                  class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-100">
+            Close
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+@endforeach
     </main>
   </div>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/preline@latest/dist/preline.js"></script>
   <script src="https://preline.co/assets/vendor/preline/dist/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-  <script>
-    window.addEventListener('load', () => {
-      const options = {
-        chart: {
-          height: 350,
-          type: 'line',
-          toolbar: { show: false },
-          zoom: { enabled: false }
-        },
-        series: [
-          { name: 'Reach', data: [25, 35, 20, 45, 38, 55, 48, 62, 58, 70, 65, 80] },
-          { name: 'Engagement', data: [15, 25, 40, 30, 45, 35, 50, 45, 60, 55, 75, 70] },
-          { name: 'Impression', data: [10, 20, 15, 25, 20, 30, 25, 35, 30, 45, 40, 50] }
-        ],
-        stroke: { curve: 'smooth', width: 3 },
-        colors: ['#facc15', '#22d3ee', '#a855f7'],
-        grid: {
-          borderColor: '#f1f5f9',
-          strokeDashArray: 4,
-          xaxis: { lines: { show: true } }
-        },
-        xaxis: {
-          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-          axisBorder: { show: false },
-          axisTicks: { show: false }
-        },
-        yaxis: { labels: { style: { colors: '#94a3b8' } } },
-        legend: { show: false }
-      };
-
-      const chart = new ApexCharts(document.querySelector("#sociotix-main-chart"), options);
-      chart.render();
-    });
-  </script>
 </body>
 </html>

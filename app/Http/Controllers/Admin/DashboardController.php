@@ -24,7 +24,9 @@ class DashboardController extends Controller
     $today = now()->toDateString();
 
     return view('admin.dashboard', [
-        'totalWorkers' => User::where('role', 'worker')->count(),
+        'totalWorkers' => User::where('role', 'worker')
+    ->where('status', 'approved')
+    ->count(),
         'pendingWorkers' => User::where('role', 'worker')->where('status', 'pending')->count(),
         'newWorkersThisMonth' => User::where('role', 'worker')
             ->whereMonth('created_at', now()->month)
@@ -51,12 +53,17 @@ class DashboardController extends Controller
 
 
     // Pending accounts
-    public function pendingAccounts(Request $request)
-    {
-        $status = $request->query('status', 'pending');
-        $users = User::where('status', $status)->orderBy('created_at', 'desc')->get();
-        return view('admin.pending_accounts', compact('users', 'status'));
-    }
+ public function pendingAccounts(Request $request)
+{
+    $status = $request->query('status', 'pending');
+
+    $users = User::where('role', 'worker') // important
+        ->where('status', $status)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return view('admin.pending_accounts', compact('users', 'status'));
+}
 
     public function approve($id)
     {
@@ -156,7 +163,9 @@ public function toggleClientStatus($id)
 public function updateClient(Request $request, $id)
 {
     $request->validate([
-        'name'   => 'required|string|max:255',
+        'firstname'   => 'required|string|max:255',
+        'middlename'  => 'nullable|string|max:255',
+        'lastname'    => 'required|string|max:255',
         'email'  => 'required|email|max:255|unique:users,email,' . $id,
         'status' => 'required|in:active,deactivate',
 
@@ -164,7 +173,9 @@ public function updateClient(Request $request, $id)
 
     $user = User::where('role', 'client')->findOrFail($id);
 
-    $user->name   = $request->name;
+    $user->first_name = $request->firstname;
+    $user->middle_name = $request->middlename;
+    $user->last_name = $request->lastname;
     $user->email  = $request->email;
     $user->status = $request->status;
 

@@ -236,7 +236,7 @@
         <div class="lg:col-span-2 space-y-4">
           <div class="flex items-center justify-between">
             <h2 class="text-base font-semibold text-slate-900">Recent Jobs</h2>
-            <a href="#" class="text-xs font-medium text-blue-600 hover:text-blue-700">View All</a>
+            <a href="{{ route('client.client_post_job') }}" class="text-xs font-medium text-blue-600 hover:text-blue-700">View All</a>
           </div>
 
           <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">

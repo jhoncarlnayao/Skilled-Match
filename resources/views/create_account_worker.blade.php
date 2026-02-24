@@ -237,39 +237,60 @@
                 <div class="form-divider"></div>
 
                 <!-- Section 3: Contact Info -->
-                <div class="field-group">
-                    <div class="section-label">
-                        <div class="num">3</div>
-                        <span class="title">Contact & Trade Info</span>
-                    </div>
+                <!-- Section 3: Contact Info -->
+<div class="field-group">
+    <div class="section-label">
+        <div class="num">3</div>
+        <span class="title">Contact & Trade Info</span>
+    </div>
 
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
-                        <div>
-                            <label class="field-label">Phone Number <span style="color:var(--brand)">*</span></label>
-                            <input type="tel" name="phone" required placeholder="+63 912 345 6789" class="field-input">
-                        </div>
-                        <div>
-                            <label class="field-label">Email Address <span style="color:var(--brand)">*</span></label>
-                            <input type="email" name="email" required placeholder="worker@email.com" class="field-input">
-                        </div>
-                    </div>
+    <!-- Phone + Email -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+        <div>
+            <label class="field-label">Phone Number <span style="color:var(--brand)">*</span></label>
+            <input type="tel" name="phone" required placeholder="+63 912 345 6789" class="field-input">
+        </div>
+        <div>
+            <label class="field-label">Email Address <span style="color:var(--brand)">*</span></label>
+            <input type="email" name="email" required placeholder="worker@email.com" class="field-input">
+        </div>
+    </div>
 
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
-                        <div>
-                            <label class="field-label">Trade Skill <span style="color:var(--brand)">*</span></label>
-                            <select name="trade_id" required class="field-input appearance-none bg-white">
-                                <option value="">Select Specialty</option>
-                                @foreach($trades as $trade)
-                                    <option value="{{ $trade->id }}">{{ $trade->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label class="field-label">Experience (Years)</label>
-                            <input type="number" name="experience_years" min="0" placeholder="5" class="field-input">
-                        </div>
-                    </div>
-                </div>
+    <!-- Address -->
+    <div style="margin-bottom:14px;">
+        <label class="field-label">Street Address</label>
+        <input type="text" name="address" placeholder="123 Main Street" class="field-input">
+    </div>
+
+    <!-- City + Postal -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">
+        <div>
+            <label class="field-label">City</label>
+            <input type="text" name="city" placeholder="Quezon City" class="field-input">
+        </div>
+        <div>
+            <label class="field-label">Postal Code</label>
+            <input type="text" name="postal_code" placeholder="1105" class="field-input">
+        </div>
+    </div>
+
+    <!-- Trade + Experience -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+        <div>
+            <label class="field-label">Trade Skill <span style="color:var(--brand)">*</span></label>
+            <select name="trade_id" required class="field-input appearance-none bg-white">
+                <option value="">Select Specialty</option>
+                @foreach($trades as $trade)
+                    <option value="{{ $trade->id }}">{{ $trade->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div>
+            <label class="field-label">Experience (Years)</label>
+            <input type="number" name="experience_years" min="0" placeholder="5" class="field-input">
+        </div>
+    </div>
+</div>
 
                 <button type="submit" class="submit-btn mt-4">
                     Create My Profile →
