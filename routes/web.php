@@ -7,6 +7,8 @@
     use App\Http\Controllers\ClientJobController;
     use App\Http\Controllers\Admin\DashboardController;
     use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\GeminiController;
+
 
     // ======================
     // Landing page
@@ -160,3 +162,14 @@ Route::middleware(['auth'])->get('/clientprofile',
 
     Route::post('/worker/register', [WorkerRegisterController::class, 'store'])
         ->name('worker.register');
+
+
+// Route::post('/ai/ask', [GeminiController::class, 'ask'])->name('ai.ask');
+
+Route::get('/check-key', function() {
+    return env('GEMINI_API_KEY', 'Key not found!');
+});
+
+Route::get('/check-test', function() {
+    return env('TEST_ENV', 'Not found!');
+});

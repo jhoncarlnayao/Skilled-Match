@@ -1,4 +1,7 @@
 <html lang="en"><head>
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
+ <meta name="gemini-api-key" content="{{ env('GEMINI_API_KEY') }}">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sociotix Client Dashboard</title>
@@ -466,6 +469,153 @@
       </div>
     </main>
   </div>
+<!-- Floating AI Chat Widget -->
+<div 
+    x-data="{ open: false }" 
+    class="fixed bottom-6 right-6 z-50 flex flex-col items-end"
+>
 
+    <!-- Chat Panel -->
+    <div 
+        x-show="open"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+        class="mb-4 w-80 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden"
+        style="display: none;"
+    >
 
+        <!-- Header -->
+        <div class="bg-slate-900 text-white px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                    <iconify-icon icon="solar:chat-round-dots-linear" width="18"></iconify-icon>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold">AI Assistant</p>
+                    <p class="text-[10px] text-slate-300">Online</p>
+                </div>
+            </div>
+
+            <button @click="open = false" class="text-slate-300 hover:text-white">
+                <iconify-icon icon="solar:close-circle-linear" width="18"></iconify-icon>
+            </button>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="chat-messages" class="h-64 overflow-y-auto p-4 space-y-3 bg-slate-50">
+            <!-- Initial AI message -->
+            <div class="flex items-start gap-2">
+                <div class="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs">
+                    AI
+                </div>
+                <div class="bg-slate-100 text-slate-900 text-xs px-3 py-2 rounded-2xl shadow-sm max-w-[75%] break-words">
+                    Hello 👋 How can I assist you today?
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="border-t border-slate-200 p-3 bg-white">
+            <div class="flex items-center gap-2">
+                <input 
+                    id="chatInput"
+                    type="text" 
+                    placeholder="Type a message..."
+                    class="flex-1 text-xs border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                >
+                <button 
+                    onclick="sendMessage()"
+                    class="bg-slate-900 text-white p-2 rounded-lg hover:bg-slate-800"
+                >
+                    <iconify-icon icon="solar:arrow-up-linear" width="16"></iconify-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Button -->
+    <button 
+        @click="open = !open"
+        class="w-14 h-14 rounded-full bg-slate-900 hover:bg-slate-800 text-white shadow-xl flex items-center justify-center transition-all duration-300"
+    >
+        <iconify-icon icon="solar:chat-round-dots-bold" width="22"></iconify-icon>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chatInput = document.getElementById('chatInput');
+            const chatMessages = document.getElementById('chat-messages');
+            const GEMINI_API_KEY = document.querySelector('meta[name="gemini-api-key"]').content;
+            const GEMINI_MODEL = "gemini-2.5-flash";
+
+            function appendMessage(message, sender) {
+                const msgDivWrapper = document.createElement('div');
+                msgDivWrapper.classList.add('flex', 'gap-2');
+
+                const avatarDiv = document.createElement('div');
+                avatarDiv.classList.add('w-7','h-7','rounded-full','flex','items-center','justify-center','text-xs');
+
+                const bubbleDiv = document.createElement('div');
+                bubbleDiv.classList.add('text-xs','px-3','py-2','rounded-2xl','shadow-sm','max-w-[75%]','break-words');
+
+                if(sender === 'user'){
+                    msgDivWrapper.classList.add('justify-end','items-end');
+                    // avatarDiv.classList.add('bg-blue-600','text-white');
+                    // avatarDiv.textContent = 'You';
+                    // bubbleDiv.classList.add('bg-blue-600','text-white');
+                } else {
+                    msgDivWrapper.classList.add('items-start');
+                    avatarDiv.classList.add('bg-slate-900','text-white');
+                    avatarDiv.textContent = 'AI';
+                    bubbleDiv.classList.add('bg-slate-100','text-slate-900');
+                }
+
+                bubbleDiv.textContent = message;
+                msgDivWrapper.appendChild(avatarDiv);
+                msgDivWrapper.appendChild(bubbleDiv);
+                chatMessages.appendChild(msgDivWrapper);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            async function askGemini(prompt) {
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            contents: [
+                                { role: "user", parts: [{ text: prompt }] }
+                            ]
+                        }),
+                    });
+
+                    const data = await res.json();
+                    return data?.candidates?.[0]?.content?.parts?.[0]?.text || "Gemini could not generate a response.";
+                } catch (err) {
+                    console.error("Gemini API error:", err);
+                    return "Error connecting to Gemini AI.";
+                }
+            }
+
+            window.sendMessage = async function () {
+                const message = chatInput.value.trim();
+                if(!message) return;
+
+                appendMessage(message, 'user');
+                chatInput.value = '';
+
+                appendMessage("Thinking...", 'bot'); 
+                const lastBot = chatMessages.lastChild;
+
+                const reply = await askGemini(message);
+                lastBot.querySelector('div:last-child').textContent = reply;
+            }
+        });
+    </script>
+</div>
+</div>
 </body></html>

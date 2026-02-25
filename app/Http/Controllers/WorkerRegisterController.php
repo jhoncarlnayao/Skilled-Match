@@ -122,59 +122,79 @@ public function store(Request $request)
 
 
     // Handle API registration for React Native
-    public function apiRegister(Request $request)
-    {
-       $request->validate([
-    'first_name' => 'required|string',
-    'last_name' => 'nullable|string',
-    'username' => 'required|string|unique:users',
-    'email' => 'required|email|unique:users',
-    'phone' => 'required|string',
-    'trade_id' => 'required|exists:trades,id', // must match column
-    'experience_years' => 'required|integer|min:0',
-    'password' => 'required|string|min:6',
-]);
+public function apiRegister(Request $request)
+{
+    // Validate input
+    $request->validate([
+        'first_name' => 'required|string|max:255',
+        'middle_name' => 'nullable|string|max:255',
+        'last_name' => 'required|string|max:255',
+        'birthdate' => 'nullable|date',
+        'username' => 'required|string|unique:users',
+        'email' => 'required|email|unique:users',
+        'phone' => 'required|string|max:20',
+        'address' => 'nullable|string|max:255',
+        'city' => 'nullable|string|max:100',
+        'postal_code' => 'nullable|string|max:20',
+        'trade_id' => 'required|exists:trades,id',
+        'experience_years' => 'required|integer|min:0',
+        'password' => 'required|string|min:6|confirmed',
+        'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
 
+    DB::beginTransaction();
 
-        DB::beginTransaction();
-
-        try {
-            // Create User
-            $user = User::create([
-                'name' => $request->first_name . ' ' . $request->last_name,
-                'username' => $request->username,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'role' => 'worker',
-                'status' => 'pending',
-            ]);
-
-            // Create Worker
-            Worker::create([
-    'user_id' => $user->id,
-    'phone' => $request->phone,
-    'trade_id' => $request->trade_id, // <- correct column
-    'experience_years' => $request->experience_years
-]);
-
-
-            DB::commit();
-
-            // Generate API token using Sanctum
-            $token = $user->createToken('worker-token')->plainTextToken;
-
-            return response()->json([
-                'message' => 'Registration successful',
-                'token' => $token,
-                'user' => $user
-            ], 201);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Registration failed',
-                'error' => $e->getMessage()
-            ], 500);
+    try {
+        // Handle profile picture upload
+        $profilePath = null;
+        if ($request->hasFile('profile_picture')) {
+            $profilePath = $request->file('profile_picture')
+                ->store('profile_pictures', 'public');
         }
+
+        // Create User
+        $user = User::create([
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'last_name' => $request->last_name,
+            'birthdate' => $request->birthdate,
+            'username' => $request->username,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'city' => $request->city,
+            'postal_code' => $request->postal_code,
+            'profile_picture' => $profilePath,
+            'password' => Hash::make($request->password),
+            'role' => 'worker',
+            'status' => 'pending',
+        ]);
+
+        // Create Worker
+        Worker::create([
+            'user_id' => $user->id,
+            'phone' => $request->phone,
+            'trade_id' => $request->trade_id,
+            'experience_years' => $request->experience_years,
+        ]);
+
+        DB::commit();
+
+        // Generate API token using Sanctum
+        $token = $user->createToken('worker-token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Registration successful',
+            'token' => $token,
+            'user' => $user
+        ], 201);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'message' => 'Registration failed',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 }
