@@ -469,6 +469,7 @@
       </div>
     </main>
   </div>
+  
 <!-- Floating AI Chat Widget -->
 <div 
     x-data="{ open: false }" 

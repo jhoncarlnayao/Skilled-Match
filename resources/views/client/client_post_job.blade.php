@@ -69,10 +69,14 @@
         </div>
     </div>
 @endif
-<main class="flex-1 p-6 lg:p-8 bg-slate-50" 
+<main class="flex-1 p-6 lg:p-8 bg-slate-50"
       x-data="{
         openModal: false,
         search: '',
+        editOpen: false,
+        selectedJob: {},
+        deleteOpen: false,  
+        deleteId: null      
       }">
 
   <!-- Page Header -->
@@ -93,95 +97,300 @@
     </button>
   </div>
 
-  <!-- Jobs List -->
-  <div class="space-y-4">
+<div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
 
-    @forelse($jobs as $job)
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 relative">
 
-    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:shadow-md transition-all group">
+            <!-- Table Head -->
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Title
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Trade
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Location
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Budget
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Worker
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Status
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Actions
+                    </th>
+                </tr>
+            </thead>
 
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <!-- Table Body -->
+            <tbody class="bg-white divide-y divide-gray-200">
+                @forelse($jobs as $job)
+                <tr class="hover:bg-gray-50 transition">
 
-        <!-- Left Side -->
-        <div class="flex items-start gap-4 flex-1">
+                    <!-- Title -->
+                    <td class="px-6 py-4">
+                        <div class="text-sm font-semibold text-gray-800">
+                            {{ $job->title }}
+                        </div>
+                        <div class="text-xs text-gray-500 line-clamp-1">
+                            {{ $job->description }}
+                        </div>
+                        <div class="text-xs text-gray-400 mt-1">
+                            {{ $job->created_at->format('M d, Y') }}
+                        </div>
+                    </td>
 
-          <!-- Icon -->
-          <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-100 shrink-0">
-            <iconify-icon icon="solar:case-round-linear" width="24"></iconify-icon>
-          </div>
+                    <!-- Trade -->
+                    <td class="px-6 py-4 text-sm text-gray-700">
+                        {{ $job->trade->name ?? 'N/A' }}
+                    </td>
 
-          <!-- Title + Meta -->
-          <div>
-            <div class="flex items-center gap-2 mb-1">
-              <h3 class="text-base font-semibold text-slate-900 group-hover:text-blue-600 transition">
-                {{ $job->title }}
-              </h3>
+                    <!-- Location -->
+                    <td class="px-6 py-4 text-sm text-gray-700">
+                        {{ $job->location }}
+                    </td>
 
-              <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium
-                {{ $job->status === 'open' ? 'bg-blue-50 text-blue-600 border border-blue-100' : '' }}
-                {{ $job->status === 'assigned' ? 'bg-yellow-50 text-yellow-600 border border-yellow-100' : '' }}
-                {{ $job->status === 'completed' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : '' }}">
-                {{ ucfirst($job->status) }}
-              </span>
-            </div>
+                    <!-- Budget -->
+                    <td class="px-6 py-4 text-sm font-semibold text-yellow-700">
+                        ₱{{ number_format($job->budget, 2) }}
+                    </td>
 
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-500">
-              <span class="flex items-center gap-1">
-                <iconify-icon icon="solar:calendar-linear" width="14"></iconify-icon>
-                {{ $job->created_at->format('M d, Y') }}
-              </span>
+                    <!-- Worker -->
+                    <td class="px-6 py-4 text-sm">
+                        @if($job->worker)
+                            <div class="font-medium text-emerald-700">
+                                {{ $job->worker->user->first_name }}
+                                {{ $job->worker->user->last_name }}
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                {{ $job->worker->user->email }}
+                            </div>
+                        @else
+                            <span class="text-gray-400 text-sm">
+                                Not assigned
+                            </span>
+                        @endif
+                    </td>
 
-              <span class="flex items-center gap-1">
-                <iconify-icon icon="solar:tag-linear" width="14"></iconify-icon>
-                {{ $job->trade->name }}
-              </span>
+                    <!-- Status -->
+                    <td class="px-6 py-4">
+                        <span class="px-3 py-1 text-xs font-medium rounded-full
+                            {{ $job->status === 'open' ? 'bg-blue-100 text-blue-700' : '' }}
+                            {{ $job->status === 'assigned' ? 'bg-yellow-100 text-yellow-700' : '' }}
+                            {{ $job->status === 'completed' ? 'bg-emerald-100 text-emerald-700' : '' }}">
+                            {{ ucfirst($job->status) }}
+                        </span>
+                    </td>
 
-              <span class="flex items-center gap-1">
-                <iconify-icon icon="solar:map-point-linear" width="14"></iconify-icon>
-                {{ $job->location }}
-              </span>
-            </div>
-          </div>
-        </div>
+                    <!-- Actions -->
+              <td class="px-6 py-4 text-sm">
+    <div class="flex items-center gap-2">
 
-        <!-- Right Side -->
-        <div class="flex items-center justify-between md:justify-end gap-6 md:w-auto w-full border-t md:border-t-0 border-slate-100 pt-3 md:pt-0 md:pl-6">
+        {{-- Complete Button --}}
+        @if($job->status === 'assigned')
+        <form action="{{ route('client.jobs.complete', $job->id) }}"
+              method="POST">
+            @csrf
+            <button type="submit"
+                class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
+                       text-emerald-600 bg-white border border-gray-300 rounded-lg
+                       hover:bg-emerald-50 hover:border-emerald-300
+                       focus:outline-none focus:ring-2 focus:ring-emerald-200 transition">
 
-          <!-- Budget -->
-          <div class="text-left md:text-right">
-            <p class="text-xs text-slate-500 font-medium">Budget</p>
-            <p class="text-base font-semibold text-slate-900">
-              ₱{{ number_format($job->budget, 2) }}
-            </p>
-          </div>
+                <!-- Check Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="w-4 h-4"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke="currentColor"
+                     stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M5 13l4 4L19 7"/>
+                </svg>
 
-          <!-- Actions -->
-          <div class="flex items-center gap-2">
-            <button class="text-slate-400 hover:text-slate-600 p-2 hover:bg-slate-50 rounded-lg transition">
-              <iconify-icon icon="solar:pen-linear" width="18"></iconify-icon>
+                Complete
             </button>
+        </form>
+        @endif
 
-            <button class="text-red-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-lg transition">
-              <iconify-icon icon="solar:trash-bin-trash-linear" width="18"></iconify-icon>
-            </button>
-          </div>
 
-        </div>
-      </div>
+        {{-- Edit Button --}}
+        <button type="button"
+            @click="
+                selectedJob = {
+                    id: {{ $job->id }},
+                    title: '{{ addslashes($job->title) }}',
+                    description: `{{ addslashes($job->description) }}`,
+                    trade_id: '{{ $job->trade_id }}',
+                    budget: '{{ $job->budget }}',
+                    location: '{{ addslashes($job->location) }}'
+                };
+                editOpen = true;
+            "
+            class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
+                   text-gray-700 bg-white border border-gray-300 rounded-lg
+                   hover:bg-gray-50 hover:border-gray-400
+                   focus:outline-none focus:ring-2 focus:ring-gray-200 transition">
+
+            <!-- Pencil Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="w-4 h-4 text-gray-500"
+                 fill="none"
+                 viewBox="0 0 24 24"
+                 stroke="currentColor"
+                 stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M15.232 5.232l3.536 3.536M9 11l6-6m2 2L11 13l-4 1 1-4 6-6z"/>
+            </svg>
+
+            Edit
+        </button>
+
+
+        {{-- Delete Button --}}
+      {{-- Delete Button --}}
+@if($job->status !== 'assigned')
+<button type="button"
+    @click="
+        deleteId = {{ $job->id }};
+        deleteOpen = true;
+    "
+    class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
+           text-red-600 bg-white border border-gray-300 rounded-lg
+           hover:bg-red-50 hover:border-red-300
+           focus:outline-none focus:ring-2 focus:ring-red-200 transition">
+
+    <!-- Trash Icon -->
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="w-4 h-4"
+         fill="none"
+         viewBox="0 0 24 24"
+         stroke="currentColor"
+         stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M6 7h12M9 7V5h6v2m-7 0v12m4-12v12m4-12v12"/>
+    </svg>
+
+    Delete
+</button>
+@else
+<span class="text-xs text-gray-400">
+    Cannot delete (Assigned)
+</span>
+@endif
+
     </div>
+</td>
 
-    @empty
-      <div class="text-center text-slate-500 py-12">
-        No jobs posted yet.
-      </div>
-    @endforelse
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="px-6 py-6 text-center text-gray-500">
+                        No jobs posted yet.
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
 
-  </div>
+        </table>
+    </div>
+</div>
 
-  <!-- Pagination -->
-  {{-- <div class="mt-8 border-t border-slate-200 pt-6">
-    {{ $jobs->links() }}
-  </div> --}}
+
+<!-- Edit Job Modal -->
+<div x-show="editOpen" 
+     x-transition.opacity
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+     style="display:none;">
+
+    <div x-show="editOpen"
+         x-transition
+         class="bg-white w-full max-w-lg rounded-xl shadow-lg p-6">
+
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+            Edit Job
+        </h3>
+
+        <form 
+            :action="'/client/jobs/' + selectedJob.id"
+            method="POST"
+            class="space-y-4"
+        >
+            @csrf
+            @method('PUT')
+
+            <!-- Title -->
+            <div>
+                <label class="text-sm text-gray-600">Title</label>
+                <input type="text" name="title"
+                       x-model="selectedJob.title"
+                       class="w-full mt-1 px-4 py-2 border rounded-lg">
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="text-sm text-gray-600">Description</label>
+                <textarea name="description"
+                          x-model="selectedJob.description"
+                          rows="3"
+                          class="w-full mt-1 px-4 py-2 border rounded-lg"></textarea>
+            </div>
+
+            <!-- Trade -->
+            <div>
+                <label class="text-sm text-gray-600">Trade</label>
+                <select name="trade_id"
+                        x-model="selectedJob.trade_id"
+                        class="w-full mt-1 px-4 py-2 border rounded-lg">
+                    @foreach($trades as $trade)
+                        <option value="{{ $trade->id }}">
+                            {{ $trade->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Budget -->
+            <div>
+                <label class="text-sm text-gray-600">Budget</label>
+                <input type="number" name="budget"
+                       x-model="selectedJob.budget"
+                       class="w-full mt-1 px-4 py-2 border rounded-lg">
+            </div>
+
+            <!-- Location -->
+            <div>
+                <label class="text-sm text-gray-600">Location</label>
+                <input type="text" name="location"
+                       x-model="selectedJob.location"
+                       class="w-full mt-1 px-4 py-2 border rounded-lg">
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-end gap-2 pt-4">
+                <button type="button"
+                        @click="editOpen = false"
+                        class="px-4 py-2 border rounded-lg hover:bg-gray-100">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    Update Job
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
 
   <!-- Modal -->
   <div x-show="openModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" x-transition>
@@ -225,15 +434,203 @@
       </form>
     </div>
   </div>
+<!-- Delete Confirmation Modal -->
+<div x-show="deleteOpen"
+     x-transition.opacity
+     class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+     style="display:none;">
 
+    <div x-show="deleteOpen"
+         x-transition
+         class="bg-white w-full max-w-md rounded-xl shadow-lg p-6">
+
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">
+            Confirm Deletion
+        </h3>
+
+        <p class="text-sm text-gray-500 mb-6">
+            Are you sure you want to delete this job?
+            This action cannot be undone.
+        </p>
+
+        <div class="flex justify-end gap-3">
+
+            <button type="button"
+                    @click="deleteOpen = false"
+                    class="px-4 py-2 border rounded-lg hover:bg-gray-100">
+                Cancel
+            </button>
+
+            <form :action="'/client/jobs/' + deleteId"
+                  method="POST">
+                @csrf
+                @method('DELETE')
+
+                <button type="submit"
+                        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                    Yes, Delete
+                </button>
+            </form>
+
+        </div>
+
+    </div>
+</div>
 </main>
+</div>
 
+<meta name="csrf-token" content="{{ csrf_token() }}">
+ <meta name="gemini-api-key" content="{{ env('GEMINI_API_KEY') }}">
+<!-- Floating AI Chat Widget -->
+<div 
+    x-data="{ open: false }" 
+    class="fixed bottom-6 right-6 z-50 flex flex-col items-end"
+>
 
+    <!-- Chat Panel -->
+    <div 
+        x-show="open"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+        class="mb-4 w-80 bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden"
+        style="display: none;"
+    >
 
+        <!-- Header -->
+        <div class="bg-slate-900 text-white px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+                    <iconify-icon icon="solar:chat-round-dots-linear" width="18"></iconify-icon>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold">AI Assistant</p>
+                    <p class="text-[10px] text-slate-300">Online</p>
+                </div>
+            </div>
 
-  </div>
-  <script src="//unpkg.com/alpinejs" defer></script>
+            <button @click="open = false" class="text-slate-300 hover:text-white">
+                <iconify-icon icon="solar:close-circle-linear" width="18"></iconify-icon>
+            </button>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="chat-messages" class="h-64 overflow-y-auto p-4 space-y-3 bg-slate-50">
+            <!-- Initial AI message -->
+            <div class="flex items-start gap-2">
+                <div class="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs">
+                    AI
+                </div>
+                <div class="bg-slate-100 text-slate-900 text-xs px-3 py-2 rounded-2xl shadow-sm max-w-[75%] break-words">
+                    Hello 👋 How can I assist you today?
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="border-t border-slate-200 p-3 bg-white">
+            <div class="flex items-center gap-2">
+                <input 
+                    id="chatInput"
+                    type="text" 
+                    placeholder="Type a message..."
+                    class="flex-1 text-xs border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                >
+                <button 
+                    onclick="sendMessage()"
+                    class="bg-slate-900 text-white p-2 rounded-lg hover:bg-slate-800"
+                >
+                    <iconify-icon icon="solar:arrow-up-linear" width="16"></iconify-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Button -->
+    <button 
+        @click="open = !open"
+        class="w-14 h-14 rounded-full bg-slate-900 hover:bg-slate-800 text-white shadow-xl flex items-center justify-center transition-all duration-300"
+    >
+        <iconify-icon icon="solar:chat-round-dots-bold" width="22"></iconify-icon>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chatInput = document.getElementById('chatInput');
+            const chatMessages = document.getElementById('chat-messages');
+            const GEMINI_API_KEY = document.querySelector('meta[name="gemini-api-key"]').content;
+            const GEMINI_MODEL = "gemini-2.5-flash";
+
+            function appendMessage(message, sender) {
+                const msgDivWrapper = document.createElement('div');
+                msgDivWrapper.classList.add('flex', 'gap-2');
+
+                const avatarDiv = document.createElement('div');
+                avatarDiv.classList.add('w-7','h-7','rounded-full','flex','items-center','justify-center','text-xs');
+
+                const bubbleDiv = document.createElement('div');
+                bubbleDiv.classList.add('text-xs','px-3','py-2','rounded-2xl','shadow-sm','max-w-[75%]','break-words');
+
+                if(sender === 'user'){
+                    msgDivWrapper.classList.add('justify-end','items-end');
+                    // avatarDiv.classList.add('bg-blue-600','text-white');
+                    // avatarDiv.textContent = 'You';
+                    // bubbleDiv.classList.add('bg-blue-600','text-white');
+                } else {
+                    msgDivWrapper.classList.add('items-start');
+                    avatarDiv.classList.add('bg-slate-900','text-white');
+                    avatarDiv.textContent = 'AI';
+                    bubbleDiv.classList.add('bg-slate-100','text-slate-900');
+                }
+
+                bubbleDiv.textContent = message;
+                msgDivWrapper.appendChild(avatarDiv);
+                msgDivWrapper.appendChild(bubbleDiv);
+                chatMessages.appendChild(msgDivWrapper);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            async function askGemini(prompt) {
+                try {
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            contents: [
+                                { role: "user", parts: [{ text: prompt }] }
+                            ]
+                        }),
+                    });
+
+                    const data = await res.json();
+                    return data?.candidates?.[0]?.content?.parts?.[0]?.text || "Gemini could not generate a response.";
+                } catch (err) {
+                    console.error("Gemini API error:", err);
+                    return "Error connecting to Gemini AI.";
+                }
+            }
+
+            window.sendMessage = async function () {
+                const message = chatInput.value.trim();
+                if(!message) return;
+
+                appendMessage(message, 'user');
+                chatInput.value = '';
+
+                appendMessage("Thinking...", 'bot'); 
+                const lastBot = chatMessages.lastChild;
+
+                const reply = await askGemini(message);
+                lastBot.querySelector('div:last-child').textContent = reply;
+            }
+        });
+    </script>
+</div>
   <script src="https://preline.co/assets/vendor/preline/dist/index.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+      <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>

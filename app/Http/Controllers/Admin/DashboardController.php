@@ -53,14 +53,21 @@ class DashboardController extends Controller
 
 
     // Pending accounts
- public function pendingAccounts(Request $request)
+public function pendingAccounts(Request $request)
 {
     $status = $request->query('status', 'pending');
 
-    $users = User::where('role', 'worker') // important
-        ->where('status', $status)
-        ->orderBy('created_at', 'desc')
-        ->get();
+    $query = User::where('role', 'worker')
+                 ->orderBy('created_at', 'desc');
+
+    if ($status === 'approved') {
+        // Show both approved AND deactivated
+        $query->whereIn('status', ['approved', 'deactivate']);
+    } else {
+        $query->where('status', $status);
+    }
+
+    $users = $query->get();
 
     return view('admin.pending_accounts', compact('users', 'status'));
 }
@@ -163,27 +170,25 @@ public function toggleClientStatus($id)
 public function updateClient(Request $request, $id)
 {
     $request->validate([
-        'firstname'   => 'required|string|max:255',
-        'middlename'  => 'nullable|string|max:255',
-        'lastname'    => 'required|string|max:255',
-        'email'  => 'required|email|max:255|unique:users,email,' . $id,
-        'status' => 'required|in:active,deactivate',
-
+        'name'        => 'required|string|max:255',         
+        'middle_name' => 'nullable|string|max:255',
+        'last_name'   => 'required|string|max:255',
+        'email'       => 'required|email|max:255|unique:users,email,' . $id,
+        'status'      => 'required|in:active,deactivate',
     ]);
 
     $user = User::where('role', 'client')->findOrFail($id);
 
-    $user->first_name = $request->firstname;
-    $user->middle_name = $request->middlename;
-    $user->last_name = $request->lastname;
-    $user->email  = $request->email;
-    $user->status = $request->status;
+    $user->first_name  = $request->name;
+    $user->middle_name = $request->middle_name;
+    $user->last_name   = $request->last_name;
+    $user->email       = $request->email;
+    $user->status      = $request->status;
 
     $user->save();
 
     return back()->with('success', 'Client updated successfully.');
 }
-
 public function ShowJobs()
 {
     return view('admin.jobs_list', [
@@ -225,6 +230,35 @@ public function storeAnnouncement(Request $request)
     ]);
 
     return back()->with('success', 'Announcement posted successfully.');
+}
+
+
+public function deactivate($id)
+{
+    $user = User::findOrFail($id);
+
+    if (strtolower($user->status) !== 'approved') {
+        return back()->with('error', 'Only approved users can be deactivated.');
+    }
+
+    $user->status = 'deactivate';
+    $user->save();
+
+    return back()->with('success', 'User deactivated successfully.');
+}
+
+public function activate($id)
+{
+    $user = User::findOrFail($id);
+
+    if ($user->status !== 'deactivate') {
+        return back()->with('error', 'Only deactivated users can be activated.');
+    }
+
+    $user->status = 'approved'; // back to approved worker
+    $user->save();
+
+    return back()->with('success', 'User activated successfully.');
 }
     
 }

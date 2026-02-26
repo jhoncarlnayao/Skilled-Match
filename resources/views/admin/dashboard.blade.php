@@ -167,7 +167,7 @@
       See the latest accounts registered on the platform
     </p>
   </div>
-  <a href="#" class="text-xs font-medium text-blue-600 hover:text-blue-700 mt-2 sm:mt-0">
+  <a href="{{ route ('admin.pending.accounts') }}" class="text-xs font-medium text-blue-600 hover:text-blue-700 mt-2 sm:mt-0">
     View All
   </a>
 </div>
@@ -190,7 +190,7 @@
                 <tr class="group hover:bg-slate-50/50 transition-colors">
                   <!-- Name + mini description -->
                   <td class="px-6 py-4">
-                    <p class="text-sm font-medium text-slate-900">{{ $user->name }}</p>
+                    <p class="text-sm font-medium text-slate-900">{{ $user->first_name }} {{ $user->last_name }}</p>
                     <p class="text-xs text-slate-500 mt-0.5">
                       Joined as {{ ucfirst($user->role) }} | {{ $user->created_at->diffForHumans() }}
                     </p>

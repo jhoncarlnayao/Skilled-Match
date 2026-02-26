@@ -30,17 +30,17 @@ public function dashboard()
 {
     $trades = Trade::all();
 
-    $today = Carbon::today();
-
-    $jobs = Job::where('client_id', Auth::id())
-                ->whereDate('created_at', $today)
-                ->latest()
-                ->get();
+    $jobs = Job::with([
+                'trade',
+                'worker.user'
+            ])
+            ->where('client_id', Auth::id())
+            ->latest()
+            ->get();
 
     $announcements = Announcement::latest()
                         ->with('admin')
                         ->get();
-
 
     $user = Auth::user();
 
@@ -128,7 +128,65 @@ public function dashboard()
     }
 
 
-    
+    public function complete(Job $job)
+{
+    // Security: ensure this job belongs to logged-in client
+    if ($job->client_id !== Auth::id()) {
+        abort(403);
+    }
+
+    // Only allow assigned jobs to be completed
+    if ($job->status !== 'assigned') {
+        return redirect()->back()
+            ->with('error', 'Only assigned jobs can be completed.');
+    }
+
+    $job->status = 'completed';
+    $job->save();
+
+    return redirect()->back()
+        ->with('success', 'Job marked as completed.');
+}
 
 
+public function updateJob(Request $request, Job $job)
+{
+    if ($job->client_id !== Auth::id()) {
+        abort(403);
+    }
+
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'required',
+        'trade_id' => 'required|exists:trades,id',
+        'budget' => 'nullable|numeric',
+        'location' => 'required|string',
+    ]);
+
+    $job->update([
+        'title' => $request->title,
+        'description' => $request->description,
+        'trade_id' => $request->trade_id,
+        'budget' => $request->budget,
+        'location' => $request->location,
+    ]);
+
+    return back()->with('success', 'Job updated successfully.');
+}
+
+public function destroy(Job $job)
+{
+    if ($job->client_id !== auth()->id()) {
+        abort(403);
+    }
+
+    // 🚫 Prevent deleting assigned jobs
+    if ($job->status === 'assigned') {
+        return back()->with('error', 'Assigned jobs cannot be deleted.');
+    }
+
+    $job->delete();
+
+    return back()->with('success', 'Job deleted successfully.');
+}
     }

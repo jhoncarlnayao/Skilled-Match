@@ -101,6 +101,9 @@
                                                 Status
                                             </th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+    Worker
+</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                                 Created
                                             </th>
                                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -146,6 +149,20 @@
                                                     {{ ucfirst($job->status) }}
                                                 </span>
                                             </td>
+                                            <!-- Assigned Worker -->
+<td class="px-4 py-4 text-sm text-gray-700">
+    @if($job->worker)
+        <div class="text-sm font-medium text-green-700">
+            {{ $job->worker->user->first_name }}
+            {{ $job->worker->user->last_name }}
+        </div>
+        <div class="text-xs text-gray-500">
+            {{ $job->worker->user->email }}
+        </div>
+    @else
+        <span class="text-gray-400 text-sm">Not assigned</span>
+    @endif
+</td>
 
                                             <!-- Created -->
                                             <td class="px-4 py-4 text-sm text-gray-500">

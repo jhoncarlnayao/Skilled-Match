@@ -90,88 +90,138 @@
                         <div class="text-gray-500 text-sm">{{ $user->email }}</div>
                       </td>
 
-                      <td class="px-12 py-4">
-                        @if(strtolower($user->status) === 'approved')
-                          <span class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium
-                                       text-green-700 bg-green-50 border border-green-200 rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                 class="w-3.5 h-3.5"
-                                 fill="none"
-                                 viewBox="0 0 24 24"
-                                 stroke="currentColor"
-                                 stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            {{ ucfirst($user->status) }}
-                          </span>
-                        @elseif(strtolower($user->status) === 'pending')
-                          <span class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium
-                                       text-yellow-700 bg-yellow-100 rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                 class="w-3.5 h-3.5"
-                                 fill="none"
-                                 viewBox="0 0 24 24"
-                                 stroke="currentColor"
-                                 stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M12 3a9 9 0 110 18 9 9 0 010-18z"/>
-                            </svg>
-                            {{ ucfirst($user->status) }}
-                          </span>
-                        @else
-                          <span class="inline-block px-3 py-1 text-sm font-normal text-gray-700 bg-gray-100 rounded-full">
-                            {{ ucfirst($user->status) }}
-                          </span>
-                        @endif
-                      </td>
+                   <td class="px-12 py-4">
+
+    @if(strtolower($user->status) === 'approved')
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium
+                     text-green-700 bg-green-50 border border-green-200 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="w-3.5 h-3.5"
+                 fill="none"
+                 viewBox="0 0 24 24"
+                 stroke="currentColor"
+                 stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            {{ ucfirst($user->status) }}
+        </span>
+
+    @elseif(strtolower($user->status) === 'pending')
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium
+                     text-yellow-700 bg-yellow-100 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="w-3.5 h-3.5"
+                 fill="none"
+                 viewBox="0 0 24 24"
+                 stroke="currentColor"
+                 stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M12 3a9 9 0 110 18 9 9 0 010-18z"/>
+            </svg>
+            {{ ucfirst($user->status) }}
+        </span>
+
+    @elseif(strtolower($user->status) === 'deactivate')
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium
+                     text-red-700 bg-red-100 border border-red-200 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 class="w-3.5 h-3.5"
+                 fill="none"
+                 viewBox="0 0 24 24"
+                 stroke="currentColor"
+                 stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+            Deactivated
+        </span>
+
+    @else
+        <span class="inline-block px-3 py-1 text-sm font-normal text-gray-700 bg-gray-100 rounded-full">
+            {{ ucfirst($user->status) }}
+        </span>
+    @endif
+
+</td>
 
                       <td class="px-4 py-4 text-sm">
                         <p class="text-gray-700">{{ $user->role }}</p>
                         <p class="text-gray-500 text-sm">Joined: {{ $user->created_at->format('M d, Y') }}</p>
                       </td>
 
-                      <td class="px-4 py-4 text-sm">
-                        <div class="flex gap-2">
-<a href="#"
-   @click.prevent="
-     user = {
-       fullname: '{{ $user->first_name }} {{ $user->last_name }}',
-       email: '{{ $user->email }}',
-       status: '{{ ucfirst($user->status) }}',
-       role: '{{ $user->role }}',
-       joined: '{{ $user->created_at->format('M d, Y') }}',
-       address: '{{ $user->address }}',
-       city: '{{ $user->city }}',
-       postal_code: '{{ $user->postal_code }}',
-       profile_picture: '{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : 'https://via.placeholder.com/150' }}'
-     };
-     isUserModalOpen = true;
-   "
-   class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
-          text-gray-700 bg-white border border-gray-300 rounded-lg
-          hover:bg-gray-50 hover:border-gray-400
-          focus:outline-none focus:ring-2 focus:ring-gray-200 transition">
-  View Details
-</a>
-                        @if($status === 'pending')
+                     <td class="px-4 py-4 text-sm">
+  <div class="flex gap-2">
+    <!-- View Details Button -->
+    <a href="#"
+       @click.prevent="
+         user = {
+           fullname: '{{ $user->first_name }} {{ $user->last_name }}',
+           email: '{{ $user->email }}',
+           status: '{{ ucfirst($user->status) }}',
+           role: '{{ $user->role }}',
+           joined: '{{ $user->created_at->format('M d, Y') }}',
+           address: '{{ $user->address }}',
+           city: '{{ $user->city }}',
+           postal_code: '{{ $user->postal_code }}',
+           profile_picture: '{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : 'https://via.placeholder.com/150' }}'
+         };
+         isUserModalOpen = true;
+       "
+       class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
+              text-gray-700 bg-white border border-gray-300 rounded-lg
+              hover:bg-gray-50 hover:border-gray-400
+              focus:outline-none focus:ring-2 focus:ring-gray-200 transition">
+      View Details
+    </a>
 
-                          <!-- Approve -->
-                          <a href="{{ route('admin.pending.approve', $user->id) }}" class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            Approve
-                          </a>
 
-                          <!-- Reject -->
-                          <a href="{{ route('admin.pending.reject', $user->id) }}" class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-200 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                            Reject
-                          </a>
-                        </div>
-                        @endif
-                      </td>
+    {{-- ================= STATUS BUTTONS ================= --}}
+
+    @if(strtolower($user->status) === 'pending')
+
+        <!-- Approve -->
+        <a href="{{ route('admin.pending.approve', $user->id) }}"
+           class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            Approve
+        </a>
+
+        <!-- Reject -->
+        <a href="{{ route('admin.pending.reject', $user->id) }}"
+           class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-200 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            Reject
+        </a>
+
+    @elseif(strtolower($user->status) === 'approved')
+
+        <!-- Deactivate -->
+        <a href="{{ route('admin.user.deactivate', $user->id) }}"
+           class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-200 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-red-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            Deactivate
+        </a>
+
+    @elseif(strtolower($user->status) === 'deactivate')
+
+        <!-- Activate -->
+        <a href="{{ route('admin.user.activate', $user->id) }}"
+           class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            Activate
+        </a>
+
+    @endif
+
+
+  </div>
+</td>
                     </tr>
                     @empty
                     <tr>

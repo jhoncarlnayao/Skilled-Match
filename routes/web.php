@@ -112,6 +112,13 @@ Route::post('/announcements/store',
     // Jobs
     Route::get('/jobs', [DashboardController::class, 'ShowJobs'])
     ->name('admin.jobs_list');
+
+    Route::get('/user/{id}/deactivate', [DashboardController::class, 'deactivate'])
+        ->name('admin.user.deactivate');
+
+    Route::get('/user/{id}/activate', [DashboardController::class, 'activate'])
+        ->name('admin.user.activate');
+
     });
 
 
@@ -140,12 +147,23 @@ Route::get('/client/dashboard', [ClientJobController::class, 'dashboard'])
     Route::get('/client/jobs/create', [ClientJobController::class, 'create'])
         ->name('client.jobs.create');
 
-Route::put('/client/profile/{id}', [ClientJobController::class, 'update'])->name('client.profile.update');
- 
-Route::middleware(['auth'])->get('/clientprofile',
-    [ClientJobController::class, 'profile']
-)->name('client.client_profile');
+        Route::put('/client/profile/{id}', [ClientJobController::class, 'update'])->name('client.profile.update');
+        
+        Route::middleware(['auth'])->get('/clientprofile',
+            [ClientJobController::class, 'profile']
+        )->name('client.client_profile');
 
+        Route::post('/client/jobs/{job}/complete', 
+            [ClientJobController::class, 'complete']
+        )->name('client.jobs.complete');
+
+Route::put('/client/jobs/{job}', 
+    [ClientJobController::class, 'updateJob']
+)->name('client.jobs.update');
+
+Route::delete('/client/jobs/{job}', 
+    [ClientJobController::class, 'destroy']
+)->name('client.jobs.destroy');
 
 
     // ======================

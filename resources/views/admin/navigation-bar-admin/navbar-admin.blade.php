@@ -70,16 +70,6 @@
 
         <div class="border-t border-slate-100 my-4"></div>
 
-        <!-- Profile -->
-        <a href="#"
-           class="flex items-center p-2 rounded-lg transition-colors
-         
-              ? 'bg-slate-100 text-slate-900' 
-              : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-          <iconify-icon icon="solar:user-circle-linear" width="20" height="20"></iconify-icon>
-          <span class="ms-3">Profile</span>
-        </a>
-
       </nav>
     </div>
 
