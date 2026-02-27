@@ -151,26 +151,30 @@
   <div class="flex gap-2">
     <!-- View Details Button -->
     <a href="#"
-       @click.prevent="
-         user = {
-           fullname: '{{ $user->first_name }} {{ $user->last_name }}',
-           email: '{{ $user->email }}',
-           status: '{{ ucfirst($user->status) }}',
-           role: '{{ $user->role }}',
-           joined: '{{ $user->created_at->format('M d, Y') }}',
-           address: '{{ $user->address }}',
-           city: '{{ $user->city }}',
-           postal_code: '{{ $user->postal_code }}',
-           profile_picture: '{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : 'https://via.placeholder.com/150' }}'
-         };
-         isUserModalOpen = true;
-       "
-       class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
-              text-gray-700 bg-white border border-gray-300 rounded-lg
-              hover:bg-gray-50 hover:border-gray-400
-              focus:outline-none focus:ring-2 focus:ring-gray-200 transition">
-      View Details
-    </a>
+   @click.prevent="
+     user = {
+       id: '{{ $user->id }}',
+       first_name: '{{ $user->first_name }}',
+       middle_name: '{{ $user->middle_name }}',
+       last_name: '{{ $user->last_name }}',
+       email: '{{ $user->email }}',
+       username: '{{ $user->username }}',
+       status: '{{ $user->status }}',
+       role: '{{ $user->role }}',
+       address: '{{ $user->address }}',
+       city: '{{ $user->city }}',
+       postal_code: '{{ $user->postal_code }}',
+       phone: '{{ $user->phone }}',
+       birthdate: '{{ $user->birthdate }}',
+       profile_picture: '{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : 'https://via.placeholder.com/150' }}'
+     };
+     isUserModalOpen = true;
+   "
+   class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
+          text-gray-700 bg-white border border-gray-300 rounded-lg
+          hover:bg-gray-50 hover:border-gray-400 transition">
+   View & Edit
+</a>
 
 
     {{-- ================= STATUS BUTTONS ================= --}}
@@ -253,52 +257,152 @@
 
       <div class="flex flex-col items-center gap-3">
         <!-- Profile Picture -->
-        <img :src="user.profile_picture" class="w-24 h-24 rounded-full ring-2 ring-gray-200 object-cover" alt="Profile Picture">
+       <!-- Profile Picture Upload -->
+<div class="relative group w-24 h-24">
+  
+  <!-- Image -->
+  <img :src="user.profile_picture"
+       class="w-24 h-24 rounded-full ring-2 ring-gray-200 object-cover">
+
+  <!-- Hover Overlay -->
+  <div class="absolute inset-0 flex items-center justify-center 
+              bg-black/50 rounded-full opacity-0 
+              group-hover:opacity-100 transition cursor-pointer"
+       @click="$refs.profileInput.click()">
+       
+      <span class="text-xs text-white font-medium">Change</span>
+  </div>
+
+  <!-- Hidden File Input -->
+  <input type="file"
+         name="profile_picture"
+         accept="image/*"
+         class="hidden"
+         x-ref="profileInput"
+         @change="
+            const file = $event.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = e => user.profile_picture = e.target.result;
+              reader.readAsDataURL(file);
+            }
+         ">
+</div>
 
         <h3 class="text-lg font-medium leading-6 text-gray-800">User Details</h3>
         <p class="mt-1 text-sm text-gray-500 text-center">Review the information of this user.</p>
       </div>
 
-      <form class="mt-4 space-y-3">
-        <div>
-          <label class="block text-sm text-gray-700">Full Name</label>
-          <input type="text" x-model="user.fullname" readonly class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
-        </div>
-        <div>
-          <label class="block text-sm text-gray-700">Email</label>
-          <input type="email" x-model="user.email" readonly class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
-        </div>
-        <div>
-          <label class="block text-sm text-gray-700">Status</label>
-          <input type="text" x-model="user.status" readonly class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
-        </div>
-        <div>
-          <label class="block text-sm text-gray-700">Address</label>
-          <input type="text" x-model="user.address" readonly class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
-        </div>
-        <div>
-          <label class="block text-sm text-gray-700">City</label>
-          <input type="text" x-model="user.city" readonly class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
-        </div>
-        <div>
-          <label class="block text-sm text-gray-700">Postal Code</label>
-          <input type="text" x-model="user.postal_code" readonly class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
-        </div>
-          <div>
-          <label class="block text-sm text-gray-700">Role</label>
-          <input type="text" x-model="user.role" readonly class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
-        </div>
-        <div>
-          <label class="block text-sm text-gray-700">Joined Date</label>
-          <input type="text" x-model="user.joined" readonly class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md">
-        </div>
+<form method="POST"
+      enctype="multipart/form-data"
+      :action="`{{ url('admin/client-accounts') }}/${user.id}/update`"
+      class="mt-4 space-y-3">
+  @csrf
 
-        <div class="mt-4 flex justify-end">
-          <button type="button" @click="isUserModalOpen = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-100">
-            Close
-          </button>
-        </div>
-      </form>
+  <!-- First Name -->
+  <div>
+    <label class="block text-sm text-gray-700">First Name</label>
+    <input type="text"
+           name="first_name"
+           x-model="user.first_name"
+           class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+  </div>
+
+  <!-- Middle Name -->
+  <div>
+    <label class="block text-sm text-gray-700">Middle Name</label>
+    <input type="text"
+           name="middle_name"
+           x-model="user.middle_name"
+           class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+  </div>
+
+  <!-- Last Name -->
+  <div>
+    <label class="block text-sm text-gray-700">Last Name</label>
+    <input type="text"
+           name="last_name"
+           x-model="user.last_name"
+           class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+  </div>
+
+  <!-- Username -->
+  <div>
+    <label class="block text-sm text-gray-700">Username</label>
+    <input type="text"
+           name="username"
+           x-model="user.username"
+           class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+  </div>
+
+  <!-- Email -->
+  <div>
+    <label class="block text-sm text-gray-700">Email</label>
+    <input type="email"
+           name="email"
+           x-model="user.email"
+           class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+  </div>
+
+  <!-- Status (Read Only) -->
+  <div>
+    <label class="block text-sm text-gray-700">Status</label>
+    <input type="text"
+           x-model="user.status"
+           readonly
+           class="block w-full px-4 py-3 text-sm text-gray-500 bg-gray-100 border border-gray-200 rounded-md cursor-not-allowed">
+  </div>
+
+  <!-- Address -->
+  <div>
+    <label class="block text-sm text-gray-700">Address</label>
+    <input type="text"
+           name="address"
+           x-model="user.address"
+           class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+  </div>
+
+  <!-- City -->
+  <div>
+    <label class="block text-sm text-gray-700">City</label>
+    <input type="text"
+           name="city"
+           x-model="user.city"
+           class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+  </div>
+
+  <!-- Postal Code -->
+  <div>
+    <label class="block text-sm text-gray-700">Postal Code</label>
+    <input type="text"
+           name="postal_code"
+           x-model="user.postal_code"
+           class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+  </div>
+
+  <!-- Role (Read Only) -->
+  <div>
+    <label class="block text-sm text-gray-700">Role</label>
+    <input type="text"
+           x-model="user.role"
+           readonly
+           class="block w-full px-4 py-3 text-sm text-gray-500 bg-gray-100 border border-gray-200 rounded-md cursor-not-allowed">
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-4 flex justify-end gap-2">
+    <button type="button"
+            @click="isUserModalOpen = false"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-100">
+      Cancel
+    </button>
+
+    <button type="submit"
+            class="px-4 py-2 text-sm font-medium text-white bg-slate-900 rounded-md hover:bg-slate-800">
+      Save Changes
+    </button>
+  </div>
+</form>
     </div>
   </div>
 </div>

@@ -13,6 +13,8 @@ Route::middleware('auth:sanctum')->get('/worker/profile', function (Request $req
     return $request->user();
 });
 
+Route::middleware('auth:sanctum')->get('/worker/my-jobs', [WorkerAuthController::class, 'myJobs']);
+
 Route::get('/trades', [TradeController::class, 'index']);
 Route::post('/worker/register', [WorkerRegisterController::class, 'apiRegister']);
 Route::middleware('auth:sanctum')->get('/worker/jobs', [JobController::class, 'workerJobs']);

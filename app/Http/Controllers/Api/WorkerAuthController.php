@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Job;
 
 class WorkerAuthController extends Controller
 {
@@ -38,4 +39,17 @@ class WorkerAuthController extends Controller
             'user' => $user
         ]);
     }
+
+public function myJobs(Request $request)
+{
+    $worker = $request->user();
+
+    $jobs = Job::where('worker_id', $worker->id)
+        ->whereIn('status', ['accepted', 'in_progress', 'completed'])
+        ->latest()
+        ->get();
+
+    return response()->json($jobs);
+}
+
 }

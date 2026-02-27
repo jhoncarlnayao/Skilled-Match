@@ -277,115 +277,197 @@
     <div class="bg-white w-full max-w-lg rounded-2xl shadow-xl border border-gray-200">
 
       {{-- Header --}}
-      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-        <h3 class="text-lg font-semibold text-gray-800">
-          Edit Client Account
-        </h3>
-        <button type="button"
-                data-hs-overlay="#edit-user-modal-{{ $user->id }}"
-                class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
-          ✕
-        </button>
-      </div>
+   <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+  
+  <div>
+    <h3 class="text-lg font-semibold text-gray-800">
+      Edit Client Account
+    </h3>
+    <p class="text-sm text-gray-500 mt-1">
+      Update client information and manage account details.
+    </p>
+  </div>
 
+  <button type="button"
+          data-hs-overlay="#edit-user-modal-{{ $user->id }}"
+          class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+    ✕
+  </button>
+
+</div>
       {{-- Body --}}
       <div class="p-6">
-        <form action="{{ route('admin.client.update', $user->id) }}"
-              method="POST"
-              class="space-y-5">
-          @csrf
-     
+       <form action="{{ route('admin.client.update', $user->id) }}"
+      method="POST"
+      class="space-y-5">
+  @csrf
 
-          {{-- Full Name --}}
-          <div>
-            <label class="block text-sm font-medium text-gray-600 mb-2">
-              First Name
-            </label>
-            <input type="text"
-                   name="name"
-                       value="{{ $user->first_name }}"
-                   class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
-                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                          outline-none transition"
-                   required>
-          </div>
+  <!-- First Name -->
+  <div>
+    <label class="block text-sm font-medium text-gray-600 mb-2">
+      First Name
+    </label>
+    <input type="text"
+           name="first_name"
+           value="{{ $user->first_name }}"
+           class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
+                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+           required>
+  </div>
 
-             <div>
-            <label class="block text-sm font-medium text-gray-600 mb-2">
-              Middle Name
-            </label>
-            <input type="text"
-                   name="middle_name"
-                       value="{{ $user->middle_name }}"
-                   class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
-                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                          outline-none transition"
-                   required>
-          </div>
+  <!-- Middle Name -->
+  <div>
+    <label class="block text-sm font-medium text-gray-600 mb-2">
+      Middle Name
+    </label>
+    <input type="text"
+           name="middle_name"
+           value="{{ $user->middle_name }}"
+           class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
+                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+  </div>
 
-             <div>
-            <label class="block text-sm font-medium text-gray-600 mb-2">
-              Last Name
-            </label>
-            <input type="text"
-                   name="last_name"
-                       value="{{ $user->last_name }}"
-                   class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
-                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                          outline-none transition"
-                   required>
-          </div>
+  <!-- Last Name -->
+  <div>
+    <label class="block text-sm font-medium text-gray-600 mb-2">
+      Last Name
+    </label>
+    <input type="text"
+           name="last_name"
+           value="{{ $user->last_name }}"
+           class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
+                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+           required>
+  </div>
 
-          {{-- Email --}}
-          <div>
-            <label class="block text-sm font-medium text-gray-600 mb-2">
-              Email Address
-            </label>
-            <input type="email"
-                   name="email"
-                   value="{{ $user->email }}"
-                   class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
-                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                          outline-none transition"
-                   required>
-          </div>
+  <!-- Username -->
+  <div>
+    <label class="block text-sm font-medium text-gray-600 mb-2">
+      Username
+    </label>
+    <input type="text"
+           name="username"
+           value="{{ $user->username }}"
+           class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
+                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+           required>
+  </div>
 
-          {{-- Status --}}
-          <div>
-            <label class="block text-sm font-medium text-gray-600 mb-2">
-              Account Status
-            </label>
-        <select name="status"
-        class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl
-               focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-               outline-none transition">
-  <option value="active"
-          {{ $user->status == 'active' ? 'selected' : '' }}>
-      Active
-  </option>
-  <option value="deactivate"
-          {{ $user->status == 'deactivate' ? 'selected' : '' }}>
-      Deactivated
-  </option>
-</select>
-          </div>
-          {{-- Footer --}}
-          <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
-            <button type="button"
-                    data-hs-overlay="#edit-user-modal-{{ $user->id }}"
-                    class="px-5 py-2.5 text-sm font-medium border border-gray-300 
-                           rounded-xl hover:bg-gray-100 transition">
-              Cancel
-            </button>
+  <!-- Email -->
+  <div>
+    <label class="block text-sm font-medium text-gray-600 mb-2">
+      Email Address
+    </label>
+    <input type="email"
+           name="email"
+           value="{{ $user->email }}"
+           class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
+                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
+           required>
+  </div>
 
-            <button type="submit"
-                    class="px-5 py-2.5 text-sm font-medium text-white 
-                           bg-blue-600 rounded-xl 
-                           hover:bg-blue-700 transition shadow-sm">
-              Save Changes
-            </button>
-          </div>
-        </form>
+  <!-- Phone -->
+  <div>
+    <label class="block text-sm font-medium text-gray-600 mb-2">
+      Phone
+    </label>
+    <input type="text"
+           name="phone"
+           value="{{ $user->phone }}"
+           class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
+                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+  </div>
+
+  <!-- Birthdate -->
+  <div>
+    <label class="block text-sm font-medium text-gray-600 mb-2">
+      Birthdate
+    </label>
+    <input type="date"
+           name="birthdate"
+           value="{{ $user->birthdate }}"
+           class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
+                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+  </div>
+
+  <!-- Address -->
+  <div>
+    <label class="block text-sm font-medium text-gray-600 mb-2">
+      Address
+    </label>
+    <input type="text"
+           name="address"
+           value="{{ $user->address }}"
+           class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
+                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+  </div>
+
+  <!-- City -->
+  <div>
+    <label class="block text-sm font-medium text-gray-600 mb-2">
+      City
+    </label>
+    <input type="text"
+           name="city"
+           value="{{ $user->city }}"
+           class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
+                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+  </div>
+
+  <!-- Postal Code -->
+  <div>
+    <label class="block text-sm font-medium text-gray-600 mb-2">
+      Postal Code
+    </label>
+    <input type="text"
+           name="postal_code"
+           value="{{ $user->postal_code }}"
+           class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl 
+                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+  </div>
+
+  <!-- Role -->
+<div>
+  <label class="block text-sm font-medium text-gray-600 mb-2">
+    Role
+  </label>
+
+  <input type="text"
+         value="{{ ucfirst($user->role) }}"
+         readonly
+         class="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl 
+                bg-gray-100 text-gray-500 cursor-not-allowed">
+</div>
+
+  <!-- Status -->
+  <div>
+    <label class="block text-sm font-medium text-gray-600 mb-2">
+      Account Status
+    </label>
+    <select name="status"
+            class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl
+                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+      <option value="pending" {{ $user->status == 'pending' ? 'selected' : '' }}>Pending</option>
+      <option value="active" {{ $user->status == 'active' ? 'selected' : '' }}>Active</option>
+      <option value="deactivate" {{ $user->status == 'deactivate' ? 'selected' : '' }}>Deactivated</option>
+    </select>
+  </div>
+
+  <!-- Footer -->
+  <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
+    <button type="button"
+            data-hs-overlay="#edit-user-modal-{{ $user->id }}"
+            class="px-5 py-2.5 text-sm font-medium border border-gray-300 rounded-xl hover:bg-gray-100 transition">
+      Cancel
+    </button>
+
+    <button type="submit"
+            class="px-5 py-2.5 text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition shadow-sm">
+      Save Changes
+    </button>
+  </div>
+
+</form>
       </div>
     </div>
   </div>
