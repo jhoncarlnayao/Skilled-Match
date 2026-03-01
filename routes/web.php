@@ -68,9 +68,15 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/client-accounts', [DashboardController::class, 'getClientAccounts'])
         ->name('admin.client.accounts');
 
-Route::post('/client-accounts/{id}/update', 
+    Route::post('/worker-accounts/{id}/update',
+    [DashboardController::class, 'updateWorker']
+)->name('admin.worker.update');
+
+    Route::post('/client-accounts/{id}/update', 
     [DashboardController::class, 'updateClient']
 )->name('admin.client.update');
+
+    // Client Toggle Status
     Route::get('/client/toggle/{id}', 
         [DashboardController::class, 'toggleClientStatus']
     )->name('admin.client.toggle');
@@ -84,14 +90,22 @@ Route::post('/client-accounts/{id}/update',
     Route::get('/jobs', [DashboardController::class, 'ShowJobs'])
         ->name('admin.jobs_list');
 
+    // Deactivate/Activate Users
     Route::get('/user/{id}/deactivate', 
         [DashboardController::class, 'deactivate']
     )->name('admin.user.deactivate');
 
+    // Deactivate/Activate Users
     Route::get('/user/{id}/activate', 
         [DashboardController::class, 'activate']
     )->name('admin.user.activate');
 
+    //Update Job
+    Route::put('/jobs/{job}', [DashboardController::class, 'updateJob'])->name('admin.jobs.update');
+
+    //Delete Job
+    Route::delete('/admin/jobs/{id}', [DashboardController::class, 'deleteJob'])
+    ->name('admin.jobs.delete');
 });
 
 

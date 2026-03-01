@@ -17,6 +17,7 @@
   </style>
 </head>
 <body class="bg-slate-50 text-slate-600">
+    @include('notifications.notifications')
 @include('client.navigation-bar-client.navbar-client')
   <!-- Main Content -->
   <div class="lg:ml-64 min-h-screen flex flex-col">
@@ -250,7 +251,7 @@
                     <th class="px-6 py-4 font-medium">Job Details</th>
                     <th class="px-6 py-4 font-medium">Budget</th>
                     <th class="px-6 py-4 font-medium">Worker Status</th>
-                    <th class="px-6 py-4 font-medium text-right">Action</th>
+
                   </tr>
                 </thead>
              <tbody class="divide-y divide-slate-100">
@@ -292,11 +293,6 @@
                 </span>
             </div>
         @endif
-    </td>
-    <td class="px-6 py-4 text-right">
-        <button class="text-slate-400 hover:text-slate-600">
-            <iconify-icon icon="solar:menu-dots-bold" width="20"></iconify-icon>
-        </button>
     </td>
 </tr>
 @empty

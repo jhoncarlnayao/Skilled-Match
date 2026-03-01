@@ -18,7 +18,7 @@
   </style>
 </head>
 <body class="bg-[#f8fafc]">
-
+@include('notifications.notifications')
 @include('client.navigation-bar-client.navbar-client')
 
   <div class="w-full lg:ps-64">

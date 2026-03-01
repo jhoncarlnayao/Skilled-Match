@@ -20,36 +20,40 @@ class DashboardController extends Controller
 
     // Admin dashboard
     public function index()
-    {
-        $today = now()->toDateString();
+{
+    $today = now()->toDateString();
 
-        return view('admin.dashboard', [
-            'totalWorkers' => User::where('role', 'worker')
-                ->where('status', 'approved')
-                ->count(),
-            'pendingWorkers' => User::where('role', 'worker')->where('status', 'pending')->count(),
-            'newWorkersThisMonth' => User::where('role', 'worker')
-                ->whereMonth('created_at', now()->month)
-                ->whereYear('created_at', now()->year)
-                ->count(),
-            'totalClients' => User::where('role', 'client')->count(),
-            'newClientsThisMonth' => User::where('role', 'client')
-                ->whereMonth('created_at', now()->month)
-                ->whereYear('created_at', now()->year)
-                ->count(),
+    // Count active jobs (not completed)
+    $activeJobs = Job::where('status', '!=', 'completed')->count();
 
+    return view('admin.dashboard', [
+        'totalWorkers' => User::where('role', 'worker')
+            ->where('status', 'approved')
+            ->count(),
+        'pendingWorkers' => User::where('role', 'worker')->where('status', 'pending')->count(),
+        'newWorkersThisMonth' => User::where('role', 'worker')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count(),
+        'totalClients' => User::where('role', 'client')->count(),
+        'newClientsThisMonth' => User::where('role', 'client')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count(),
 
-            'newAccountsToday' => User::whereDate('created_at', $today)
-                ->orderBy('created_at', 'desc')
-                ->get(),
+        'newAccountsToday' => User::whereDate('created_at', $today)
+            ->orderBy('created_at', 'desc')
+            ->get(),
 
+        'newJobsToday' => Job::with(['client', 'trade'])
+            ->whereDate('created_at', $today)
+            ->latest()
+            ->get(),
 
-            'newJobsToday' => Job::with(['client', 'trade'])
-                ->whereDate('created_at', $today)
-                ->latest()
-                ->get(),
-        ]);
-    }
+       
+        'activeJobs' => $activeJobs,
+    ]);
+}
 
 
     // Pending accounts
@@ -167,43 +171,6 @@ class DashboardController extends Controller
     }
 
 
- public function updateClient(Request $request, $id)
-{
-    $request->validate([
-        'first_name'  => 'required|string|max:255',
-        'middle_name' => 'nullable|string|max:255',
-        'last_name'   => 'required|string|max:255',
-        'username'    => 'required|string|max:255|unique:users,username,' . $id,
-        'email'       => 'required|email|max:255|unique:users,email,' . $id,
-        'address'     => 'nullable|string|max:500',
-        'city'        => 'nullable|string|max:255',
-        'postal_code' => 'nullable|string|max:255',
-        'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-    ]);
-
-    $user = User::where('role', 'client')->findOrFail($id);
-
-    $user->first_name  = $request->first_name;
-    $user->middle_name = $request->middle_name;
-    $user->last_name   = $request->last_name;
-    $user->username    = $request->username;
-    $user->email       = $request->email;
-    $user->address     = $request->address;
-    $user->city        = $request->city;
-    $user->postal_code = $request->postal_code;
-
-    // Handle profile picture
-    if ($request->hasFile('profile_picture')) {
-        $path = $request->file('profile_picture')
-                        ->store('profiles', 'public');
-
-        $user->profile_picture = $path;
-    }
-
-    $user->save();
-
-    return back()->with('success', 'Client updated successfully.');
-}
 
     public function ShowJobs()
     {
@@ -278,7 +245,126 @@ class DashboardController extends Controller
     }
 
 
-    
+    public function updateWorker(Request $request, $id)
+{
+    $user = User::where('role', 'worker')->findOrFail($id);
+
+    $request->validate([
+        'first_name' => 'required|string|max:255',
+        'middle_name' => 'nullable|string|max:255',
+        'last_name' => 'required|string|max:255',
+        'username' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'address' => 'nullable|string|max:255',
+        'city' => 'nullable|string|max:255',
+        'postal_code' => 'nullable|string|max:50',
+        'profile_picture' => 'nullable|image|max:2048'
+    ]);
+
+    // Handle profile picture upload
+    if ($request->hasFile('profile_picture')) {
+        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+        $user->profile_picture = $path;
+    }
+
+    $user->update([
+        'first_name' => $request->first_name,
+        'middle_name' => $request->middle_name,
+        'last_name' => $request->last_name,
+        'username' => $request->username,
+        'email' => $request->email,
+        'address' => $request->address,
+        'city' => $request->city,
+        'postal_code' => $request->postal_code,
+    ]);
+
+    return back()->with('success', 'Worker updated successfully.');
+}
+
+public function updateClient(Request $request, $id)
+{
+    $user = User::where('role', 'client')->findOrFail($id);
+
+    $request->validate([
+        'first_name' => 'required|string|max:255',
+        'middle_name' => 'nullable|string|max:255',
+        'last_name' => 'required|string|max:255',
+        'username' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'address' => 'nullable|string|max:255',
+        'city' => 'nullable|string|max:255',
+        'postal_code' => 'nullable|string|max:50',
+        'profile_picture' => 'nullable|image|max:2048',
+        'status' => 'required|in:active,deactivate,pending'
+    ]);
+
+    // Handle profile picture upload
+    if ($request->hasFile('profile_picture')) {
+        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+        $user->profile_picture = $path;
+    }
+
+    $user->update([
+        'first_name' => $request->first_name,
+        'middle_name' => $request->middle_name,
+        'last_name' => $request->last_name,
+        'username' => $request->username,
+        'email' => $request->email,
+        'address' => $request->address,
+        'city' => $request->city,
+        'postal_code' => $request->postal_code,
+        'status' => $request->status,
+    ]);
+
+    return back()->with('success', 'Client updated successfully.');
+}
 
 
+
+public function updateJob(Request $request, $id)
+{
+    $job = Job::findOrFail($id);
+
+    // ❌ Block removal if job is completed
+    if ($job->status === 'completed' && $request->remove_worker == 1) {
+        return redirect()->back()->with('error', 'Cannot remove worker from a completed job.');
+    }
+
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'budget' => 'required|numeric',
+        'trade_id' => 'required|exists:trades,id',
+        'status' => 'required|in:open,assigned,completed'
+    ]);
+
+    $job->title = $request->title;
+    $job->description = $request->description;
+    $job->budget = $request->budget;
+    $job->trade_id = $request->trade_id;
+    $job->status = $request->status;
+
+    // ✅ Only allow removal if NOT completed
+    if ($request->remove_worker == 1 && $job->status !== 'completed') {
+        $job->worker_id = null;
+        $job->status = 'open';
+    }
+
+    $job->save();
+
+    return redirect()->back()->with('success', 'Job updated successfully.');
+}
+
+
+public function deleteJob($id)
+{
+    $job = Job::findOrFail($id);
+    if (in_array($job->status, ['assigned', 'completed'])) {
+        return back()->with('error', 'Cannot delete assigned or completed jobs.');
+    }
+
+    $job->delete();
+
+    return back()->with('success', 'Job deleted successfully.');
+}
 }

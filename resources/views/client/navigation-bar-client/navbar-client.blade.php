@@ -42,16 +42,6 @@ pt-6 pb-6 overflow-y-auto lg:block lg:translate-x-0">
           <span class="ms-3">My Jobs</span>
         </a>
 
-
-        <!-- Completed Jobs -->
-        <a href="#"
-           class="flex items-center p-2 rounded-lg transition-colors
-           text-slate-500 hover:bg-slate-50 hover:text-slate-900">
-          
-          <iconify-icon icon="solar:check-circle-linear" width="20" height="20"></iconify-icon>
-          <span class="ms-3">Completed Jobs</span>
-        </a>
-
         <div class="border-t border-slate-100 my-4"></div>
 
         <!-- Profile -->

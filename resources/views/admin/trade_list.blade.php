@@ -15,7 +15,7 @@
     </style>
     </head>
     <body class="bg-[#f8fafc]">
-
+@include('notifications.notifications')
 @include('admin.navigation-bar-admin.navbar-admin')
 
 
@@ -147,7 +147,12 @@
 
           <tbody class="bg-white divide-y divide-gray-200">
             @forelse($trades as $trade)
-              <tr x-data="{ isEditOpen: false, name: '{{ $trade->name }}', description: '{{ $trade->description }}' }">
+              <tr x-data="{ 
+    isEditOpen: false, 
+    isDeleteOpen: false,
+    name: '{{ $trade->name }}', 
+    description: '{{ $trade->description }}' 
+}">
                 <td class="px-4 py-4 text-sm font-medium text-gray-800">{{ $trade->name }}</td>
                 <td class="px-4 py-4 text-sm text-gray-700">{{ $trade->description }}</td>
                 <td class="px-4 py-4 text-sm text-gray-500">{{ $trade->created_at->format('M d, Y') }}</td>
@@ -223,7 +228,7 @@
                             </button>
 
                             <button type="submit"
-                                    class="w-full px-4 py-2 mt-3 text-sm font-medium tracking-wide text-white transition-colors duration-300 transform bg-blue-600 rounded-md sm:mt-0 sm:w-1/2 sm:mx-2 hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40">
+                                    class="w-full px-4 py-2 mt-3 text-sm font-medium tracking-wide text-white transition-colors duration-300 transform bg-slate-900 rounded-md hover:bg-slate-800 rounded-md sm:mt-0 sm:w-1/2 sm:mx-2    focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40">
                                 Update Trade
                             </button>
                           </div>
@@ -233,33 +238,75 @@
                     </div>
                   </div>
                   
-    <form method="POST"
-          action="{{ route('admin.trades.delete', $trade->id) }}"
-          onsubmit="return confirm('Are you sure you want to delete this trade?');"
-          class="inline-block">
-        @csrf
-        @method('DELETE')
+   <!-- Delete Button -->
+<button type="button"
+        @click="isDeleteOpen = true"
+        class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
+               text-red-700 bg-red-50 border border-red-200 rounded-lg
+               hover:bg-red-100
+               focus:outline-none focus:ring-2 focus:ring-red-200 transition">
 
-        <button type="submit"
-            class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
-                   text-red-700 bg-red-50 border border-red-200 rounded-lg
-                   hover:bg-red-100
-                   focus:outline-none focus:ring-2 focus:ring-red-200 transition">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="w-4 h-4"
+         fill="none"
+         viewBox="0 0 24 24"
+         stroke="currentColor"
+         stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M6 7h12M9 7v12m6-12v12M10 7l1-2h2l1 2"/>
+    </svg>
 
-          
-            <svg xmlns="http://www.w3.org/2000/svg"
-                 class="w-4 h-4"
-                 fill="none"
-                 viewBox="0 0 24 24"
-                 stroke="currentColor"
-                 stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M6 7h12M9 7v12m6-12v12M10 7l1-2h2l1 2"/>
-            </svg>
+    Delete
+</button>
 
-            Delete
-        </button>
-    </form>
+<!-- Delete Modal -->
+<div x-show="isDeleteOpen"
+     class="fixed inset-0 z-30 flex items-center justify-center bg-black/50"
+     x-transition>
+    
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+            <div class="flex items-center gap-3">
+                <div class="flex items-center justify-center w-10 h-10 rounded-full bg-red-100">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-5 h-5 text-red-600"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor"
+                         stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M12 9v2m0 4h.01M12 3C7.03 3 3 7.03 3 12s4.03 9 9 9
+                                 9-4.03 9-9-4.03-9-9-9z" />
+                    </svg>
+                </div>
+
+                <h3 class="text-lg font-semibold text-gray-800">
+                    Confirm Delete
+                </h3>
+            </div>
+
+        <p class="mt-2 text-sm text-gray-600">
+            Are you sure you want to delete 
+            <strong>{{ $trade->name }}</strong>?
+        </p>
+
+        <div class="mt-4 flex justify-end gap-3">
+            <button @click="isDeleteOpen = false"
+                    class="px-4 py-2 text-sm bg-gray-100 rounded-md hover:bg-gray-200">
+                Cancel
+            </button>
+
+            <form method="POST"
+                  action="{{ route('admin.trades.delete', $trade->id) }}">
+                @csrf
+                @method('DELETE')
+                <button type="submit"
+                        class="px-4 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-500">
+                    Yes, Delete
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
 
                 </td>
               </tr>

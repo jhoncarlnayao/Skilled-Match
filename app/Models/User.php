@@ -73,4 +73,7 @@ public function announcements()
 {
     return $this->hasMany(Announcement::class, 'user_id');
 }
+public function jobs() {
+    return $this->hasMany(Job::class, 'worker_id'); 
+}
 }

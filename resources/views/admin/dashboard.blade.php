@@ -14,7 +14,7 @@
   </style>
 </head>
 <body class="bg-[#f8fafc]">
-
+@include('notifications.notifications')
 @include('admin.navigation-bar-admin.navbar-admin')
 
   <div class="w-full lg:ps-64">
@@ -137,18 +137,19 @@
   </a>
 
   <!-- Active Jobs -->
-  <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-32 hover:scale-105 transition duration-300">
+  <a href="{{ route('admin.jobs_list') }}">
+  <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-32 hover:scale-105 transition duration-300 cursor-pointer">
     <div class="flex items-start justify-between">
       <div class="p-2 bg-cyan-50 text-cyan-600 rounded-lg">
         <iconify-icon icon="solar:wallet-money-linear" width="20" height="20"></iconify-icon>
       </div>
     </div>
-    <div>
-      <p class="text-2xl font-semibold text-slate-900">{{ $activeJobs ?? '—' }}</p>
-      <p class="text-xs text-slate-500 font-medium">Active Jobs</p>
+     <div>
+        <p class="text-2xl font-semibold text-slate-900">{{ $activeJobs ?? '—' }}</p>
+        <p class="text-xs text-slate-500 font-medium">Active Jobs</p>
     </div>
   </div>
-
+</a>
 </div>
 <!-- ================= MAIN GRID LAYOUT ================= -->
 <div class="grid lg:grid-cols-3 gap-6 mt-6">

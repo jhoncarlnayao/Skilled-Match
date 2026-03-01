@@ -16,69 +16,69 @@
   </style>
 </head>
 <body class="bg-[#f8fafc]">
-
+@include('notifications.notifications')
 @include('client.navigation-bar-client.navbar-client')
 
-  <div class="w-full lg:ps-64">
+<div class="w-full lg:ps-64"
+     x-data="{
+        openModal: false,
+        search: '',
+        statusFilter: 'all',
+        editOpen: false,
+        selectedJob: {},
+        deleteOpen: false,
+        deleteId: null
+     }">
     
-    <header class="sticky top-0 inset-x-0 flex flex-wrap sm:justify-start sm:flex-nowrap z-[48] w-full bg-white/80 backdrop-blur-md border-b py-3 px-4 sm:px-6 md:px-8">
-      <div class="w-full flex items-center justify-between gap-x-5">
-        <div class="relative w-full max-w-md">
-          <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          </div>
-          <input type="text" class="py-2 px-3 ps-10 block w-full bg-gray-50 border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Search">
-        </div>
+<header class="sticky top-0 inset-x-0 flex flex-wrap sm:flex-nowrap z-[48] w-full bg-white/80 backdrop-blur-md border-b py-3 px-4 sm:px-6 md:px-8">
+  
+  <div class="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 
-        <div class="flex flex-row items-center justify-end gap-2">
-          <button class="w-[2.375rem] h-[2.375rem] inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-500 hover:bg-gray-100">
-            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-          </button>
-          <img class="inline-block h-[2.375rem] w-[2.375rem] rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1531927557220-a9e23c1e4794?auto=format&fit=facearea&facepad=2&w=300&h=300&q=80" alt="Avatar">
-        </div>
+    <!-- Left Side: Search -->
+    <div class="relative w-full sm:max-w-md">
+      <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+        <svg class="h-4 w-4 text-gray-400"
+             xmlns="http://www.w3.org/2000/svg"
+             fill="none"
+             viewBox="0 0 24 24"
+             stroke="currentColor"
+             stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.3-4.3"/>
+        </svg>
       </div>
-    </header>
 
-    
-  @if(session('success'))
-    <div 
-        x-data="{ show: true }" 
-        x-init="setTimeout(() => show = false, 4000)" 
-        x-show="show"
-        x-transition
-        class="fixed top-5 right-5 z-50"
-    >
-        <div class="flex items-start gap-3 bg-white border border-emerald-200 shadow-lg rounded-xl p-4 min-w-[280px]">
-            
-            <div class="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
-                <iconify-icon icon="solar:check-circle-linear" width="20"></iconify-icon>
-            </div>
-
-            <div class="flex-1">
-                <p class="text-sm font-semibold text-slate-900">
-                    Success
-                </p>
-                <p class="text-xs text-slate-500 mt-1">
-                    {{ session('success') }}
-                </p>
-            </div>
-
-            <button @click="show = false" class="text-slate-400 hover:text-slate-600">
-                <iconify-icon icon="solar:close-circle-linear" width="18"></iconify-icon>
-            </button>
-        </div>
+      <input type="text"
+             x-model="search"
+             placeholder="Search job title..."
+             class="py-2 px-3 ps-10 block w-full bg-gray-50 border-gray-200 rounded-lg text-sm focus:border-slate-900 focus:ring-slate-900">
     </div>
-@endif
-<main class="flex-1 p-6 lg:p-8 bg-slate-50"
+
+    <!-- Right Side: Status Filter -->
+    <div class="w-full sm:w-48">
+      <select x-model="statusFilter"
+              class="w-full px-4 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:ring-2 focus:ring-slate-900 focus:border-slate-900">
+        <option value="all">All Status</option>
+        <option value="open">Open</option>
+        <option value="assigned">Assigned</option>
+        <option value="completed">Completed</option>
+      </select>
+    </div>
+
+  </div>
+</header>
+{{-- <main class="flex-1 p-6 lg:p-8 bg-slate-50"
       x-data="{
         openModal: false,
         search: '',
+        statusFilter: 'all',   // 👈 add this
         editOpen: false,
         selectedJob: {},
-        deleteOpen: false,  
-        deleteId: null      
-      }">
-
+        deleteOpen: false,
+        deleteId: null
+      }"> --}}
+<main class="flex-1 p-6 lg:p-8 bg-slate-50"
+   >
   <!-- Page Header -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
     <div>
@@ -132,7 +132,12 @@
             <!-- Table Body -->
             <tbody class="bg-white divide-y divide-gray-200">
                 @forelse($jobs as $job)
-                <tr class="hover:bg-gray-50 transition">
+            <tr class="hover:bg-gray-50 transition"
+    x-show="
+        (statusFilter === 'all' || statusFilter === '{{ $job->status }}') &&
+        ('{{ strtolower($job->title) }}'.includes(search.toLowerCase()))
+    "
+>
 
                     <!-- Title -->
                     <td class="px-6 py-4">

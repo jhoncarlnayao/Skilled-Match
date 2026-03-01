@@ -13,7 +13,7 @@
   </style>
 </head>
 <body class="bg-[#f8fafc]" x-data="{ isUserModalOpen: false, user: {} }">
-
+@include('notifications.notifications')
   @include('admin.navigation-bar-admin.navbar-admin')
 
   <div class="w-full lg:ps-64">
@@ -255,9 +255,14 @@
          x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
          class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-lg sm:p-6 sm:align-middle">
 
+<form method="POST"
+      enctype="multipart/form-data"
+      :action="`/admin/worker-accounts/${user.id}/update`"
+      class="mt-4 space-y-3">
+  @csrf
       <div class="flex flex-col items-center gap-3">
         <!-- Profile Picture -->
-       <!-- Profile Picture Upload -->
+    
 <div class="relative group w-24 h-24">
   
   <!-- Image -->
@@ -292,13 +297,7 @@
         <h3 class="text-lg font-medium leading-6 text-gray-800">User Details</h3>
         <p class="mt-1 text-sm text-gray-500 text-center">Review the information of this user.</p>
       </div>
-
-<form method="POST"
-      enctype="multipart/form-data"
-      :action="`{{ url('admin/client-accounts') }}/${user.id}/update`"
-      class="mt-4 space-y-3">
-  @csrf
-
+  
   <!-- First Name -->
   <div>
     <label class="block text-sm text-gray-700">First Name</label>
