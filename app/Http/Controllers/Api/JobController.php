@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Job;
+use App\Models\Announcement;
 
 class JobController extends Controller
 {
@@ -49,5 +50,32 @@ public function acceptJob(Request $request, $id)
     $job->save();
 
     return response()->json(['message' => 'Job accepted successfully']);
+}
+
+  public function index()
+    {
+        $announcements = Announcement::latest()
+            ->select('id', 'title', 'content', 'created_at')
+            ->get();
+
+        return response()->json($announcements);
+    }
+
+public function myJobs(Request $request)
+{
+    $user = $request->user();
+
+    $worker = \App\Models\Worker::where('user_id', $user->id)->first();
+
+    if (!$worker) {
+        return response()->json([]);
+    }
+
+    $jobs = \App\Models\Job::where('worker_id', $worker->id)
+        ->whereIn('status', ['assigned', 'completed'])
+        ->latest()
+        ->get();
+
+    return response()->json($jobs);
 }
 }

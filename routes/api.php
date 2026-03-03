@@ -21,3 +21,7 @@ Route::middleware('auth:sanctum')->get('/worker/jobs', [JobController::class, 'w
 
 Route::post('/worker/jobs/{id}/accept', [JobController::class, 'acceptJob'])
     ->middleware('auth:sanctum');
+
+    Route::middleware('auth:sanctum')->get('/worker/announcements', [JobController::class, 'index']);
+
+    Route::middleware('auth:sanctum')->get('/worker/my-jobs', [JobController::class, 'myJobs']);
