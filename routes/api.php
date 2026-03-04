@@ -22,6 +22,13 @@ Route::middleware('auth:sanctum')->get('/worker/jobs', [JobController::class, 'w
 Route::post('/worker/jobs/{id}/accept', [JobController::class, 'acceptJob'])
     ->middleware('auth:sanctum');
 
+    // View announcements
     Route::middleware('auth:sanctum')->get('/worker/announcements', [JobController::class, 'index']);
 
+    // View my jobs
     Route::middleware('auth:sanctum')->get('/worker/my-jobs', [JobController::class, 'myJobs']);
+
+    // Update profile
+    Route::middleware('auth:sanctum')->put('/worker/profile', [JobController::class, 'updateProfile']);
+
+    

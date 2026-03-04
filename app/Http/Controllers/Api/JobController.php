@@ -78,4 +78,21 @@ public function myJobs(Request $request)
 
     return response()->json($jobs);
 }
+
+public function updateProfile(Request $request)
+{
+    $user = $request->user();
+    
+    $validated = $request->validate([
+        'first_name'  => 'required|string|max:255',
+        'middle_name' => 'nullable|string|max:255',
+        'last_name'   => 'required|string|max:255',
+        'email'       => 'required|email|unique:users,email,' . $user->id,
+        'phone'       => 'nullable|string|max:20',
+    ]);
+
+    $user->update($validated);
+
+    return response()->json($user);
+}
 }
