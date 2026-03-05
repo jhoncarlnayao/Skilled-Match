@@ -31,4 +31,10 @@ Route::post('/worker/jobs/{id}/accept', [JobController::class, 'acceptJob'])
     // Update profile
     Route::middleware('auth:sanctum')->put('/worker/profile', [JobController::class, 'updateProfile']);
 
+    // Update profile picture
+Route::middleware('auth:sanctum')->post('/worker/profile-picture', [JobController::class, 'updateProfilePicture']);
+
+// Update job status
+Route::middleware('auth:sanctum')->put('/worker/jobs/{id}/status', [JobController::class, 'updateJobStatus']);
+
     
