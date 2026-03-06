@@ -443,307 +443,106 @@
             </div>
         </main>
     </div>
-    <div x-data="{ open: false }" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-
-        <!-- Chat Panel -->
-        <div x-show="open" x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 translate-y-4 scale-95"
-            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100"
-            x-transition:leave-end="opacity-0 translate-y-4 scale-95"
-            class="mb-4 w-[92vw] max-w-[460px] bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden"
-            style="display:none">
-
-            <!-- Header -->
-            <div class="bg-slate-900 text-white px-4 py-3 flex items-center justify-between">
-
-                <div class="flex items-center gap-2">
-
-                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                        <iconify-icon icon="solar:chat-round-dots-linear" width="18"></iconify-icon>
-                    </div>
-
-                    <div>
-                        <p class="text-sm font-semibold">AI Assistant</p>
-                        <p class="text-[10px] text-slate-300">Online</p>
-                    </div>
-
-                </div>
-
-                <button @click="open=false" class="text-slate-300 hover:text-white">
-                    <iconify-icon icon="solar:close-circle-linear" width="18"></iconify-icon>
-                </button>
-
-            </div>
-
-
-            <!-- Messages -->
-            <div id="chat-messages" class="h-[500px] overflow-y-auto p-4 space-y-3 bg-slate-50">
-
-                <div class="flex items-start gap-2">
-
-                    <div class="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs">
-                        AI
-                    </div>
-
-                    <div
-                        class="bg-slate-100 text-slate-900 text-xs px-3 py-2 rounded-2xl shadow-sm max-w-[75%] break-words">
-                        Hello 👋 I'm your TRD Assistant.<br><br>
-
-                        I can help you:<br>
-                        • Find skilled workers<br>
-                        • Estimate project costs<br>
-                        • Post a job<br>
-                        • Solve hiring issues<br><br>
-
-                        How can I help today?
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- Input -->
-            <div class="border-t border-slate-200 p-3 bg-white">
-
-                <div class="flex items-center gap-2">
-
-                    <input id="chatInput" type="text" placeholder="Type a message..."
-                        class="flex-1 text-xs border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-900">
-
-                    <button onclick="sendMessage()" class="bg-slate-900 text-white p-2 rounded-lg hover:bg-slate-800">
-
-                        <iconify-icon icon="solar:arrow-up-linear" width="16"></iconify-icon>
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- Floating Button -->
-        <button @click="open=!open"
-            class="w-14 h-14 rounded-full bg-slate-900 hover:bg-slate-800 text-white shadow-xl flex items-center justify-center transition-all duration-300">
-
-            <iconify-icon icon="solar:chat-round-dots-bold" width="22"></iconify-icon>
-
-        </button>
-
-
-        <script>
-
-            document.addEventListener("DOMContentLoaded", function () {
-
-                const chatInput = document.getElementById("chatInput")
-                const chatMessages = document.getElementById("chat-messages")
-
-                const GEMINI_API_KEY = document.querySelector('meta[name="gemini-api-key"]').content
-                const GEMINI_MODEL = "gemini-2.5-flash"
-
-                let conversation = []
-
-
-                function parseMarkdown(text) {
-
-                    text = text.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
-                    text = text.replace(/\n/g, "<br>")
-
-                    return text
-
-                }
-
-
-
-                function appendMessage(message, sender) {
-
-                    const wrapper = document.createElement("div")
-                    wrapper.classList.add("flex", "gap-2")
-
-                    const avatar = document.createElement("div")
-                    avatar.classList.add("w-7", "h-7", "rounded-full", "flex", "items-center", "justify-center", "text-xs")
-
-                    const bubble = document.createElement("div")
-                    bubble.classList.add("text-xs", "px-3", "py-2", "rounded-2xl", "shadow-sm", "max-w-[75%]", "break-words")
-
-                    if (sender === "user") {
-
-                        wrapper.classList.add("justify-end", "items-end")
-
-                        bubble.classList.add("bg-slate-900", "text-white")
-
-                    } else {
-
-                        wrapper.classList.add("items-start")
-
-                        avatar.classList.add("bg-slate-900", "text-white")
-
-                        avatar.textContent = "AI"
-
-                        bubble.classList.add("bg-slate-100", "text-slate-900")
-
-                    }
-
-                    bubble.innerHTML = parseMarkdown(message)
-
-                    wrapper.appendChild(avatar)
-                    wrapper.appendChild(bubble)
-
-                    chatMessages.appendChild(wrapper)
-
-                    chatMessages.scrollTop = chatMessages.scrollHeight
-
-                    return bubble
-
-                }
-
-
-
-                function typingIndicator() {
-
-                    const wrapper = document.createElement("div")
-                    wrapper.classList.add("flex", "gap-2")
-
-                    const avatar = document.createElement("div")
-                    avatar.classList.add("w-7", "h-7", "rounded-full", "bg-slate-900", "text-white", "flex", "items-center", "justify-center", "text-xs")
-                    avatar.textContent = "AI"
-
-                    const bubble = document.createElement("div")
-                    bubble.classList.add("bg-slate-100", "px-3", "py-2", "rounded-2xl", "text-xs")
-
-                    bubble.innerHTML = '<span class="animate-pulse">AI is typing...</span>'
-
-                    wrapper.appendChild(avatar)
-                    wrapper.appendChild(bubble)
-
-                    chatMessages.appendChild(wrapper)
-
-                    chatMessages.scrollTop = chatMessages.scrollHeight
-
-                    return wrapper
-
-                }
-
-
-
-                async function askGemini() {
-
-                    try {
-
-                        const res = await fetch(
-
-                            `https://generativelanguage.googleapis.com/v1/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
-
-                            {
-
-                                method: "POST",
-
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-
-                                body: JSON.stringify({
-
-                                    contents: conversation
-
-                                })
-
-                            }
-
-                        )
-
-                        const data = await res.json()
-
-                        return data?.candidates?.[0]?.content?.parts?.[0]?.text || "AI could not respond."
-
-                    }
-
-                    catch (e) {
-
-                        console.error(e)
-
-                        return "Error connecting to AI."
-
-                    }
-
-                }
-
-
-
-                async function streamText(element, text) {
-
-                    element.innerHTML = ""
-
-                    let i = 0
-
-                    const speed = 15
-
-                    function type() {
-
-                        if (i < text.length) {
-
-                            element.innerHTML += text.charAt(i)
-
-                            i++
-
-                            setTimeout(type, speed)
-
-                        }
-
-                    }
-
-                    type()
-
-                }
-
-
-
-                window.sendMessage = async function () {
-
-                    const message = chatInput.value.trim()
-
-                    if (!message) return
-
-                    appendMessage(message, "user")
-
-                    conversation.push({
-                        role: "user",
-                        parts: [{ text: message }]
-                    })
-
-                    chatInput.value = ""
-
-                    const typing = typingIndicator()
-
-                    const reply = await askGemini()
-
-                    typing.remove()
-
-                    const bubble = appendMessage("", "bot")
-
-                    streamText(bubble, parseMarkdown(reply))
-
-                    conversation.push({
-                        role: "model",
-                        parts: [{ text: reply }]
-                    })
-                }
-                chatInput.addEventListener("keypress", function (e) {
-
-                    if (e.key === "Enter") {
-
-                        sendMessage()
-
-                    }
-                })
-            })
-
-        </script>
-
-    </div>
+<div x-data="{open:false}" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+<div x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 scale-95" x-transition:enter-end="opacity-100 translate-y-0 scale-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 translate-y-4 scale-95" class="mb-4 w-[92vw] max-w-[460px] bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden" style="display:none">
+<div class="bg-slate-900 text-white px-4 py-3 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center"><iconify-icon icon="solar:chat-round-dots-linear" width="18"></iconify-icon></div>
+<div><p class="text-sm font-semibold">AI Assistant</p><p class="text-[10px] text-slate-300">Online</p></div>
+</div>
+<button @click="open=false" class="text-slate-300 hover:text-white"><iconify-icon icon="solar:close-circle-linear" width="18"></iconify-icon></button>
+</div>
+
+<div id="chat-messages" class="h-[500px] overflow-y-auto p-4 space-y-3 bg-slate-50">
+<div class="flex items-start gap-2">
+<div class="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs">AI</div>
+<div class="bg-slate-100 text-slate-900 text-xs px-3 py-2 rounded-2xl shadow-sm max-w-[75%] break-words">
+Hello 👋 I'm your TRD Assistant.<br><br>I can help you:<br>• Find skilled workers<br>• Estimate project costs<br>• Post a job<br>• Solve hiring issues<br><br>How can I help today?
+</div>
+</div>
+</div>
+
+<div class="border-t border-slate-200 p-3 bg-white">
+<div class="flex items-center gap-2">
+<input id="chatInput" type="text" placeholder="Type a message..." class="flex-1 text-xs border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-slate-900">
+<button onclick="sendMessage()" class="bg-slate-900 text-white p-2 rounded-lg hover:bg-slate-800"><iconify-icon icon="solar:arrow-up-linear" width="16"></iconify-icon></button>
+</div>
+</div>
+</div>
+
+<button @click="open=!open" class="w-14 h-14 rounded-full bg-slate-900 hover:bg-slate-800 text-white shadow-xl flex items-center justify-center transition-all duration-300">
+<iconify-icon icon="solar:chat-round-dots-bold" width="22"></iconify-icon>
+</button>
+
+<script>
+document.addEventListener("DOMContentLoaded",function(){
+const chatInput=document.getElementById("chatInput")
+const chatMessages=document.getElementById("chat-messages")
+const GEMINI_API_KEY=document.querySelector('meta[name="gemini-api-key"]').content
+const GEMINI_MODEL="gemini-2.5-flash"
+let conversation=[]
+
+function parseMarkdown(text){text=text.replace(/\*\*(.*?)\*\*/g,"<b>$1</b>");text=text.replace(/\n/g,"<br>");return text}
+
+function appendMessage(message,sender){
+const wrapper=document.createElement("div");wrapper.classList.add("flex","gap-2")
+const avatar=document.createElement("div");avatar.classList.add("w-7","h-7","rounded-full","flex","items-center","justify-center","text-xs")
+const bubble=document.createElement("div");bubble.classList.add("text-xs","px-3","py-2","rounded-2xl","shadow-sm","max-w-[75%]","break-words")
+
+if(sender==="user"){wrapper.classList.add("justify-end","items-end");bubble.classList.add("bg-slate-900","text-white")}
+else{wrapper.classList.add("items-start");avatar.classList.add("bg-slate-900","text-white");avatar.textContent="AI";bubble.classList.add("bg-slate-100","text-slate-900")}
+
+bubble.innerHTML=parseMarkdown(message)
+wrapper.appendChild(avatar);wrapper.appendChild(bubble)
+chatMessages.appendChild(wrapper)
+chatMessages.scrollTop=chatMessages.scrollHeight
+return bubble
+}
+
+function typingIndicator(){
+const wrapper=document.createElement("div");wrapper.classList.add("flex","gap-2")
+const avatar=document.createElement("div");avatar.classList.add("w-7","h-7","rounded-full","bg-slate-900","text-white","flex","items-center","justify-center","text-xs");avatar.textContent="AI"
+const bubble=document.createElement("div");bubble.classList.add("bg-slate-100","px-3","py-2","rounded-2xl","text-xs")
+bubble.innerHTML='<span class="animate-pulse">AI is typing...</span>'
+wrapper.appendChild(avatar);wrapper.appendChild(bubble)
+chatMessages.appendChild(wrapper)
+chatMessages.scrollTop=chatMessages.scrollHeight
+return wrapper
+}
+
+async function askGemini(){
+try{
+const res=await fetch(`https://generativelanguage.googleapis.com/v1/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:conversation})})
+const data=await res.json()
+return data?.candidates?.[0]?.content?.parts?.[0]?.text||"AI could not respond."
+}catch(e){console.error(e);return "Error connecting to AI."}
+}
+
+async function streamText(element,text){
+element.innerHTML=""
+let i=0;const speed=15
+function type(){if(i<text.length){element.innerHTML+=text.charAt(i);i++;setTimeout(type,speed)}}
+type()
+}
+
+window.sendMessage=async function(){
+const message=chatInput.value.trim()
+if(!message)return
+appendMessage(message,"user")
+conversation.push({role:"user",parts:[{text:message}]})
+chatInput.value=""
+const typing=typingIndicator()
+const reply=await askGemini()
+typing.remove()
+const bubble=appendMessage("","bot")
+streamText(bubble,parseMarkdown(reply))
+conversation.push({role:"model",parts:[{text:reply}]})
+}
+
+chatInput.addEventListener("keypress",function(e){if(e.key==="Enter"){sendMessage()}})
+})
+</script>
+</div>
     </div>
 </body>
 
