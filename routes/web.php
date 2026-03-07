@@ -68,10 +68,12 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/client-accounts', [DashboardController::class, 'getClientAccounts'])
         ->name('admin.client.accounts');
 
+    //Update Worker Account
     Route::post('/worker-accounts/{id}/update',
     [DashboardController::class, 'updateWorker']
 )->name('admin.worker.update');
 
+    // Update Client Account
     Route::post('/client-accounts/{id}/update', 
     [DashboardController::class, 'updateClient']
 )->name('admin.client.update');
@@ -155,6 +157,9 @@ Route::delete(
     '/client/jobs/{job}',
     [ClientJobController::class, 'destroy']
 )->name('client.jobs.destroy');
+
+Route::get('/client/jobs/{id}/worker', [ClientJobController::class, 'getWorker'])
+    ->name('client.jobs.worker');
 
 
 // ======================

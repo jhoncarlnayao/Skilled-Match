@@ -202,7 +202,7 @@
                             class="text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">+12%</span>
                     </div>
                     <div>
-                        <p class="text-2xl font-semibold text-slate-900">14</p>
+                        <p class="text-2xl font-semibold text-slate-900">{{ $totalJobs }}</p>
                         <p class="text-xs text-slate-500 font-medium">Active Jobs</p>
                     </div>
                 </div>
@@ -216,7 +216,7 @@
                         </div>
                     </div>
                     <div>
-                        <p class="text-2xl font-semibold text-slate-900">8</p>
+                        <p class="text-2xl font-semibold text-slate-900">{{ $activeWorkers }}</p>
                         <p class="text-xs text-slate-500 font-medium">Active Workers</p>
                     </div>
                 </div>
@@ -230,8 +230,8 @@
                         </div>
                     </div>
                     <div>
-                        <p class="text-2xl font-semibold text-slate-900">3</p>
-                        <p class="text-xs text-slate-500 font-medium">Pending Review</p>
+                       <p class="text-2xl font-semibold text-slate-900">{{ $completedJobs }}</p>
+                        <p class="text-xs text-slate-500 font-medium">Completed Jobs</p>
                     </div>
                 </div>
 
@@ -244,7 +244,9 @@
                         </div>
                     </div>
                     <div>
-                        <p class="text-2xl font-semibold text-slate-900">$4,250</p>
+                        <p class="text-2xl font-semibold text-slate-900">
+                    $ {{ number_format($totalSpent, 2) }}
+                    </p>
                         <p class="text-xs text-slate-500 font-medium">Total Spent</p>
                     </div>
                 </div>

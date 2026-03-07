@@ -158,92 +158,55 @@
               </td>
 
 
-            <!-- Action -->
+{{-- Action --}}
 <td class="px-4 py-4 text-sm">
-  <div class="flex items-center gap-2">
-<button type="button"
-        data-hs-overlay="#edit-user-modal-{{ $user->id }}"
-        class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
-               text-gray-700 bg-white border border-gray-300 rounded-lg
-               hover:bg-gray-50 hover:border-gray-400
-               focus:outline-none focus:ring-2 focus:ring-gray-200 transition">
+    <div class="hs-dropdown relative inline-flex">
 
-    <!-- Eye Icon -->
-    <svg xmlns="http://www.w3.org/2000/svg"
-         class="w-4 h-4 text-gray-500"
-         fill="none"
-         viewBox="0 0 24 24"
-         stroke="currentColor"
-         stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M2.458 12C3.732 7.943 7.523 5 12 5
-                 c4.477 0 8.268 2.943 9.542 7
-                 -1.274 4.057-5.065 7-9.542 7
-                 -4.477 0-8.268-2.943-9.542-7z"/>
-    </svg>
+        {{-- 3-dot trigger --}}
+        <button type="button"
+                class="hs-dropdown-toggle w-8 h-8 inline-flex items-center justify-center
+                       rounded-lg border border-gray-200 bg-white text-gray-500
+                       hover:bg-gray-50 hover:border-gray-300
+                       focus:outline-none focus:ring-2 focus:ring-gray-200 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+            </svg>
+        </button>
 
-    View & Edit
-</button>
+        {{-- Dropdown menu --}}
+        <div class="hs-dropdown-menu hs-dropdown-open:opacity-100 hidden z-10
+                    min-w-[160px] bg-white border border-gray-200 rounded-xl shadow-lg p-1 mt-1">
 
+            {{-- View & Edit --}}
+            <button type="button"
+                    data-hs-overlay="#edit-user-modal-{{ $user->id }}"
+                    class="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700
+                           rounded-lg hover:bg-gray-50 transition text-left">
+                <iconify-icon icon="solar:pen-linear" width="15" class="text-gray-400"></iconify-icon>
+                View & Edit
+            </button>
 
+            <div class="my-1 border-t border-gray-100"></div>
 
-  <div class="flex gap-2">
+            {{-- Deactivate / Activate --}}
+            @if($user->status === 'active')
+                <a href="{{ route('admin.client.toggle', $user->id) }}"
+                   class="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600
+                          rounded-lg hover:bg-red-50 transition">
+                    <iconify-icon icon="solar:user-cross-linear" width="15" class="text-red-400"></iconify-icon>
+                    Deactivate
+                </a>
+            @else
+                <a href="{{ route('admin.client.toggle', $user->id) }}"
+                   class="w-full flex items-center gap-3 px-3 py-2 text-sm text-emerald-600
+                          rounded-lg hover:bg-emerald-50 transition">
+                    <iconify-icon icon="solar:user-check-linear" width="15" class="text-emerald-400"></iconify-icon>
+                    Activate
+                </a>
+            @endif
 
-        @if($user->status === 'active')
-
-            <!-- Deactivate Button -->
-           <a href="{{ route('admin.client.toggle', $user->id) }}"
-   class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
-          text-red-700 bg-red-50 border border-red-200 rounded-lg
-          hover:bg-red-100
-          focus:outline-none focus:ring-2 focus:ring-red-200 transition">
-
-    <!-- X Icon -->
-    <svg xmlns="http://www.w3.org/2000/svg"
-         class="w-4 h-4"
-         fill="none"
-         viewBox="0 0 24 24"
-         stroke="currentColor"
-         stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12"/>
-    </svg>
-
-    Deactivate
-</a>
-
-
-        @else
-
-            <!-- Activate Button -->
-        <a href="{{ route('admin.client.toggle', $user->id) }}"
-   class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
-          text-green-700 bg-green-50 border border-green-200 rounded-lg
-          hover:bg-green-100
-          focus:outline-none focus:ring-2 focus:ring-green-200 transition">
-
-    <!-- Check Icon -->
-    <svg xmlns="http://www.w3.org/2000/svg"
-         class="w-4 h-4"
-         fill="none"
-         viewBox="0 0 24 24"
-         stroke="currentColor"
-         stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M5 13l4 4L19 7"/>
-    </svg>
-
-    Activate
-</a>
-
-
-        @endif
-
+        </div>
     </div>
-
-  </div>
 </td>
 
           </tr>

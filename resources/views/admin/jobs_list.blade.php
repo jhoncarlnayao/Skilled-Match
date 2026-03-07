@@ -172,180 +172,219 @@
                                                 {{ $job->created_at->format('M d, Y') }}
                                             </td>
 
-                                            <!-- Actions -->
-                                            <td class="px-4 py-4 text-sm">
-                                                <div class="flex items-center gap-x-2">
+                                           {{-- Actions --}}
+<td class="px-4 py-4 text-sm">
+    <div class="hs-dropdown relative inline-flex">
 
-                                                    <!-- Edit Button -->
-                                                    <button @click="isEditOpen = true"
-                                                        class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
-                                                        text-gray-700 bg-white border border-gray-300 rounded-lg
-                                                        hover:bg-gray-50 hover:border-gray-400
-                                                        focus:outline-none focus:ring-2 focus:ring-gray-200 transition">
-                                                        <svg xmlns="http://www.w3.org/2000/svg"
-                                                            class="w-4 h-4 text-gray-500" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                d="M15 12H9m12 0A9 9 0 1112 3a9 9 0 019 9z" />
-                                                        </svg>
-                                                        View & Edit
-                                                    </button>
+        {{-- 3-dot trigger --}}
+        <button type="button"
+                class="hs-dropdown-toggle w-8 h-8 inline-flex items-center justify-center
+                       rounded-lg border border-gray-200 bg-white text-gray-500
+                       hover:bg-gray-50 hover:border-gray-300
+                       focus:outline-none focus:ring-2 focus:ring-gray-200 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+            </svg>
+        </button>
 
-                                                    <!-- Delete Button -->
-                                                    <button 
-                                                        @click="isDeleteOpen = true"
-                                                        class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium
-                                                        text-red-700 bg-red-50 border border-red-200 rounded-lg
-                                                        hover:bg-red-100
-                                                        focus:outline-none focus:ring-2 focus:ring-red-200 transition
-                                                        {{ in_array($job->status, ['assigned','completed']) ? 'opacity-50 cursor-not-allowed' : '' }}"
-                                                        {{ in_array($job->status, ['assigned','completed']) ? 'disabled' : '' }}>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4"
-                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                                                            stroke-width="2">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                d="M6 7h12M9 7v12m6-12v12M10 7l1-2h2l1 2" />
-                                                        </svg>
-                                                        Delete
-                                                    </button>
+        {{-- Dropdown --}}
+        <div class="hs-dropdown-menu hs-dropdown-open:opacity-100 hidden z-10
+                    min-w-[150px] bg-white border border-gray-200 rounded-xl shadow-lg p-1 mt-1">
 
-                                                    <!-- Edit Job Modal -->
-                                                    <div x-show="isEditOpen" class="fixed inset-0 z-20 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                                                        <div x-show="isEditOpen" x-transition.opacity class="fixed inset-0 bg-black/50"></div>
-                                                        <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                                                            <span class="hidden sm:inline-block sm:h-screen sm:align-middle">&#8203;</span>
+            {{-- View & Edit --}}
+            <button type="button"
+                    @click="isEditOpen = true"
+                    class="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-700
+                           rounded-lg hover:bg-gray-50 transition text-left">
+                <iconify-icon icon="solar:pen-linear" width="15" class="text-gray-400"></iconify-icon>
+                View & Edit
+            </button>
 
-                                                            <div x-show="isEditOpen"
-                                                                 x-transition:enter="transition ease-out duration-300"
-                                                                 x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
-                                                                 x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
-                                                                 x-transition:leave="transition ease-in duration-200"
-                                                                 x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
-                                                                 x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
-                                                                 class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:w-full sm:max-w-lg sm:p-6 sm:align-middle">
+            <div class="my-1 border-t border-gray-100"></div>
 
-                                                                <h3 class="text-lg font-medium leading-6 text-gray-800" id="modal-title">Edit Job</h3>
-                                                                <p class="mt-2 text-sm text-gray-500">Update job details below.</p>
+            {{-- Delete — disabled if assigned or completed --}}
+            @if(in_array($job->status, ['assigned', 'completed']))
+                <div class="w-full flex items-center gap-3 px-3 py-2 text-sm text-gray-300 rounded-lg cursor-not-allowed">
+                    <iconify-icon icon="solar:trash-bin-minimalistic-linear" width="15" class="text-gray-300"></iconify-icon>
+                    Delete
+                </div>
+            @else
+                <button type="button"
+                        @click="isDeleteOpen = true"
+                        class="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600
+                               rounded-lg hover:bg-red-50 transition text-left">
+                    <iconify-icon icon="solar:trash-bin-minimalistic-linear" width="15" class="text-red-400"></iconify-icon>
+                    Delete
+                </button>
+            @endif
 
-                                                                <form class="mt-4" method="POST" action="{{ route('admin.jobs.update', $job->id) }}">
-                                                                    @csrf
-                                                                    @method('PUT')
+        </div>
+    </div>
 
-                                                                    <label class="block mt-3 text-sm text-gray-700" for="job-client-{{ $job->id }}">Client</label>
-                                                                    <input type="text" id="job-client-{{ $job->id }}" 
-                                                                           value="{{ optional($job->client)->first_name }} {{ optional($job->client)->last_name }}" 
-                                                                           disabled
-                                                                           class="block w-full px-4 py-3 text-sm text-gray-700 bg-gray-100 border border-gray-200 rounded-md focus:outline-none">
+    {{-- ════════════════════════════
+         EDIT MODAL
+    ════════════════════════════ --}}
+    <div x-show="isEditOpen"
+         class="fixed inset-0 z-[80] overflow-y-auto"
+         role="dialog" aria-modal="true">
 
-                                                                    <label class="block mt-3 text-sm text-gray-700" for="job-title-{{ $job->id }}">Title</label>
-                                                                    <input type="text" name="title" id="job-title-{{ $job->id }}" x-model="title"
-                                                                           class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40" required>
+        <div x-show="isEditOpen" x-transition.opacity
+             class="fixed inset-0 bg-black/50"
+             @click="isEditOpen = false"></div>
 
-                                                                    <label class="block mt-3 text-sm text-gray-700" for="job-description-{{ $job->id }}">Description</label>
-                                                                    <textarea name="description" id="job-description-{{ $job->id }}" rows="3" x-model="description"
-                                                                              class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"></textarea>
+        <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <span class="hidden sm:inline-block sm:h-screen sm:align-middle">&#8203;</span>
 
-                                                                    <label class="block mt-3 text-sm text-gray-700" for="job-budget-{{ $job->id }}">Budget</label>
-                                                                    <input type="number" name="budget" id="job-budget-{{ $job->id }}" x-model="budget" step="0.01"
-                                                                           class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40" required>
+            <div x-show="isEditOpen"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 scale-100"
+                 x-transition:leave-end="opacity-0 scale-95"
+                 class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom
+                        transform bg-white rounded-lg shadow-xl
+                        sm:my-8 sm:w-full sm:max-w-lg sm:p-6 sm:align-middle">
 
-                                                                    <label class="block mt-3 text-sm text-gray-700" for="job-trade-{{ $job->id }}">Trade</label>
-                                                                    <select name="trade_id" id="job-trade-{{ $job->id }}" x-model="trade"
-                                                                            class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40">
-                                                                        @foreach($trades as $t)
-                                                                            <option value="{{ $t->id }}" @if($job->trade_id == $t->id) selected @endif>{{ $t->name }}</option>
-                                                                        @endforeach
-                                                                    </select>
+                <h3 class="text-lg font-medium leading-6 text-gray-800">Edit Job</h3>
+                <p class="mt-1 text-sm text-gray-500">Update job details below.</p>
 
-                                                                    <label class="block mt-3 text-sm text-gray-700">Worker</label>
-                                                                    <div class="flex items-center space-x-2">
-                                                                        <input type="text" x-model="workerName" disabled
-                                                                               class="flex-1 px-4 py-3 text-sm text-gray-700 bg-gray-100 border border-gray-200 rounded-md focus:outline-none">
-                                                                        @if($job->status !== 'completed')
-                                                                        <button type="button"
-                                                                                x-show="workerName"
-                                                                                @click="workerName = ''; removeWorker = true; status = 'open';"
-                                                                                class="px-3 py-2 text-sm text-red-600 bg-red-100 rounded-md hover:bg-red-200">
-                                                                            Remove
-                                                                        </button>
-                                                                        @endif
-                                                                    </div>
-                                                                    <input type="hidden" name="remove_worker" :value="removeWorker ? 1 : 0">
+                <form class="mt-4 space-y-3" method="POST" action="{{ route('admin.jobs.update', $job->id) }}">
+                    @csrf
+                    @method('PUT')
 
-                                                                    <label class="block mt-3 text-sm text-gray-700" for="job-status-{{ $job->id }}">Status</label>
-                                                                    <select name="status" id="job-status-{{ $job->id }}" x-model="status"
-                                                                            class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40">
-                                                                        <option value="open" @if($job->status=='open') selected @endif>Open</option>
-                                                                        <option value="assigned" @if($job->status=='assigned') selected @endif>Assigned</option>
-                                                                        <option value="completed" @if($job->status=='completed') selected @endif>Completed</option>
-                                                                    </select>
+                    <div>
+                        <label class="block text-sm text-gray-700 mb-1">Client</label>
+                        <input type="text"
+                               value="{{ optional($job->client)->first_name }} {{ optional($job->client)->last_name }}"
+                               disabled
+                               class="block w-full px-4 py-3 text-sm text-gray-500 bg-gray-100 border border-gray-200 rounded-md cursor-not-allowed">
+                    </div>
 
-                                                                    <div class="mt-4 sm:flex sm:items-center sm:-mx-2">
-                                                                        <button type="button" @click="isEditOpen = false"
-                                                                                class="w-full px-4 py-2 text-sm font-medium tracking-wide text-gray-700 transition-colors duration-300 transform border border-gray-200 rounded-md sm:w-1/2 sm:mx-2 hover:bg-gray-100 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-40">
-                                                                            Cancel
-                                                                        </button>
-                                                                        <button type="submit"
-                                                                                class="w-full px-4 py-2 mt-3 text-sm font-medium tracking-wide text-white transition-colors duration-300 transform bg-blue-600 rounded-md sm:mt-0 sm:w-1/2 sm:mx-2 hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40">
-                                                                            Update Job
-                                                                        </button>
-                                                                    </div>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-700 mb-1">Title</label>
+                        <input type="text" name="title" x-model="title" required
+                               class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
 
-                                                    <!-- Delete Confirmation Modal -->
-                                                    <div x-show="isDeleteOpen" 
-                                                         class="fixed inset-0 z-30 overflow-y-auto"
-                                                         aria-labelledby="delete-modal-title" 
-                                                         role="dialog">
-                                                        <div x-show="isDeleteOpen" x-transition.opacity class="fixed inset-0 bg-black/50"></div>
-                                                        <div class="flex items-center justify-center min-h-screen px-4">
-                                                            <div x-show="isDeleteOpen"
-                                                                 x-transition:enter="transition ease-out duration-300"
-                                                                 x-transition:enter-start="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
-                                                                 x-transition:enter-end="translate-y-0 opacity-100 sm:scale-100"
-                                                                 x-transition:leave="transition ease-in duration-200"
-                                                                 x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
-                                                                 x-transition:leave-end="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
-                                                                 class="relative bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+                    <div>
+                        <label class="block text-sm text-gray-700 mb-1">Description</label>
+                        <textarea name="description" rows="3" x-model="description"
+                                  class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    </div>
 
-                                                                <div class="flex items-center gap-3">
-                                                                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-red-100">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M12 3C7.03 3 3 7.03 3 12s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9z" />
-                                                                        </svg>
-                                                                    </div>
-                                                                    <h3 class="text-lg font-semibold text-gray-800">Delete Job</h3>
-                                                                </div>
+                    <div>
+                        <label class="block text-sm text-gray-700 mb-1">Budget</label>
+                        <input type="number" name="budget" x-model="budget" step="0.01" required
+                               class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
 
-                                                                <p class="mt-4 text-sm text-gray-600">
-                                                                    Are you sure you want to delete 
-                                                                    <span class="font-semibold text-gray-800">{{ $job->title }}</span>?
-                                                                    This action cannot be undone.
-                                                                </p>
+                    <div>
+                        <label class="block text-sm text-gray-700 mb-1">Trade</label>
+                        <select name="trade_id" x-model="trade"
+                                class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            @foreach($trades as $t)
+                                <option value="{{ $t->id }}" @if($job->trade_id == $t->id) selected @endif>{{ $t->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                                                                <div class="mt-6 flex justify-end gap-3">
-                                                                    <button @click="isDeleteOpen = false"
-                                                                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">
-                                                                        Cancel
-                                                                    </button>
-                                                                    <form method="POST" action="{{ route('admin.jobs.delete', $job->id) }}">
-                                                                        @csrf
-                                                                        @method('DELETE')
-                                                                        <button type="submit"
-                                                                                class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-500">
-                                                                            Yes, Delete
-                                                                        </button>
-                                                                    </form>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-700 mb-1">Worker</label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" x-model="workerName" disabled
+                                   class="flex-1 px-4 py-3 text-sm text-gray-500 bg-gray-100 border border-gray-200 rounded-md cursor-not-allowed">
+                            @if($job->status !== 'completed')
+                                <button type="button"
+                                        x-show="workerName"
+                                        @click="workerName = ''; removeWorker = true; status = 'open';"
+                                        class="px-3 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-md hover:bg-red-100">
+                                    Remove
+                                </button>
+                            @endif
+                        </div>
+                        <input type="hidden" name="remove_worker" :value="removeWorker ? 1 : 0">
+                    </div>
 
-                                                </div>
-                                            </td>
+                    <div>
+                        <label class="block text-sm text-gray-700 mb-1">Status</label>
+                        <select name="status" x-model="status"
+                                class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="open"      @if($job->status=='open')      selected @endif>Open</option>
+                            <option value="assigned"  @if($job->status=='assigned')  selected @endif>Assigned</option>
+                            <option value="completed" @if($job->status=='completed') selected @endif>Completed</option>
+                        </select>
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-2">
+                        <button type="button" @click="isEditOpen = false"
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-100">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                                class="px-4 py-2 text-sm font-medium text-white bg-slate-900 rounded-md hover:bg-slate-800">
+                            Update Job
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- ════════════════════════════
+         DELETE MODAL
+    ════════════════════════════ --}}
+    <div x-show="isDeleteOpen"
+         class="fixed inset-0 z-[80] overflow-y-auto"
+         role="dialog" aria-modal="true">
+
+        <div x-show="isDeleteOpen" x-transition.opacity
+             class="fixed inset-0 bg-black/50"
+             @click="isDeleteOpen = false"></div>
+
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div x-show="isDeleteOpen"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+                 x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 scale-100"
+                 x-transition:leave-end="opacity-0 scale-95"
+                 class="relative bg-white rounded-lg shadow-xl w-full max-w-sm p-6">
+
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                        <iconify-icon icon="solar:trash-bin-minimalistic-linear" width="18" class="text-red-600"></iconify-icon>
+                    </div>
+                    <h3 class="text-base font-semibold text-gray-800">Delete Job</h3>
+                </div>
+
+                <p class="text-sm text-gray-600 mb-5">
+                    Are you sure you want to delete
+                    <strong class="text-gray-800">{{ $job->title }}</strong>?
+                    This action cannot be undone.
+                </p>
+
+                <div class="flex justify-end gap-2">
+                    <button type="button" @click="isDeleteOpen = false"
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-100">
+                        Cancel
+                    </button>
+                    <form method="POST" action="{{ route('admin.jobs.delete', $job->id) }}">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                                class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
+                            Yes, Delete
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</td>
                                         </tr>
                                         @empty
                                         <tr id="emptyRow">
