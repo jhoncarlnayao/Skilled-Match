@@ -50,6 +50,8 @@ class DashboardController extends Controller
             ->latest()
             ->get(),
 
+         'announcements' => Announcement::latest()->get(),
+
        
         'activeJobs' => $activeJobs,
     ]);

@@ -8,131 +8,240 @@ use App\Models\Job;
 use App\Models\Announcement;
 use Illuminate\Support\Facades\Storage;
 
-
 class JobController extends Controller
 {
-   public function workerJobs(Request $request)
-{
-    $user = $request->user();
+    // ── FIND JOBS (swipe card) ────────────────────────────────
+    public function workerJobs(Request $request)
+    {
+        $user   = $request->user();
+        $worker = \App\Models\Worker::where('user_id', $user->id)->first();
 
-    $worker = \App\Models\Worker::where('user_id', $user->id)->first();
+        if (!$worker) {
+            return response()->json(['message' => 'Worker profile not found'], 404);
+        }
 
-    if (!$worker) {
-        return response()->json(['message' => 'Worker profile not found'], 404);
+        $job = Job::with('client')
+            ->where('trade_id', $worker->trade_id)
+            ->where('status', 'open')
+            ->latest()
+            ->first();
+
+        if (!$job) {
+            return response()->json(null);
+        }
+
+        return response()->json([
+            'id'          => $job->id,
+            'title'       => $job->title,
+            'description' => $job->description,
+            'budget'      => $job->budget,
+            'location'    => $job->location,
+            'status'      => $job->status,
+            'trade_id'    => $job->trade_id,
+            'client_id'   => $job->client_id,
+            'created_at'  => $job->created_at,
+            'client_name' => $job->client
+                ? trim($job->client->first_name . ' ' . $job->client->last_name)
+                : 'Anonymous Client',
+        ]);
     }
 
-    $job = Job::where('trade_id', $worker->trade_id)
-        ->where('status', 'open')
-        ->latest()
-        ->first();
+    // ── ACCEPT JOB ───────────────────────────────────────────
+    public function acceptJob(Request $request, $id)
+    {
+        $user   = $request->user();
+        // jobs.worker_id = workers.id (1), NOT users.id (2)
+        $worker = \App\Models\Worker::where('user_id', $user->id)->first();
 
-    return response()->json($job);
-}
+        if (!$worker) {
+            return response()->json(['message' => 'Worker not found'], 404);
+        }
 
+        $job = Job::where('id', $id)
+            ->where('status', 'open')
+            ->first();
 
-public function acceptJob(Request $request, $id)
-{
-    $user = $request->user();
-    $worker = \App\Models\Worker::where('user_id', $user->id)->first();
+        if (!$job) {
+            return response()->json(['message' => 'Job not available'], 400);
+        }
 
-    if (!$worker) {
-        return response()->json(['message' => 'Worker not found'], 404);
+        $job->worker_id = $worker->id;   // workers.id = 1
+        $job->status    = 'assigned';
+        $job->save();
+
+        return response()->json(['message' => 'Job accepted successfully']);
     }
 
-    $job = Job::where('id', $id)
-        ->where('status', 'open')
-        ->first();
+    // ── MY JOBS ───────────────────────────────────────────────
+    public function myJobs(Request $request)
+    {
+        $user   = $request->user();
+        $worker = \App\Models\Worker::where('user_id', $user->id)->first();
 
-    if (!$job) {
-        return response()->json(['message' => 'Job not available'], 400);
+        if (!$worker) {
+            return response()->json([]);
+        }
+
+        $jobs = Job::with('client')
+            ->where('worker_id', $worker->id)
+            ->whereIn('status', ['assigned', 'in_progress', 'completed'])
+            ->latest()
+            ->get();
+
+        return response()->json(
+            $jobs->map(fn($job) => [
+                'id'          => $job->id,
+                'title'       => $job->title,
+                'description' => $job->description,
+                'budget'      => $job->budget,
+                'location'    => $job->location,
+                'status'      => $job->status,
+                'trade_id'    => $job->trade_id,
+                'client_id'   => $job->client_id,
+                'created_at'  => $job->created_at,
+                'completed_at'=> $job->completed_at,
+                'client_name' => $job->client
+                    ? trim($job->client->first_name . ' ' . $job->client->last_name)
+                    : 'Unknown Client',
+            ])
+        );
     }
 
-    $job->worker_id = $worker->id;
-    $job->status = 'assigned';
-    $job->save();
+    // ── UPDATE JOB STATUS ─────────────────────────────────────
+    public function updateJobStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:in_progress,completed',
+        ]);
 
-    return response()->json(['message' => 'Job accepted successfully']);
-}
+        $user   = $request->user();
+        $worker = \App\Models\Worker::where('user_id', $user->id)->first();
 
-  public function index()
+        if (!$worker) {
+            return response()->json(['message' => 'Worker not found'], 404);
+        }
+
+        $job = Job::where('id', $id)
+            ->where('worker_id', $worker->id)
+            ->first();
+
+        if (!$job) {
+            return response()->json(['message' => 'Job not found'], 404);
+        }
+
+        if ($job->status === 'completed') {
+            return response()->json(['message' => 'Job is already completed'], 400);
+        }
+
+        $job->status = $request->status;
+
+        if ($request->status === 'completed') {
+            $job->completed_at = now();
+        }
+
+        $job->save();
+
+        return response()->json([
+            'message' => 'Job status updated',
+            'job'     => $job->fresh(),
+        ]);
+    }
+
+    // ── ANNOUNCEMENTS ─────────────────────────────────────────
+    public function index()
     {
         $announcements = Announcement::latest()
-            ->select('id', 'title', 'content', 'created_at')
+            ->select('id', 'title', 'content',  'created_at')
             ->get();
 
         return response()->json($announcements);
     }
 
-public function myJobs(Request $request)
-{
-    $user = $request->user();
+    // ── GET PROFILE ───────────────────────────────────────────
+    public function getProfile(Request $request)
+    {
+        $user   = $request->user();
+        $worker = \App\Models\Worker::with('trade')
+            ->where('user_id', $user->id)
+            ->first();
 
-    $worker = \App\Models\Worker::where('user_id', $user->id)->first();
-
-    if (!$worker) {
-        return response()->json([]);
+        return response()->json([
+            'id'               => $user->id,
+            'first_name'       => $user->first_name,
+            'middle_name'      => $user->middle_name,
+            'last_name'        => $user->last_name,
+            'username'         => $user->username,
+            'email'            => $user->email,
+            'phone'            => $user->phone ?? $worker?->phone,
+            'role'             => $user->role,
+            'status'           => $user->status,
+            'created_at'       => $user->created_at,
+            // Full URL — React Native Image works directly with this
+            'profile_picture'  => $user->profile_picture
+                ? asset('storage/' . $user->profile_picture)
+                : null,
+            // From workers + trades join
+            'trade'            => $worker?->trade?->name ?? null,
+            'experience_years' => $worker?->experience_years ?? null,
+        ]);
     }
 
-    $jobs = \App\Models\Job::where('worker_id', $worker->id)
-        ->whereIn('status', ['assigned', 'completed'])
-        ->latest()
-        ->get();
+    // ── UPDATE PROFILE ────────────────────────────────────────
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
 
-    return response()->json($jobs);
-}
+        $validated = $request->validate([
+            'first_name'  => 'required|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'last_name'   => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email,' . $user->id,
+            'phone'       => 'nullable|string|max:20',
+            'username'    => 'nullable|string|max:255|unique:users,username,' . $user->id,
+            'password'    => 'nullable|string|min:8|confirmed',
+        ]);
 
-public function updateProfile(Request $request)
-{
-    $user = $request->user();
+        $user->update([
+            'first_name'  => $validated['first_name'],
+            'middle_name' => $validated['middle_name'] ?? null,
+            'last_name'   => $validated['last_name'],
+            'email'       => $validated['email'],
+            'phone'       => $validated['phone'] ?? null,
+            'username'    => $validated['username'] ?? null,
+            'password'    => !empty($validated['password'])
+                ? bcrypt($validated['password'])
+                : $user->password,
+        ]);
 
-    $validated = $request->validate([
-        'first_name'  => 'required|string|max:255',
-        'middle_name' => 'nullable|string|max:255',
-        'last_name'   => 'required|string|max:255',
-        'email'       => 'required|email|unique:users,email,' . $user->id,
-        'phone'       => 'nullable|string|max:20',
-        'username'    => 'nullable|string|max:255|unique:users,username,' . $user->id,
-        'password'    => 'nullable|string|min:8|confirmed',
-
-    ]);
-
-    $user->update([
-        'first_name'  => $validated['first_name'],
-        'middle_name' => $validated['middle_name'] ?? null,
-        'last_name'   => $validated['last_name'],
-        'email'       => $validated['email'],
-        'phone'       => $validated['phone'] ?? null,
-        'username'    => $validated['username'] ?? null,
-        'password'    => !empty($validated['password']) ? bcrypt($validated['password']) : $user->password,
-    ]);
-
-    return response()->json($user->fresh());
-}
-
-
- // ── UPDATE PROFILE PICTURE ────────────────────────────────
-public function updateProfilePicture(Request $request)
-{
-    $request->validate([
-        'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
-
-    $worker = $request->user();
-
-    // Delete old picture if exists
-    if ($worker->profile_picture) {
-        $oldPath = str_replace(asset('storage') . '/', '', $worker->profile_picture);
-        Storage::disk('public')->delete($oldPath);
+        return $this->getProfile($request);
     }
 
-    // Store new picture
-    $path = $request->file('profile_picture')->store('profile_pictures', 'public');
-    $url = asset('storage/' . $path);
+    // ── UPDATE PROFILE PICTURE ────────────────────────────────
+    public function updateProfilePicture(Request $request)
+    {
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ]);
 
-    $worker->update(['profile_picture' => $url]);
+        $user = $request->user();
 
-    return response()->json(['profile_picture' => $url]);
-}
+        // Delete old file so storage doesn't pile up
+        if ($user->profile_picture) {
+            Storage::disk('public')->delete($user->profile_picture);
+        }
+
+        $path = $request->file('profile_picture')->store(
+            'profile_pictures/' . $user->id,
+            'public'
+        );
+
+        $user->update(['profile_picture' => $path]);
+
+        return response()->json([
+            'message'         => 'Profile picture updated',
+            'profile_picture' => asset('storage/' . $path),
+        ]);
+    }
 
     // ── EARNINGS ─────────────────────────────────────────────
     public function getEarnings(Request $request)
