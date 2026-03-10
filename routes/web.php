@@ -108,6 +108,19 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     //Delete Job
     Route::delete('/admin/jobs/{id}', [DashboardController::class, 'deleteJob'])
     ->name('admin.jobs.delete');
+
+//     Route::get('/complaints', function () {
+//     return view('admin.complaints');
+// })->name('admin.complaints');
+
+    Route::get('/complaints', [DashboardController::class, 'complaints'])
+    ->name('admin.complaints');
+
+Route::patch('/complaints/{id}', [DashboardController::class, 'updateComplaint'])
+    ->name('admin.complaints.update');
+
+Route::delete('/complaints/{id}', [DashboardController::class, 'deleteComplaint'])
+    ->name('admin.complaints.delete');
 });
 
 
@@ -161,6 +174,8 @@ Route::delete(
 Route::get('/client/jobs/{id}/worker', [ClientJobController::class, 'getWorker'])
     ->name('client.jobs.worker');
 
+    Route::post('/client/complaints', [ClientJobController::class, 'storeComplaint'])
+     ->name('client.complaints.store');
 
 // ======================
 // REGISTRATION (PUBLIC)

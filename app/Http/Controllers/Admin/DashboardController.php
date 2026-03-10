@@ -8,6 +8,7 @@ use App\Models\Trade;
 use Illuminate\Http\Request;
 use App\Models\Job;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Complaint;
 use App\Models\Announcement;
 
 class DashboardController extends Controller
@@ -368,5 +369,44 @@ public function deleteJob($id)
     $job->delete();
 
     return back()->with('success', 'Job deleted successfully.');
+}
+
+public function complaints(Request $request)
+{
+    $status = $request->query('status', 'all');
+
+    $query = Complaint::with(['client'])->latest();
+
+    if ($status !== 'all') {
+        $query->where('status', $status);
+    }
+
+    $complaints    = $query->paginate(15);
+    $pendingCount  = Complaint::where('status', 'pending')->count();
+
+    return view('admin.complaints', compact('complaints', 'pendingCount', 'status'));
+}
+
+public function updateComplaint(Request $request, $id)
+{
+    $complaint = Complaint::findOrFail($id);
+
+    $request->validate([
+        'status'      => 'required|in:pending,reviewed,resolved,dismissed',
+        'admin_notes' => 'nullable|string|max:1000',
+    ]);
+
+    $complaint->update([
+        'status'      => $request->status,
+        'admin_notes' => $request->admin_notes,
+    ]);
+
+    return back()->with('success', 'Complaint updated successfully.');
+}
+
+public function deleteComplaint($id)
+{
+    Complaint::findOrFail($id)->delete();
+    return back()->with('success', 'Complaint deleted.');
 }
 }

@@ -68,6 +68,16 @@
           <span class="ms-3">Jobs List</span>
         </a>
 
+          <!-- COmplaint List -->
+        <a href="{{ route('admin.complaints') }}"
+           class="flex items-center p-2 rounded-lg transition-colors
+           {{ request()->routeIs('admin.complaints') 
+              ? 'bg-slate-100 text-slate-900' 
+              : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
+          <iconify-icon icon="solar:case-round-linear" width="20" height="20"></iconify-icon>
+          <span class="ms-3">Complaints List</span>
+        </a>
+
         <div class="border-t border-slate-100 my-4"></div>
 
       </nav>

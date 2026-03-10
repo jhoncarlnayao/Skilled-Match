@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Job;
+use App\Models\Complaint;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Trade;
 use App\Models\User;
@@ -51,10 +52,14 @@ class ClientJobController extends Controller
 
         $user = Auth::user();
 
-        $totalJobs = $jobs->count();
+        $totalJobs     = $jobs->count();
         $activeWorkers = $jobs->where('status', 'assigned')->count();
         $completedJobs = $jobs->where('status', 'completed')->count();
-        $totalSpent = $jobs->where('status', 'completed')->sum('budget');
+        $totalSpent    = $jobs->where('status', 'completed')->sum('budget');
+
+        $myComplaints = Complaint::where('client_id', Auth::id())
+                            ->latest()
+                            ->get();
 
         return view('client.client_dashboard', compact(
             'trades',
@@ -64,7 +69,8 @@ class ClientJobController extends Controller
             'totalJobs',
             'activeWorkers',
             'completedJobs',
-            'totalSpent'
+            'totalSpent',
+            'myComplaints'
         ));
     }
 
@@ -91,24 +97,69 @@ class ClientJobController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title'       => 'required|string|max:255',
             'description' => 'required',
-            'trade_id' => 'required|exists:trades,id',
-            'budget' => 'nullable|numeric',
-            'location' => 'required|string'
+            'trade_id'    => 'required|exists:trades,id',
+            'budget'      => 'nullable|numeric',
+            'location'    => 'required|string',
         ]);
 
         Job::create([
-            'client_id' => Auth::id(),
-            'title' => $request->title,
+            'client_id'   => Auth::id(),
+            'title'       => $request->title,
             'description' => $request->description,
-            'trade_id' => $request->trade_id,
-            'budget' => $request->budget,
-            'location' => $request->location,
-            'status' => 'open'
+            'trade_id'    => $request->trade_id,
+            'budget'      => $request->budget,
+            'location'    => $request->location,
+            'status'      => 'open',
         ]);
 
         return redirect()->back()->with('success', 'Job posted successfully.');
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // STORE COMPLAINT
+    // Route : POST /client/complaints
+    // Name  : client.complaints.store
+    // ══════════════════════════════════════════════════════════════
+
+    /**
+     * Save a complaint filed by a client against a worker.
+     *
+     * Add to web.php:
+     *   Route::post('/client/complaints', [ClientJobController::class, 'storeComplaint'])
+     *        ->name('client.complaints.store');
+     */
+    public function storeComplaint(Request $request)
+    {
+        $request->validate([
+            'worker_name' => 'required|string|max:255',
+            'reason'      => 'required|in:no_show,incomplete_work,unprofessional,overcharging,damage,other',
+            'subject'     => 'required|string|max:120',
+            'description' => 'required|string|max:1000',
+            'screenshot'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
+
+        $screenshotPath = null;
+        if ($request->hasFile('screenshot')) {
+            $screenshotPath = $request->file('screenshot')
+                                      ->store('complaints', 'public');
+        }
+
+        Complaint::create([
+            'client_id'   => Auth::id(),
+            'job_id'      => null,
+            'worker_id'   => null,
+            'worker_name' => $request->worker_name,
+            'reason'      => $request->reason,
+            'subject'     => $request->subject,
+            'description' => $request->description,
+            'screenshot'  => $screenshotPath,
+            'status'      => 'pending',
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Your complaint has been submitted. Our team will review it shortly.');
     }
 
     /**
@@ -119,25 +170,25 @@ class ClientJobController extends Controller
         $user = User::findOrFail($id);
 
         $request->validate([
-            'first_name' => 'required|string|max:255',
+            'first_name'  => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'birthdate' => 'nullable|date',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:100',
-            'password' => 'nullable|string|min:8|confirmed',
+            'last_name'   => 'required|string|max:255',
+            'birthdate'   => 'nullable|date',
+            'email'       => 'required|email|unique:users,email,' . $user->id,
+            'phone'       => 'nullable|string|max:20',
+            'address'     => 'nullable|string|max:255',
+            'city'        => 'nullable|string|max:100',
+            'password'    => 'nullable|string|min:8|confirmed',
         ]);
 
-        $user->first_name = $request->first_name;
+        $user->first_name  = $request->first_name;
         $user->middle_name = $request->middle_name;
-        $user->last_name = $request->last_name;
-        $user->birthdate = $request->birthdate;
-        $user->email = $request->email;
-        $user->phone = $request->phone;
-        $user->address = $request->address;
-        $user->city = $request->city;
+        $user->last_name   = $request->last_name;
+        $user->birthdate   = $request->birthdate;
+        $user->email       = $request->email;
+        $user->phone       = $request->phone;
+        $user->address     = $request->address;
+        $user->city        = $request->city;
 
         if ($request->filled('password')) {
             $user->password = bcrypt($request->password);
@@ -179,19 +230,19 @@ class ClientJobController extends Controller
         }
 
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title'       => 'required|string|max:255',
             'description' => 'required',
-            'trade_id' => 'required|exists:trades,id',
-            'budget' => 'nullable|numeric',
-            'location' => 'required|string',
+            'trade_id'    => 'required|exists:trades,id',
+            'budget'      => 'nullable|numeric',
+            'location'    => 'required|string',
         ]);
 
         $job->update([
-            'title' => $request->title,
+            'title'       => $request->title,
             'description' => $request->description,
-            'trade_id' => $request->trade_id,
-            'budget' => $request->budget,
-            'location' => $request->location,
+            'trade_id'    => $request->trade_id,
+            'budget'      => $request->budget,
+            'location'    => $request->location,
         ]);
 
         return back()->with('success', 'Job updated successfully.');
@@ -215,11 +266,13 @@ class ClientJobController extends Controller
         return back()->with('success', 'Job deleted successfully.');
     }
 
-public function getWorker($id)
+    /**
+     * Get worker details for a specific job (used by client modal).
+     */
+    public function getWorker($id)
     {
         \Log::info('getWorker called', ['job_id' => $id, 'auth_id' => auth()->id()]);
 
-        // Find the job — no client_id filter yet so we can debug
         $job = Job::with(['worker', 'worker.user', 'worker.trade'])->find($id);
 
         \Log::info('Job found', [
@@ -232,7 +285,6 @@ public function getWorker($id)
             return response()->json(['message' => 'Job not found.'], 404);
         }
 
-        // Now enforce ownership
         if ($job->client_id !== auth()->id()) {
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
@@ -248,7 +300,6 @@ public function getWorker($id)
             return response()->json(['message' => 'Worker user record not found.'], 404);
         }
 
-        // Handle profile picture — may already be a full URL or just a path
         $pic = $user->profile_picture;
         if ($pic) {
             $profilePicture = str_starts_with($pic, 'http')
