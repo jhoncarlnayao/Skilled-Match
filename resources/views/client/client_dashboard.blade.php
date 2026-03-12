@@ -337,7 +337,7 @@
                                                 <div class="w-6 h-6 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0">
                                                     <iconify-icon icon="solar:user-id-linear" width="12" class="text-red-400"></iconify-icon>
                                                 </div>
-                                                <span class="text-xs font-medium text-slate-700">{{ $complaint->worker_name ?? '—' }}</span>
+                                                <span class="text-xs font-medium text-slate-700">{{ $complaint->fullname ?? '—' }}</span>
                                             </div>
                                         </td>
 
@@ -437,27 +437,7 @@
                 enctype="multipart/form-data" class="px-6 py-5 space-y-4">
             @csrf
 
-            <!-- ① Job Selector -->
-            <div>
-              <label class="block text-xs font-medium text-slate-700 mb-1.5">Select Job</label>
-              <div class="relative">
-                <select name="job_id" id="reportJobId" required onchange="updateWorkerName(this)"
-                  class="block w-full appearance-none rounded-lg border border-slate-200 bg-slate-50 text-sm py-2.5 px-3 focus:border-slate-900 focus:ring-slate-900 shadow-sm text-slate-600">
-                  <option value="" disabled selected>Choose a job with an assigned worker…</option>
-                  @foreach($jobs as $job)
-                    @if($job->worker_id)
-                      <option value="{{ $job->id }}"
-                        data-worker="{{ $job->worker->user->first_name ?? 'Worker' }} {{ $job->worker->user->last_name ?? '' }}">
-                        {{ $job->title }} — {{ $job->worker->user->first_name ?? 'Worker' }} {{ $job->worker->user->last_name ?? '' }}
-                      </option>
-                    @endif
-                  @endforeach
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
-                  <iconify-icon icon="solar:alt-arrow-down-linear" width="12"></iconify-icon>
-                </div>
-              </div>
-            </div>
+           
 
             <!-- ② Worker Name (auto-filled, but editable) -->
             <div>

@@ -3,17 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Complaint extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'client_id',
-        'job_id',
         'worker_id',
-        'worker_name',
+        'fullname',
+        'filed_by',
         'reason',
         'subject',
         'description',
@@ -22,36 +19,43 @@ class Complaint extends Model
         'admin_notes',
     ];
 
-  
+    // ── RELATIONSHIPS ─────────────────────────────────────────────────
+
+    /** The client user (filer when filed_by = 'client') */
     public function client()
     {
         return $this->belongsTo(User::class, 'client_id');
     }
 
-    public function job()
-    {
-        return $this->belongsTo(Job::class, 'job_id');
-    }
-
-   
+    /** The worker (filer when filed_by = 'worker') */
     public function worker()
     {
         return $this->belongsTo(Worker::class, 'worker_id');
     }
 
+    // ── ACCESSORS ─────────────────────────────────────────────────────
+
+    /** Human-readable reason */
     public function getReasonLabelAttribute(): string
     {
         return match ($this->reason) {
-            'no_show'         => 'Worker did not show up',
-            'incomplete_work' => 'Incomplete or poor quality work',
-            'unprofessional'  => 'Unprofessional behavior',
-            'overcharging'    => 'Overcharging / unauthorized fees',
-            'damage'          => 'Damage to property',
-            default           => 'Other',
+            // Client-filed reasons
+            'no_show'          => 'Worker did not show up',
+            'incomplete_work'  => 'Incomplete / poor quality work',
+            'unprofessional'   => 'Unprofessional behavior',
+            'overcharging'     => 'Overcharging / unauthorized fees',
+            'damage'           => 'Damage to property',
+            // Worker-filed reasons
+            'non_payment'      => 'Non-payment / underpayment',
+            'false_info'       => 'False job information',
+            'harassment'       => 'Harassment or abuse',
+            'unsafe_condition' => 'Unsafe working conditions',
+            'scope_creep'      => 'Excessive scope creep',
+            default            => 'Other',
         };
     }
 
-
+    /** Full storage URL for the screenshot */
     public function getScreenshotUrlAttribute(): ?string
     {
         return $this->screenshot
@@ -59,6 +63,7 @@ class Complaint extends Model
             : null;
     }
 
+    // ── HELPERS ───────────────────────────────────────────────────────
 
     public function isPending(): bool
     {

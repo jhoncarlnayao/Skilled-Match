@@ -11,44 +11,38 @@ return new class extends Migration
         Schema::create('complaints', function (Blueprint $table) {
             $table->id();
 
-            // The client (users.id) who filed the complaint
+            // Who filed it
             $table->foreignId('client_id')
+                  ->nullable()
                   ->constrained('users')
-                  ->onDelete('cascade');
+                  ->nullOnDelete();
 
-            // The job the complaint is about
-            // $table->foreignId('job_id')
-            //       ->nullable()
-            //       ->constrained('jobs')
-            //       ->nullOnDelete();
+            $table->foreignId('worker_id')
+                  ->nullable()
+                  ->constrained('workers')
+                  ->nullOnDelete();
 
-            // // The worker (workers.id) being reported
-            // $table->foreignId('worker_id')
-            //       ->nullable()
-            //       ->constrained('workers')
-            //       ->nullOnDelete();
+            // Full name of the person being reported (typed text fallback)
+            $table->string('fullname')->nullable();
 
-            // Typed/auto-filled worker name for quick reference
-            $table->string('worker_name')->nullable();
+            // Direction: 'client' filed against a worker, 'worker' filed against a client
+            $table->enum('filed_by', ['client', 'worker'])->default('client');
 
-            // Complaint fields
-            $table->string('reason');       // no_show|incomplete_work|unprofessional|overcharging|damage|other
+            // Complaint details
+            $table->string('reason');
             $table->string('subject', 120);
             $table->text('description');
 
-            // Optional screenshot — stored path e.g. complaints/abc123.jpg
+            // Optional screenshot (client-filed only)
             $table->string('screenshot')->nullable();
 
-            // Admin-managed status
+            // Admin
             $table->enum('status', ['pending', 'reviewed', 'resolved', 'dismissed'])
                   ->default('pending');
 
-            // Admin notes when reviewing / resolving
             $table->text('admin_notes')->nullable();
 
             $table->timestamps();
-
-            // No unique constraint needed since job_id is now optional
         });
     }
 

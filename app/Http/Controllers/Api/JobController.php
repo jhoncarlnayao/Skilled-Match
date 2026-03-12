@@ -151,7 +151,7 @@ class JobController extends Controller
     public function index()
     {
         $announcements = Announcement::latest()
-            ->select('id', 'title', 'content',  'created_at')
+            ->select('id', 'title', 'content', 'created_at')
             ->get();
 
         return response()->json($announcements);
@@ -277,5 +277,80 @@ class JobController extends Controller
             'weekly'     => (float) $weekly,
             'jobs_count' => $completedJobs->count(),
         ]);
+    }
+
+    // ── WORKER COMPLAINTS ─────────────────────────────────────────────
+
+    /**
+     * List all complaints filed by this worker.
+     */
+    public function myComplaints(Request $request)
+    {
+      $user = $request->user();
+
+if (!$user) {
+    return response()->json(['message' => 'Unauthenticated'], 401);
+}
+
+$worker = \App\Models\Worker::where('user_id', $user->id)->first();
+        if (!$worker) return response()->json(['complaints' => []]);
+
+        $complaints = \App\Models\Complaint::where('worker_id', $worker->id)
+            ->latest()
+            ->get()
+            ->map(fn($c) => [
+                'id'          => $c->id,
+                'fullname'    => $c->fullname,
+                'reason'      => $c->reason,
+                'subject'     => $c->subject,
+                'description' => $c->description,
+                'status'      => $c->status,
+                'admin_notes' => $c->admin_notes,
+                'created_at'  => $c->created_at->toDateString(),
+            ]);
+
+        return response()->json(['complaints' => $complaints]);
+    }
+
+    /**
+     * Worker files a new complaint against a client.
+     */
+    public function storeWorkerComplaint(Request $request)
+    {
+        $request->validate([
+            'client_name' => 'required|string|max:255',
+            'reason'      => 'required|in:non_payment,false_info,harassment,unsafe_condition,scope_creep,other',
+            'subject'     => 'required|string|max:120',
+            'description' => 'required|string|max:1000',
+            'screenshot'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
+
+    $user = $request->user();
+
+if (!$user) {
+    return response()->json(['message' => 'Unauthenticated'], 401);
+}
+
+$worker = \App\Models\Worker::where('user_id', $user->id)->first();
+        if (!$worker) return response()->json(['message' => 'Worker profile not found.'], 403);
+
+        $screenshotPath = null;
+        if ($request->hasFile('screenshot')) {
+            $screenshotPath = $request->file('screenshot')->store('complaints', 'public');
+        }
+
+        \App\Models\Complaint::create([
+            'client_id'  => null,
+            'worker_id'  => $worker->id,
+            'fullname'   => $request->client_name,
+            'filed_by'   => 'worker',
+            'reason'     => $request->reason,
+            'subject'    => $request->subject,
+            'description'=> $request->description,
+            'screenshot' => $screenshotPath,
+            'status'     => 'pending',
+        ]);
+
+        return response()->json(['message' => 'Complaint submitted successfully.']);
     }
 }

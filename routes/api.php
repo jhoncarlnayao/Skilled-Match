@@ -37,4 +37,9 @@ Route::middleware('auth:sanctum')->post('/worker/profile-picture', [JobControlle
 // Update job status
 Route::middleware('auth:sanctum')->put('/worker/jobs/{id}/status', [JobController::class, 'updateJobStatus']);
 
+     // Worker Complaints
+    Route::middleware('auth:sanctum')->get('/worker/complaints',  [JobController::class, 'myComplaints']);
+    Route::middleware('auth:sanctum')->post('/worker/complaints', [JobController::class, 'storeWorkerComplaint']);
+ 
+
     

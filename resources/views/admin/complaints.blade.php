@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Complaints — Sociotix Admin</title>
+    <title>Complaints — Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -25,8 +25,8 @@
     <header class="sticky top-0 inset-x-0 flex flex-wrap sm:justify-start sm:flex-nowrap z-[48] w-full bg-white/80 backdrop-blur-md border-b py-3 px-4 sm:px-6 md:px-8">
         <div class="w-full flex items-center justify-between gap-x-5">
             <div>
-                <h1 class="text-base font-semibold text-slate-900">Worker Complaints</h1>
-                <p class="text-xs text-slate-500">Review and manage complaints submitted by clients</p>
+                <h1 class="text-base font-semibold text-slate-900">Complaints</h1>
+                <p class="text-xs text-slate-500">Review complaints submitted by clients and workers</p>
             </div>
             <div class="flex items-center gap-2">
                 @if($pendingCount > 0)
@@ -113,7 +113,7 @@
         <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
 
             <!-- Filter Tabs -->
-            <div class="flex items-center gap-1 px-4 pt-4 pb-0 border-b border-slate-100 overflow-x-auto no-scrollbar">
+            <div class="flex items-center gap-1 px-4 pt-4 pb-0 border-b border-slate-100 overflow-x-auto">
                 @foreach([['all','All'], ['pending','Pending'], ['reviewed','Reviewed'], ['resolved','Resolved'], ['dismissed','Dismissed']] as [$key, $label])
                     <a href="{{ route('admin.complaints', ['status' => $key]) }}"
                         class="flex-shrink-0 px-4 py-2 text-xs font-medium rounded-t-lg border-b-2 transition-colors
@@ -137,8 +137,9 @@
                         <tr class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wider">
                             <th class="px-5 py-3 font-medium">Complaint</th>
                             <th class="px-5 py-3 font-medium">Filed By</th>
-                            <th class="px-5 py-3 font-medium">Worker Reported</th>
+                            <th class="px-5 py-3 font-medium">Reported Party</th>
                             <th class="px-5 py-3 font-medium">Reason</th>
+                            <th class="px-5 py-3 font-medium">Type</th>
                             <th class="px-5 py-3 font-medium">Status</th>
                             <th class="px-5 py-3 font-medium">Date</th>
                             <th class="px-5 py-3 font-medium text-right">Actions</th>
@@ -146,38 +147,72 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @forelse($complaints as $complaint)
+                            @php
+                                /*
+                                 * filed_by = 'client' → client filed, worker was reported
+                                 * filed_by = 'worker' → worker filed, client was reported
+                                 *
+                                 * filerName  = who submitted the complaint (from DB relation)
+                                 * filerRole  = 'Client' or 'Worker'
+                                 * filerEmail = email of the filer (optional display)
+                                 * reportedName = fullname column (typed name of the reported party)
+                                 * reportedRole = opposite of filerRole
+                                 */
+                                if ($complaint->filed_by === 'client') {
+                                    // Client filed → use client relation for filer
+                                    $filerName  = $complaint->client
+                                        ? trim($complaint->client->first_name . ' ' . $complaint->client->last_name)
+                                        : 'Unknown Client';
+                                    $filerEmail = $complaint->client?->email ?? '';
+                                    $filerRole  = 'Client';
+                                    $filerInitial = strtoupper(substr($complaint->client?->first_name ?? 'C', 0, 1));
+                                    $filerBg    = 'bg-blue-100 text-blue-600';
+                                    $reportedRole = 'Worker Reported';
+                                } else {
+                                    // Worker filed → use worker.user relation for filer
+                                    $filerName  = $complaint->worker?->user
+                                        ? trim($complaint->worker->user->first_name . ' ' . $complaint->worker->user->last_name)
+                                        : 'Unknown Worker';
+                                    $filerEmail = $complaint->worker?->user?->email ?? '';
+                                    $filerRole  = 'Worker';
+                                    $filerInitial = strtoupper(substr($complaint->worker?->user?->first_name ?? 'W', 0, 1));
+                                    $filerBg    = 'bg-indigo-100 text-indigo-600';
+                                    $reportedRole = 'Client Reported';
+                                }
+                                $reportedName = $complaint->fullname ?? '—';
+                            @endphp
+
                             <tr class="hover:bg-slate-50/50 transition-colors group">
 
                                 <!-- Subject + description preview -->
-                                <td class="px-5 py-4 max-w-[220px]">
+                                <td class="px-5 py-4 max-w-[200px]">
                                     <p class="text-sm font-medium text-slate-900 truncate">{{ $complaint->subject }}</p>
-                                    <p class="text-xs text-slate-400 truncate mt-0.5">{{ Str::limit($complaint->description, 60) }}</p>
+                                    <p class="text-xs text-slate-400 truncate mt-0.5">{{ Str::limit($complaint->description, 55) }}</p>
                                 </td>
 
-                                <!-- Client -->
-                                <td class="px-5 py-4">
-                                    @if($complaint->client)
-                                        <div class="flex items-center gap-2">
-                                            <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-semibold flex-shrink-0">
-                                                {{ strtoupper(substr($complaint->client->first_name, 0, 1)) }}
-                                            </div>
-                                            <div>
-                                                <p class="text-xs font-medium text-slate-700">{{ $complaint->client->first_name }} {{ $complaint->client->last_name }}</p>
-                                                <p class="text-[11px] text-slate-400">{{ $complaint->client->email }}</p>
-                                            </div>
-                                        </div>
-                                    @else
-                                        <span class="text-xs text-slate-400 italic">Unknown</span>
-                                    @endif
-                                </td>
-
-                                <!-- Worker name -->
+                                <!-- Filed By (who submitted) -->
                                 <td class="px-5 py-4">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-7 h-7 rounded-full bg-red-50 text-red-500 flex items-center justify-center flex-shrink-0">
+                                        <div class="w-7 h-7 rounded-full {{ $filerBg }} flex items-center justify-center text-xs font-semibold flex-shrink-0">
+                                            {{ $filerInitial }}
+                                        </div>
+                                        <div>
+                                            <p class="text-xs font-medium text-slate-700">{{ $filerName }}</p>
+                                            <p class="text-[10px] text-slate-400">{{ $filerEmail }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- Reported Party (fullname column — typed name) -->
+                                <td class="px-5 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-full bg-rose-50 text-rose-400 flex items-center justify-center flex-shrink-0">
                                             <iconify-icon icon="solar:user-id-linear" width="14"></iconify-icon>
                                         </div>
-                                        <span class="text-xs font-medium text-slate-700">{{ $complaint->worker_name ?? '—' }}</span>
+                                        <div>
+                                            <p class="text-xs font-medium text-slate-700">{{ $reportedName }}</p>
+                                            <p class="text-[10px] text-slate-400">{{ $reportedRole }}</p>
+                                        </div>
                                     </div>
                                 </td>
 
@@ -186,6 +221,21 @@
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
                                         {{ $complaint->reason_label }}
                                     </span>
+                                </td>
+
+                                <!-- Type badge -->
+                                <td class="px-5 py-4">
+                                    @if($complaint->filed_by === 'worker')
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-indigo-50 text-indigo-600 border border-indigo-100">
+                                            <iconify-icon icon="solar:helmet-linear" width="11"></iconify-icon>
+                                            Worker
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-600 border border-blue-100">
+                                            <iconify-icon icon="solar:user-linear" width="11"></iconify-icon>
+                                            Client
+                                        </span>
+                                    @endif
                                 </td>
 
                                 <!-- Status badge -->
@@ -206,31 +256,32 @@
 
                                 <!-- Date -->
                                 <td class="px-5 py-4 text-xs text-slate-400 whitespace-nowrap">
-                                    {{ $complaint->created_at->format('M d, Y') }}
-                                    <br>
+                                    {{ $complaint->created_at->format('M d, Y') }}<br>
                                     <span class="text-[11px]">{{ $complaint->created_at->diffForHumans() }}</span>
                                 </td>
 
                                 <!-- Actions -->
                                 <td class="px-5 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
-                                        <!-- View / Edit button -->
                                         <button type="button"
-                                            onclick="openComplaintModal({{ $complaint->id }},
+                                            onclick="openComplaintModal(
+                                                {{ $complaint->id }},
                                                 '{{ addslashes($complaint->subject) }}',
                                                 '{{ addslashes($complaint->description) }}',
-                                                '{{ $complaint->reason_label }}',
-                                                '{{ $complaint->worker_name ?? '' }}',
-                                                '{{ $complaint->client->first_name ?? '' }} {{ $complaint->client->last_name ?? '' }}',
+                                                '{{ addslashes($complaint->reason_label) }}',
+                                                '{{ addslashes($filerName) }}',
+                                                '{{ addslashes($filerRole) }}',
+                                                '{{ addslashes($reportedName) }}',
+                                                '{{ addslashes($reportedRole) }}',
                                                 '{{ $complaint->status }}',
                                                 '{{ addslashes($complaint->admin_notes ?? '') }}',
-                                                '{{ $complaint->screenshot_url ?? '' }}')"
+                                                '{{ $complaint->screenshot_url ?? '' }}'
+                                            )"
                                             class="inline-flex items-center gap-1 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-lg transition-colors">
                                             <iconify-icon icon="solar:eye-linear" width="14"></iconify-icon>
                                             Review
                                         </button>
 
-                                        <!-- Delete button -->
                                         <form action="{{ route('admin.complaints.delete', $complaint->id) }}" method="POST"
                                             onsubmit="return confirm('Delete this complaint? This cannot be undone.')">
                                             @csrf
@@ -246,7 +297,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-5 py-16 text-center">
+                                <td colspan="8" class="px-5 py-16 text-center">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
                                             <iconify-icon icon="solar:shield-check-linear" width="24"></iconify-icon>
@@ -274,9 +325,9 @@
     </main>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════ -->
-<!-- COMPLAINT REVIEW MODAL                                     -->
-<!-- ══════════════════════════════════════════════════════════ -->
+<!-- ════════════════════════════════════════════════════ -->
+<!-- COMPLAINT REVIEW MODAL                              -->
+<!-- ════════════════════════════════════════════════════ -->
 <div id="complaintModal"
      class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50 px-4 py-6">
   <div class="bg-white w-full max-w-lg rounded-xl shadow-xl overflow-hidden max-h-[92vh] flex flex-col">
@@ -301,15 +352,15 @@
     <!-- Scrollable Body -->
     <div class="overflow-y-auto flex-1 px-6 py-5 space-y-4">
 
-      <!-- Info Grid -->
+      <!-- Info Grid — 2x2 + full-width reason -->
       <div class="grid grid-cols-2 gap-3">
         <div class="bg-slate-50 rounded-lg px-3 py-2.5">
-          <p class="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Filed By</p>
-          <p class="text-xs font-medium text-slate-700" id="modalClient">—</p>
+          <p class="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5" id="modalFilerRoleLabel">Filed By</p>
+          <p class="text-xs font-medium text-slate-700" id="modalFilerName">—</p>
         </div>
-        <div class="bg-slate-50 rounded-lg px-3 py-2.5">
-          <p class="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Worker Reported</p>
-          <p class="text-xs font-medium text-slate-700" id="modalWorker">—</p>
+        <div class="bg-rose-50 rounded-lg px-3 py-2.5">
+          <p class="text-[10px] text-rose-400 uppercase tracking-wider mb-0.5" id="modalReportedRoleLabel">Reported Party</p>
+          <p class="text-xs font-medium text-slate-700" id="modalReportedName">—</p>
         </div>
         <div class="bg-slate-50 rounded-lg px-3 py-2.5 col-span-2">
           <p class="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">Reason</p>
@@ -367,12 +418,11 @@
         <div>
           <label class="block text-xs font-medium text-slate-700 mb-1.5">
             Admin Notes
-            <span class="text-slate-400 font-normal ml-1">(optional)</span>
+            <span class="text-slate-400 font-normal ml-1">(optional — visible to admin only)</span>
           </label>
           <textarea name="admin_notes" id="modalAdminNotes" rows="3" maxlength="1000"
             class="block w-full rounded-lg border border-slate-200 bg-slate-50 text-sm py-2.5 px-3 focus:border-slate-900 focus:ring-slate-900 shadow-sm resize-none"
             placeholder="Add internal notes about this complaint…"></textarea>
-          <p class="text-[11px] text-slate-400 mt-1">Visible to admins only. Not shown to the client.</p>
         </div>
 
         <!-- Actions -->
@@ -387,7 +437,6 @@
             Save Changes
           </button>
         </div>
-
       </form>
     </div>
   </div>
@@ -397,36 +446,47 @@
 <script src="https://preline.co/assets/vendor/preline/dist/index.js"></script>
 
 <script>
-    function openComplaintModal(id, subject, description, reason, worker, client, status, adminNotes, screenshotUrl) {
-        document.getElementById('modalSubject').textContent      = subject;
-        document.getElementById('modalDescription').textContent  = description;
-        document.getElementById('modalReason').textContent       = reason;
-        document.getElementById('modalWorker').textContent       = worker || '—';
-        document.getElementById('modalClient').textContent       = client.trim() || '—';
-        document.getElementById('modalAdminNotes').value         = adminNotes;
+    /**
+     * @param {number} id
+     * @param {string} subject
+     * @param {string} description
+     * @param {string} reason        - human-readable reason label
+     * @param {string} filerName     - name of who filed (client or worker)
+     * @param {string} filerRole     - 'Client' or 'Worker'
+     * @param {string} reportedName  - fullname column (who was reported)
+     * @param {string} reportedRole  - 'Client Reported' or 'Worker Reported'
+     * @param {string} status
+     * @param {string} adminNotes
+     * @param {string} screenshotUrl
+     */
+    function openComplaintModal(id, subject, description, reason, filerName, filerRole, reportedName, reportedRole, status, adminNotes, screenshotUrl) {
+        document.getElementById('modalSubject').textContent         = subject   || '—';
+        document.getElementById('modalDescription').textContent     = description || '—';
+        document.getElementById('modalReason').textContent          = reason    || '—';
+        document.getElementById('modalFilerName').textContent       = filerName || '—';
+        document.getElementById('modalFilerRoleLabel').textContent  = filerRole ? 'Filed By · ' + filerRole : 'Filed By';
+        document.getElementById('modalReportedName').textContent    = reportedName || '—';
+        document.getElementById('modalReportedRoleLabel').textContent = reportedRole || 'Reported Party';
+        document.getElementById('modalAdminNotes').value            = adminNotes || '';
 
-        // Set status dropdown
+        // Status dropdown
         const statusEl = document.getElementById('modalStatus');
         for (let i = 0; i < statusEl.options.length; i++) {
-            if (statusEl.options[i].value === status) {
-                statusEl.selectedIndex = i;
-                break;
-            }
+            statusEl.options[i].selected = (statusEl.options[i].value === status);
         }
 
         // Screenshot
         if (screenshotUrl) {
-            document.getElementById('modalScreenshot').src  = screenshotUrl;
-            document.getElementById('screenshotLink').href  = screenshotUrl;
+            document.getElementById('modalScreenshot').src = screenshotUrl;
+            document.getElementById('screenshotLink').href = screenshotUrl;
             document.getElementById('screenshotSection').classList.remove('hidden');
         } else {
             document.getElementById('screenshotSection').classList.add('hidden');
         }
 
-        // Set form action to PATCH route
+        // Form action
         document.getElementById('complaintUpdateForm').action = `/admin/complaints/${id}`;
 
-        // Show modal
         const modal = document.getElementById('complaintModal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -438,7 +498,6 @@
         modal.classList.remove('flex');
     }
 
-    // Close on backdrop click
     document.getElementById('complaintModal').addEventListener('click', function (e) {
         if (e.target === this) closeComplaintModal();
     });

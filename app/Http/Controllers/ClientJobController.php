@@ -147,15 +147,15 @@ class ClientJobController extends Controller
         }
 
         Complaint::create([
-            'client_id'   => Auth::id(),
-            'job_id'      => null,
-            'worker_id'   => null,
-            'worker_name' => $request->worker_name,
-            'reason'      => $request->reason,
-            'subject'     => $request->subject,
-            'description' => $request->description,
-            'screenshot'  => $screenshotPath,
-            'status'      => 'pending',
+            'client_id'  => Auth::id(),
+            'worker_id'  => null,
+            'fullname'   => $request->worker_name,
+            'filed_by'   => 'client',
+            'reason'     => $request->reason,
+            'subject'    => $request->subject,
+            'description'=> $request->description,
+            'screenshot' => $screenshotPath,
+            'status'     => 'pending',
         ]);
 
         return redirect()->back()
